@@ -1,0 +1,128 @@
+# Sentinel Agents Configuration - EXAMPLE FILE
+# Copy this file to sentinel_config.yaml and update with your actual values
+
+# Global settings
+global:
+  log_level: INFO
+  db_path: "sentinel_data.db"
+  notification:
+    email:
+      enabled: false
+      recipients: []
+    slack:
+      enabled: false
+      webhook_url: "YOUR_SLACK_WEBHOOK_URL"
+    webhook:
+      enabled: false
+      url: "YOUR_WEBHOOK_URL"
+
+# Oracle Sentinel Configuration
+oracle_sentinel:
+  enabled: true
+  monitoring_interval: 10  # seconds
+  web3_provider: "YOUR_WEB3_PROVIDER_URL"
+  history_size: 100
+  alert_threshold: 0.8
+  max_workers: 5
+  db_path: "oracle_sentinel.db"
+  assets:
+    - "ETH"
+    - "BTC"
+    - "USDT"
+    - "USDC"
+  oracle_sources:
+    - "chainlink"
+    - "uniswap"
+    - "compound"
+  ml_enabled: true
+  anomaly_detection:
+    isolation_forest:
+      contamination: 0.05
+      n_estimators: 100
+
+# MEV Sentinel Configuration
+mev_sentinel:
+  enabled: true
+  monitoring_interval: 1  # seconds
+  web3_provider: "YOUR_WEB3_PROVIDER_URL"
+  flashbots_relay: "https://relay.flashbots.net"
+  max_workers: 5
+  db_path: "mev_sentinel.db"
+  block_history_size: 100
+  min_profit_threshold: 0.01  # ETH
+  gas_price_bump_percentage: 10
+  private_mempool_enabled: true
+  randomized_submission_enabled: true
+  protection_strategies:
+    frontrunning: true
+    backrunning: true
+    sandwich_attack: true
+    time_bandit: false
+
+# Strategy Sentinel Configuration
+strategy_sentinel:
+  enabled: true
+  monitoring_interval: 5  # seconds
+  web3_provider: "YOUR_WEB3_PROVIDER_URL"
+  max_workers: 5
+  db_path: "strategy_sentinel.db"
+  performance_baselines_path: "strategy_performance_baselines.json"
+  alert_thresholds:
+    profit_loss_deviation: 0.2  # 20% deviation from baseline
+    execution_time_max_deviation: 0.5  # 50% longer than baseline
+    gas_cost_max_deviation: 0.3  # 30% higher than baseline
+    slippage_max: 0.02  # 2% max slippage
+    price_impact_max: 0.03  # 3% max price impact
+  strategies:
+    arbitrage_v1:
+      max_execution_time: 60  # seconds
+      min_profit_threshold: 0.001  # ETH
+      max_gas_cost: 0.01  # ETH
+      abort_on_slippage_above: 0.03  # 3%
+    flashloan_arbitrage:
+      max_execution_time: 30
+      min_profit_threshold: 0.005
+      max_gas_cost: 0.02
+      abort_on_slippage_above: 0.02
+
+# Integration Configuration
+integration:
+  # WebSocket Integration for Real-time Alerts
+  websocket:
+    enabled: true
+    endpoint: "ws://localhost:8080"
+    reconnect_interval: 5  # seconds
+    max_retries: 3
+    buffer_size: 1000
+    compression: true
+    
+  # Alert Routing Configuration
+  alert_routing:
+    enabled: true
+    config_file: "alert_routing_config.yaml"
+    rate_limit: 10  # alerts per minute per channel
+    deduplication_window: 300  # seconds
+    escalation_delay: 900  # 15 minutes
+    
+  # Contract Interaction for Emergency Actions
+  contract_interaction:
+    enabled: true
+    abi_registry: "contract_abi_registry.json"
+    gas_limit: 500000
+    gas_price_multiplier: 1.2
+    emergency_wallet: "YOUR_EMERGENCY_WALLET_ADDRESS"
+    emergency_private_key: "YOUR_EMERGENCY_PRIVATE_KEY"
+    auto_pause_threshold: "CRITICAL"  # Auto-pause on CRITICAL or EMERGENCY alerts
+    contracts:
+      arbitrage_executor:
+        address: "YOUR_ARBITRAGE_EXECUTOR_ADDRESS"
+        pause_function: "emergencyPause"
+        unpause_function: "emergencyUnpause"
+      ai_strategy:
+        address: "YOUR_AI_STRATEGY_ADDRESS"
+        pause_function: "emergencyPause"
+        unpause_function: "_unpause"
+      vault:
+        address: "YOUR_VAULT_ADDRESS"
+        pause_function: "emergencyPause"
+        unpause_function: "emergencyUnpause"

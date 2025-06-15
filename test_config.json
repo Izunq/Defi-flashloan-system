@@ -1,0 +1,48 @@
+{
+  "security": {
+    "price_deviation_threshold": 0.15,
+    "volume_anomaly_threshold": 3.0,
+    "correlation_threshold": 0.8,
+    "confidence_threshold": 0.85,
+    "circuit_breaker_threshold": 0.25
+  },
+  "ml_security": {
+    "anomaly_threshold": 0.7,
+    "correlation_threshold": 0.6,
+    "prediction_window": 300,
+    "feature_importance": 0.1,
+    "training_data_size": 1000
+  },
+  "oracles": {
+    "chainlink": {
+      "enabled": true,
+      "weight": 0.4,
+      "timeout": 30
+    },
+    "uniswap": {
+      "enabled": true,
+      "weight": 0.3,
+      "timeout": 30
+    },
+    "binance": {
+      "enabled": true,
+      "weight": 0.3,
+      "timeout": 30
+    }
+  },
+  "alerting": {
+    "webhook_url": "",
+    "email_enabled": false,
+    "slack_enabled": false,
+    "discord_enabled": false
+  },
+  "database": {
+    "path": "oracle_security_test.db",
+    "max_history_days": 30
+  },
+  "web3": {
+    "provider_url": "https://mainnet.infura.io/v3/test",
+    "timeout": 30,
+    "retry_attempts": 3
+  }
+}

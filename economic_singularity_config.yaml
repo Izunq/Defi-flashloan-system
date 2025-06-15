@@ -1,0 +1,215 @@
+# Economic Singularity Configuration
+
+# Account Configuration
+account:
+  private_key: ${PRIVATE_KEY}
+
+# Contract Addresses
+contracts:
+  algorithmic_central_bank: ${ALGORITHMIC_CENTRAL_BANK_ADDRESS}
+  cognitive_mesh: ${COGNITIVE_MESH_ADDRESS}
+
+# Web3 Connections
+web3:
+  ethereum:
+    rpc_url: ${ETH_RPC_URL}
+    chain_id: 1
+  
+  polygon:
+    rpc_url: ${POLYGON_RPC_URL}
+    chain_id: 137
+  
+  arbitrum:
+    rpc_url: ${ARBITRUM_RPC_URL}
+    chain_id: 42161
+  
+  optimism:
+    rpc_url: ${OPTIMISM_RPC_URL}
+    chain_id: 10
+  
+  binance:
+    rpc_url: ${BSC_RPC_URL}
+    chain_id: 56
+
+# File Paths
+paths:
+  contract_abis: "./abi"
+  data_dir: "./economic_data"
+  models_dir: "./economic_models"
+
+# Monitoring Configuration
+monitoring:
+  # Interval between main loop iterations (in seconds)
+  interval_seconds: 60
+  
+  # Interval between market data updates (in seconds)
+  market_update_interval: 300
+  
+  # Interval between model retraining (in seconds)
+  model_retrain_interval: 86400
+  
+  # Enable Prometheus metrics
+  enable_prometheus: true
+  
+  # Prometheus port
+  prometheus_port: 9091
+  
+  # Enable health checks
+  enable_health_checks: true
+  
+  # Health check port
+  health_check_port: 8081
+  
+  # Log level
+  log_level: "INFO"
+
+# Intervention Configuration
+intervention:
+  # Minimum confidence required for intervention
+  min_confidence: 0.8
+  
+  # Minimum price impact percentage to trigger intervention
+  min_impact_percentage: 1.0
+  
+  # Maximum intervention size (in USD)
+  max_intervention_size: 1000000
+  
+  # Cooldown period between interventions (in seconds)
+  cooldown_seconds: 3600
+  
+  # Maximum number of interventions per day
+  max_interventions_per_day: 10
+  
+  # Emergency intervention threshold (price deviation percentage)
+  emergency_threshold: 10.0
+  
+  # Maximum emergency intervention size (in USD)
+  max_emergency_intervention_size: 5000000
+
+# Market Analysis Configuration
+market_analysis:
+  # Minimum data points required for analysis
+  min_data_points: 100
+  
+  # Lookback period for analysis (in days)
+  lookback_days: 30
+  
+  # Price deviation threshold for monitoring (percentage)
+  price_deviation_threshold: 0.5
+  
+  # Volatility threshold for monitoring (percentage)
+  volatility_threshold: 5.0
+  
+  # Liquidity threshold for monitoring (in USD)
+  liquidity_threshold: 100000
+  
+  # Volume threshold for monitoring (in USD)
+  volume_threshold: 50000
+
+# Model Configuration
+model:
+  # Model type (options: "linear", "random_forest", "gradient_boosting", "neural_network")
+  type: "gradient_boosting"
+  
+  # Feature importance threshold
+  feature_importance_threshold: 0.05
+  
+  # Minimum accuracy required for model use
+  min_accuracy: 0.7
+  
+  # Neural network configuration (if type is "neural_network")
+  neural_network:
+    layers: [128, 64, 32]
+    dropout: 0.2
+    learning_rate: 0.001
+    epochs: 100
+    batch_size: 32
+  
+  # Gradient boosting configuration (if type is "gradient_boosting")
+  gradient_boosting:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 5
+    min_samples_split: 2
+    min_samples_leaf: 1
+
+# Asset Configuration
+assets:
+  # Stablecoins
+  stablecoins:
+    - symbol: "USDC"
+      address: ${USDC_ADDRESS}
+      target_price: 1.0
+      max_deviation: 0.5
+    
+    - symbol: "USDT"
+      address: ${USDT_ADDRESS}
+      target_price: 1.0
+      max_deviation: 0.5
+    
+    - symbol: "DAI"
+      address: ${DAI_ADDRESS}
+      target_price: 1.0
+      max_deviation: 0.5
+  
+  # Major assets
+  major_assets:
+    - symbol: "ETH"
+      address: ${ETH_ADDRESS}
+      volatility_threshold: 10.0
+    
+    - symbol: "WBTC"
+      address: ${WBTC_ADDRESS}
+      volatility_threshold: 10.0
+  
+  # Protocol tokens
+  protocol_tokens:
+    - symbol: "UNI"
+      address: ${UNI_ADDRESS}
+      volatility_threshold: 15.0
+    
+    - symbol: "AAVE"
+      address: ${AAVE_ADDRESS}
+      volatility_threshold: 15.0
+    
+    - symbol: "COMP"
+      address: ${COMP_ADDRESS}
+      volatility_threshold: 15.0
+
+# Market Configuration
+markets:
+  # DEXs
+  dexs:
+    - name: "Uniswap V3"
+      address: ${UNISWAP_V3_ADDRESS}
+      type: "dex"
+      stabilization_factor: 1.0
+    
+    - name: "SushiSwap"
+      address: ${SUSHISWAP_ADDRESS}
+      type: "dex"
+      stabilization_factor: 1.0
+  
+  # Lending protocols
+  lending:
+    - name: "Aave V3"
+      address: ${AAVE_V3_ADDRESS}
+      type: "lending"
+      stabilization_factor: 1.2
+    
+    - name: "Compound V3"
+      address: ${COMPOUND_V3_ADDRESS}
+      type: "lending"
+      stabilization_factor: 1.2
+  
+  # Derivatives
+  derivatives:
+    - name: "dYdX"
+      address: ${DYDX_ADDRESS}
+      type: "derivatives"
+      stabilization_factor: 1.5
+    
+    - name: "GMX"
+      address: ${GMX_ADDRESS}
+      type: "derivatives"
+      stabilization_factor: 1.5

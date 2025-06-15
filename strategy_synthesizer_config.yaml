@@ -1,0 +1,130 @@
+# Strategy Synthesizer Configuration
+
+# Strategy primitives
+primitives:
+  # Condition primitives
+  conditions:
+    - name: "price_above"
+      params: ["asset", "threshold"]
+      description: "Check if the price of an asset is above a threshold"
+    
+    - name: "price_below"
+      params: ["asset", "threshold"]
+      description: "Check if the price of an asset is below a threshold"
+    
+    - name: "price_change_above"
+      params: ["asset", "threshold"]
+      description: "Check if the 24h price change of an asset is above a threshold"
+    
+    - name: "price_change_below"
+      params: ["asset", "threshold"]
+      description: "Check if the 24h price change of an asset is below a threshold"
+    
+    - name: "gas_price_below"
+      params: ["threshold"]
+      description: "Check if the gas price is below a threshold"
+    
+    - name: "supply_apy_above"
+      params: ["protocol", "asset", "threshold"]
+      description: "Check if the supply APY for an asset on a protocol is above a threshold"
+    
+    - name: "has_balance"
+      params: ["asset", "min_balance"]
+      description: "Check if the wallet has at least a minimum balance of an asset"
+    
+    - name: "portfolio_value_above"
+      params: ["threshold"]
+      description: "Check if the total portfolio value is above a threshold"
+    
+    - name: "always"
+      params: []
+      description: "Always returns true"
+  
+  # Action primitives
+  actions:
+    - name: "swap"
+      params: ["protocol", "asset_from", "asset_to", "amount_percentage"]
+      description: "Swap one asset for another on a protocol"
+    
+    - name: "deposit"
+      params: ["protocol", "asset", "amount_percentage"]
+      description: "Deposit an asset into a lending protocol"
+    
+    - name: "withdraw"
+      params: ["protocol", "asset", "amount_percentage"]
+      description: "Withdraw an asset from a lending protocol"
+    
+    - name: "borrow"
+      params: ["protocol", "asset", "amount_percentage"]
+      description: "Borrow an asset from a lending protocol"
+    
+    - name: "repay"
+      params: ["protocol", "asset", "amount_percentage"]
+      description: "Repay a borrowed asset to a lending protocol"
+    
+    - name: "do_nothing"
+      params: []
+      description: "Do nothing (no-op action)"
+
+# Genetic algorithm parameters
+genetic_algorithm:
+  population_size: 50
+  generations: 20
+  mutation_rate: 0.2
+  crossover_rate: 0.7
+  elitism_count: 5
+  tournament_size: 3
+  fitness_goals:
+    - "maximize_profit"
+    - "minimize_risk"
+    - "balanced"
+
+# Simulation parameters
+simulation:
+  num_episodes: 10
+  max_steps: 1000
+  simulator_config_path: "world_model_simulator_config.yaml"
+
+# Strategy constraints
+strategy_constraints:
+  min_nodes: 3
+  max_nodes: 20
+  min_conditions: 1
+  max_conditions: 10
+  min_actions: 1
+  max_actions: 10
+  max_depth: 5
+
+# Strategy templates
+strategy_templates:
+  - name: "delta_neutral"
+    description: "A delta-neutral strategy that balances long and short positions"
+    primitives:
+      - { type: "action", name: "deposit", params: { protocol: "aave_v3", asset: "eth", amount_percentage: 0.8 } }
+      - { type: "action", name: "borrow", params: { protocol: "aave_v3", asset: "usdc", amount_percentage: 0.5 } }
+      - { type: "action", name: "swap", params: { protocol: "uniswap_v3", asset_from: "usdc", asset_to: "eth", amount_percentage: 1.0 } }
+  
+  - name: "yield_farming"
+    description: "A yield farming strategy that seeks the highest APY"
+    primitives:
+      - { type: "condition", name: "supply_apy_above", params: { protocol: "aave_v3", asset: "usdc", threshold: 0.05 } }
+      - { type: "action", name: "deposit", params: { protocol: "aave_v3", asset: "usdc", amount_percentage: 1.0 } }
+  
+  - name: "flash_loan_arbitrage"
+    description: "A flash loan arbitrage strategy"
+    primitives:
+      - { type: "action", name: "borrow", params: { protocol: "aave_v3", asset: "usdc", amount_percentage: 1.0 } }
+      - { type: "action", name: "swap", params: { protocol: "uniswap_v3", asset_from: "usdc", asset_to: "eth", amount_percentage: 1.0 } }
+      - { type: "action", name: "swap", params: { protocol: "curve", asset_from: "eth", asset_to: "usdc", amount_percentage: 1.0 } }
+      - { type: "action", name: "repay", params: { protocol: "aave_v3", asset: "usdc", amount_percentage: 1.0 } }
+
+# Data and results storage
+data_dir: "data/strategy_synthesizer"
+results_dir: "results/strategy_synthesizer"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/strategy_synthesizer.log"
+  max_size: 10485760  # 10 MB
+  backup_count: 5

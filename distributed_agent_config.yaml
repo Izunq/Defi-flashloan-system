@@ -1,0 +1,192 @@
+# Distributed AI Agent Configuration
+# ===================================
+# Configuration for the decentralized AI agent architecture
+# that eliminates single point of failure risks
+
+cluster_id: "arbitrage-cluster-v1"
+
+# Cluster Health & Monitoring
+health_check_interval: 10  # seconds
+failover_threshold: 3      # failed health checks before failover
+recovery_timeout: 300      # seconds to wait for agent recovery
+heartbeat_timeout: 30      # seconds before considering agent offline
+
+# Agent Configuration
+min_primary_agents: 2      # minimum primary agents required
+min_secondary_agents: 3    # minimum secondary agents required
+max_agents_per_role: 5     # maximum agents per role
+emergency_agent_count: 2   # emergency backup agents to spawn
+
+# Consensus Protocol
+consensus:
+  min_consensus_ratio: 0.67  # 67% agreement required
+  voting_timeout: 30         # seconds for consensus voting
+  decision_cache_time: 300   # seconds to cache consensus decisions
+
+# Load Balancing
+load_balancing:
+  algorithm: "weighted_round_robin"  # round_robin, weighted_round_robin, least_connections
+  health_weight: 0.4        # weight given to agent health
+  load_weight: 0.4          # weight given to current load
+  performance_weight: 0.2   # weight given to performance metrics
+
+# Circuit Breaker
+circuit_breaker:
+  failure_threshold: 5      # failures before opening circuit
+  timeout: 60              # seconds before attempting reset
+  half_open_max_calls: 3   # max calls in half-open state
+
+# Service Discovery (Redis)
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+  ssl: false
+  connection_pool_size: 10
+  socket_timeout: 5
+  retry_on_timeout: true
+
+# Service Discovery (Consul) - Optional
+consul:
+  host: "localhost" 
+  port: 8500
+  scheme: "http"
+  token: null
+  datacenter: "dc1"
+  consistency: "default"
+
+# Distributed Configuration (etcd) - Optional  
+etcd:
+  host: "localhost"
+  port: 2379
+  user: null
+  password: null
+  ca_cert: null
+  cert_key: null
+  cert_cert: null
+
+# Agent Capabilities Matrix
+agent_roles:
+  primary:
+    capabilities:
+      - "trading"
+      - "risk_management" 
+      - "strategy_execution"
+      - "market_analysis"
+      - "portfolio_management"
+    min_instances: 2
+    max_instances: 3
+    
+  secondary:
+    capabilities:
+      - "trading"
+      - "risk_management"
+      - "strategy_execution" 
+      - "data_processing"
+    min_instances: 3
+    max_instances: 5
+    
+  backup:
+    capabilities:
+      - "trading"
+      - "basic_risk_management"
+      - "emergency_operations"
+    min_instances: 1
+    max_instances: 2
+    
+  monitor:
+    capabilities:
+      - "health_monitoring"
+      - "performance_tracking"
+      - "alerting"
+      - "log_aggregation"
+    min_instances: 1
+    max_instances: 2
+    
+  coordinator:
+    capabilities:
+      - "consensus_coordination"
+      - "load_balancing"
+      - "failover_management"
+      - "cluster_orchestration"
+    min_instances: 1
+    max_instances: 1
+
+# Resource Limits per Agent
+resource_limits:
+  memory_mb: 2048
+  cpu_cores: 2
+  disk_gb: 10
+  network_bandwidth_mbps: 100
+
+# Security Configuration
+security:
+  enable_tls: true
+  mutual_auth: true
+  key_rotation_interval: 86400  # 24 hours
+  audit_logging: true
+  encrypted_communications: true
+
+# Monitoring & Alerting
+monitoring:
+  metrics_interval: 5        # seconds
+  alert_thresholds:
+    cpu_usage: 80           # percent
+    memory_usage: 85        # percent
+    error_rate: 10          # percent
+    response_time: 5000     # milliseconds
+  
+  alert_channels:
+    - type: "log"
+      level: "critical"
+    - type: "webhook"
+      url: "https://your-alerting-webhook.com"
+    
+# Backup & Recovery
+backup:
+  state_backup_interval: 300   # seconds
+  backup_retention_days: 7
+  enable_cross_region_backup: false
+  backup_encryption: true
+
+# Auto-scaling Configuration
+auto_scaling:
+  enabled: true
+  scale_up_threshold: 0.8    # resource utilization
+  scale_down_threshold: 0.3   # resource utilization
+  scale_up_cooldown: 300     # seconds
+  scale_down_cooldown: 600   # seconds
+  max_scale_up_instances: 2
+  max_scale_down_instances: 1
+
+# Disaster Recovery
+disaster_recovery:
+  cross_region_replication: false
+  automated_failover: true
+  recovery_time_objective: 60    # seconds (RTO)
+  recovery_point_objective: 30   # seconds (RPO)
+  
+# Performance Tuning
+performance:
+  async_io_workers: 4
+  thread_pool_size: 8
+  connection_timeout: 10
+  request_timeout: 30
+  max_concurrent_requests: 100
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - [%(funcName)s:%(lineno)d] - %(message)s"
+  file_path: "logs/distributed_agent.log"
+  max_file_size_mb: 100
+  backup_count: 5
+  enable_json_logging: true
+
+# Development & Testing
+development:
+  mock_external_services: false
+  enable_debug_endpoints: false
+  simulation_mode: false
+  test_failover_scenarios: false

@@ -1,0 +1,28 @@
+# Dockerfile for Streamlit Dashboard
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy only the dashboard-related files
+COPY streamlit_dashboard.py .
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir streamlit
+
+# Expose Streamlit port
+EXPOSE 8501
+
+# Set the entrypoint
+ENTRYPOINT ["streamlit", "run"]
+
+# Default command
+CMD ["streamlit_dashboard.py"]

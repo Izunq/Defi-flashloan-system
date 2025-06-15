@@ -1,0 +1,9 @@
+{
+  "test_mode": true,
+  "use_mock_data": true,
+  "database_url": "sqlite:///:memory:",
+  "web3_provider": "http://localhost:8545",
+  "timeout_seconds": 30,
+  "max_retries": 3,
+  "log_level": "INFO"
+}

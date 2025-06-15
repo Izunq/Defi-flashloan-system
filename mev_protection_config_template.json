@@ -1,0 +1,156 @@
+{
+  "security_settings": {
+    "enforce_private_mempool": true,
+    "high_value_threshold_eth": 0.1,
+    "critical_value_threshold_eth": 1.0,
+    "max_public_mempool_value_eth": 0.05,
+    "advanced_mev_detection": true,
+    "randomized_timing": true,
+    "max_mev_bot_confidence": 0.7,
+    "mandatory_simulation": true,
+    "fail_secure_mode": true,
+    "comprehensive_slippage_protection": true
+  },
+  "flashbots_config": {
+    "enabled": true,
+    "endpoint": "https://relay.flashbots.net",
+    "auth_signing_key": "AUTO_GENERATE",
+    "fallback_enabled": false,
+    "max_bundle_size": 1,
+    "retry_count": 3,
+    "retry_delay_base_ms": 1000,
+    "retry_delay_jitter_ms": 500,
+    "simulation_required": true
+  },
+  "eden_config": {
+    "enabled": true,
+    "endpoint": "https://api.edennetwork.io/v1/bundle",
+    "fallback_enabled": false,
+    "retry_count": 2,
+    "priority_fee_multiplier": 1.1
+  },
+  "bloxroute_config": {
+    "enabled": false,
+    "endpoint": "https://api.blxr.io/v1",
+    "auth_header": "CONFIGURE_IF_USING",
+    "fallback_enabled": false
+  },
+  "mempool_analysis": {
+    "enabled": true,
+    "scan_interval_seconds": 30,
+    "blocks_to_analyze": 15,
+    "mev_bot_detection_threshold": 2,
+    "sandwich_attack_detection": true,
+    "front_running_detection": true,
+    "back_running_detection": true,
+    "statistical_arbitrage_detection": true
+  },
+  "transaction_analysis": {
+    "value_based_risk_assessment": true,
+    "function_signature_analysis": true,
+    "contract_interaction_analysis": true,
+    "gas_price_analysis": true,
+    "timing_analysis": true,
+    "multi_factor_risk_scoring": true
+  },
+  "slippage_protection": {
+    "enabled": true,
+    "max_slippage_bps": 30,
+    "universal_dex_protection": true,
+    "value_based_protection": true,
+    "supported_dexes": [
+      "uniswap_v2",
+      "uniswap_v3",
+      "sushiswap",
+      "1inch",
+      "0x_protocol",
+      "curve",
+      "balancer"
+    ],
+    "dynamic_slippage_adjustment": true,
+    "front_running_compensation": true
+  },
+  "timing_protection": {
+    "randomized_delays": true,
+    "min_delay_ms": 100,
+    "max_delay_ms": 2000,
+    "cryptographic_jitter": true,
+    "anti_pattern_timing": true,
+    "submission_time_obfuscation": true
+  },
+  "gas_optimization": {
+    "dynamic_gas_pricing": true,
+    "eip1559_optimization": true,
+    "gas_price_oracle": "flashbots",
+    "max_priority_fee_gwei": 5.0,
+    "max_fee_gwei": 300.0,
+    "gas_limit_buffer_percent": 20,
+    "congestion_aware_pricing": true
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_collection": true,
+    "alert_on_mev_detection": true,
+    "alert_on_failed_protection": true,
+    "alert_on_high_slippage": true,
+    "alert_on_gas_price_spike": true,
+    "metrics_endpoint": "http://localhost:8080/metrics",
+    "log_level": "INFO",
+    "real_time_monitoring": true
+  },
+  "emergency_settings": {
+    "circuit_breaker_enabled": true,
+    "max_consecutive_failures": 3,
+    "emergency_shutdown_threshold": 5,
+    "auto_recovery_enabled": true,
+    "emergency_contact_webhook": null,
+    "fallback_to_safe_mode": true
+  },
+  "compliance": {
+    "regulatory_compliance_mode": false,
+    "transaction_logging": true,
+    "audit_trail_enabled": true,
+    "privacy_protection": true,
+    "data_retention_days": 30
+  },
+  "advanced_features": {
+    "machine_learning_detection": false,
+    "behavioral_analysis": true,
+    "cross_chain_protection": false,
+    "multi_exchange_arbitrage_protection": true,
+    "flash_loan_mev_protection": true,
+    "liquidation_protection": true
+  },
+  "network_specific": {
+    "ethereum_mainnet": {
+      "enabled": true,
+      "high_value_threshold_eth": 0.1,
+      "gas_price_multiplier": 1.0
+    },
+    "polygon": {
+      "enabled": false,
+      "high_value_threshold_matic": 100,
+      "gas_price_multiplier": 1.2
+    },
+    "arbitrum": {
+      "enabled": false,
+      "high_value_threshold_eth": 0.05,
+      "gas_price_multiplier": 0.8
+    },
+    "optimism": {
+      "enabled": false,
+      "high_value_threshold_eth": 0.05,
+      "gas_price_multiplier": 0.8
+    }
+  },
+  "testing": {
+    "simulation_mode": false,
+    "dry_run_enabled": false,
+    "test_transaction_limit": 10,
+    "mock_mev_attacks": false,
+    "performance_benchmarking": false
+  },
+  "version": "1.0.0",
+  "last_updated": "2025-06-14T00:00:00Z",
+  "deployment_notes": "Enhanced MEV protection with real mempool analysis, private mempool enforcement, and advanced threat detection. This configuration provides institutional-grade MEV protection suitable for high-value DeFi transactions."
+}

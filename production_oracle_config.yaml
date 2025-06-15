@@ -1,0 +1,427 @@
+# Production Oracle Security Monitor Configuration
+# Enterprise-grade oracle security monitoring system
+
+# Blockchain Configuration
+blockchain:
+  rpc_url: "http://localhost:8545"  # Local development
+  # rpc_url: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID"  # Mainnet
+  # rpc_url: "https://polygon-rpc.com"  # Polygon
+  chain_id: 31337  # Local: 31337, Mainnet: 1, Polygon: 137
+  gas_limit: 8000000
+  gas_price: 20000000000  # 20 Gwei
+
+# Smart Contract Addresses
+contracts:
+  secure_multi_oracle: "0x1234567890123456789012345678901234567890"
+  oracle_security_wrapper: "0x1234567890123456789012345678901234567891"
+  oracle_manipulation_monitor: "0x1234567890123456789012345678901234567892"
+  advanced_oracle_security_validator: "0x1234567890123456789012345678901234567893"
+  arbitrage_executor: "0x1234567890123456789012345678901234567894"
+
+# Monitoring Configuration
+monitoring:
+  interval: 30  # seconds between monitoring cycles
+  deep_analysis_interval: 300  # seconds between deep analysis
+  health_check_interval: 60  # seconds between health checks
+  
+  # Assets to monitor
+  assets:
+    - "ETH"
+    - "BTC"
+    - "USDC"
+    - "DAI"
+    - "USDT"
+    - "WETH"
+    - "WBTC"
+    - "LINK"
+    - "UNI"
+    - "AAVE"
+  
+  # External Oracle APIs for cross-validation
+  external_apis:
+    - name: "chainlink"
+      url: "https://api.chain.link"
+      api_key: "${CHAINLINK_API_KEY}"
+      enabled: true
+      weight: 0.3
+      
+    - name: "coingecko"
+      url: "https://api.coingecko.com/api/v3"
+      api_key: "${COINGECKO_API_KEY}"
+      enabled: true
+      weight: 0.2
+      
+    - name: "coinmarketcap"
+      url: "https://pro-api.coinmarketcap.com/v1"
+      api_key: "${CMC_API_KEY}"
+      enabled: false
+      weight: 0.2
+      
+    - name: "binance"
+      url: "https://api.binance.com/api/v3"
+      enabled: true
+      weight: 0.3
+
+# Security Thresholds
+security_thresholds:
+  # Price deviation thresholds (in basis points)
+  max_price_deviation: 500  # 5% maximum acceptable deviation
+  circuit_breaker_threshold: 1000  # 10% circuit breaker activation
+  critical_deviation: 1500  # 15% critical alert threshold
+  
+  # Oracle consensus requirements
+  min_oracle_consensus: 3  # Minimum number of oracles for consensus
+  min_consensus_weight: 7000  # 70% minimum consensus weight
+  oracle_weight_threshold: 1000  # 10% minimum oracle weight
+  
+  # Time-based thresholds
+  staleness_threshold: 3600  # 1 hour maximum price age
+  update_frequency_threshold: 300  # 5 minutes maximum update interval
+  response_time_threshold: 60  # 60 seconds maximum response time
+  
+  # Statistical thresholds
+  anomaly_threshold: 3.0  # Z-score threshold for anomaly detection
+  volatility_threshold: 0.05  # 5% volatility threshold
+  volume_spike_threshold: 300  # 3x normal volume spike threshold
+  
+  # Machine Learning thresholds
+  ml_anomaly_threshold: -0.5  # Isolation Forest threshold
+  ml_confidence_threshold: 0.8  # Minimum ML confidence
+  training_data_minimum: 1000  # Minimum data points for training
+  
+  # Threat Assessment
+  threat_assessment_interval: 300  # 5 minutes between assessments
+  high_threat_threshold: 0.6  # 60% probability for high threat
+  critical_threat_threshold: 0.8  # 80% probability for critical threat
+
+# Circuit Breaker Configuration
+circuit_breakers:
+  global_threshold: 3  # Number of asset circuit breakers to trigger global
+  cooldown_period: 3600  # 1 hour cooldown period
+  auto_reset_enabled: false  # Require manual reset
+  emergency_contacts:
+    - "security@company.com"
+    - "admin@company.com"
+
+# Alerting Configuration
+alerting:
+  # Email Alerts
+  email_enabled: true
+  email:
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    username: "${EMAIL_USERNAME}"
+    password: "${EMAIL_PASSWORD}"
+    from_address: "oracle-security@company.com"
+    to_addresses:
+      - "security-team@company.com"
+      - "risk-management@company.com"
+    cc_addresses:
+      - "compliance@company.com"
+    
+  # Webhook Alerts
+  webhook_enabled: true
+  webhook:
+    url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+    timeout: 30
+    retry_count: 3
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer ${SLACK_TOKEN}"
+    
+  # Telegram Alerts
+  telegram_enabled: false
+  telegram:
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+    
+  # SMS Alerts (for critical incidents)
+  sms_enabled: false
+  sms:
+    provider: "twilio"
+    account_sid: "${TWILIO_ACCOUNT_SID}"
+    auth_token: "${TWILIO_AUTH_TOKEN}"
+    from_number: "+1234567890"
+    to_numbers:
+      - "+1987654321"
+      - "+1555123456"
+  
+  # Alert Severity Mapping
+  severity_channels:
+    CRITICAL:
+      - email
+      - webhook
+      - sms
+    HIGH:
+      - email
+      - webhook
+    MEDIUM:
+      - email
+    LOW:
+      - webhook
+
+# Database Configuration
+database:
+  type: "sqlite"
+  path: "oracle_security.db"
+  backup_enabled: true
+  backup_interval: 3600  # 1 hour
+  retention_days: 30
+  
+  # For production, consider PostgreSQL
+  # type: "postgresql"
+  # host: "localhost"
+  # port: 5432
+  # database: "oracle_security"
+  # username: "${DB_USERNAME}"
+  # password: "${DB_PASSWORD}"
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file_enabled: true
+  file_path: "production_oracle_security.log"
+  max_file_size: 10485760  # 10MB
+  backup_count: 5
+  console_enabled: true
+  
+  # Log rotation
+  rotation_enabled: true
+  rotation_interval: "midnight"
+  
+  # Structured logging for production
+  structured: true
+  format: "json"
+
+# Machine Learning Configuration
+machine_learning:
+  enabled: true
+  
+  # Anomaly Detection
+  anomaly_detection:
+    algorithm: "isolation_forest"  # isolation_forest, one_class_svm, local_outlier_factor
+    contamination: 0.1  # Expected proportion of anomalies
+    random_state: 42
+    
+  # Feature Engineering
+  features:
+    price_features:
+      - "current_price"
+      - "price_change_1m"
+      - "price_change_5m"
+      - "price_change_15m"
+      - "price_volatility"
+      - "price_momentum"
+    
+    volume_features:
+      - "current_volume"
+      - "volume_change_1m"
+      - "volume_moving_average"
+      - "volume_volatility"
+    
+    oracle_features:
+      - "oracle_confidence"
+      - "oracle_deviation"
+      - "oracle_latency"
+      - "oracle_reputation"
+    
+    time_features:
+      - "hour_of_day"
+      - "day_of_week"
+      - "is_weekend"
+  
+  # Model Training
+  training:
+    auto_retrain: true
+    retrain_interval: 3600  # 1 hour
+    min_data_points: 1000
+    validation_split: 0.2
+    
+  # Model Evaluation
+  evaluation:
+    metrics:
+      - "precision"
+      - "recall"
+      - "f1_score"
+      - "accuracy"
+    threshold_adjustment: true
+
+# Performance Monitoring
+performance:
+  metrics_enabled: true
+  metrics_interval: 60  # seconds
+  
+  # System Metrics
+  system_metrics:
+    - "cpu_usage"
+    - "memory_usage"
+    - "disk_usage"
+    - "network_io"
+  
+  # Application Metrics
+  app_metrics:
+    - "monitoring_cycle_time"
+    - "detection_accuracy"
+    - "response_time"
+    - "active_incidents"
+    - "oracle_health_score"
+  
+  # Alerting on performance issues
+  performance_alerts:
+    cpu_threshold: 80  # %
+    memory_threshold: 85  # %
+    response_time_threshold: 30  # seconds
+
+# Security Configuration
+security:
+  # API Security
+  api_security:
+    rate_limiting: true
+    rate_limit: "100/hour"
+    authentication: true
+    jwt_secret: "${JWT_SECRET}"
+    
+  # Encryption
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key: "${ENCRYPTION_KEY}"
+    
+  # Access Control
+  access_control:
+    rbac_enabled: true
+    roles:
+      - admin
+      - security_analyst
+      - read_only
+    
+  # Audit Logging
+  audit:
+    enabled: true
+    log_level: "INFO"
+    include_requests: true
+    include_responses: false
+
+# High Availability Configuration
+high_availability:
+  enabled: false
+  
+  # Load Balancing
+  load_balancer:
+    type: "round_robin"  # round_robin, least_connections, weighted
+    health_check_interval: 30
+    
+  # Failover
+  failover:
+    enabled: true
+    automatic: true
+    timeout: 30
+    
+  # Clustering
+  clustering:
+    enabled: false
+    nodes:
+      - host: "node1.company.com"
+        port: 8080
+      - host: "node2.company.com"
+        port: 8080
+
+# Compliance Configuration
+compliance:
+  # Regulatory Requirements
+  regulations:
+    - "GDPR"
+    - "SOX"
+    - "PCI_DSS"
+  
+  # Data Retention
+  data_retention:
+    price_data: 365  # days
+    incident_data: 2555  # 7 years
+    log_data: 90  # days
+    
+  # Privacy
+  privacy:
+    data_anonymization: true
+    pii_detection: true
+    consent_management: true
+
+# Development & Testing
+development:
+  debug_mode: false
+  test_mode: false
+  mock_external_apis: false
+  
+  # Test Data Generation
+  test_data:
+    generate_synthetic: true
+    attack_simulations: true
+    stress_testing: true
+
+# Integration Configuration
+integrations:
+  # Monitoring Systems
+  prometheus:
+    enabled: false
+    endpoint: "http://localhost:9090"
+    
+  grafana:
+    enabled: false
+    endpoint: "http://localhost:3000"
+    
+  # Incident Management
+  pagerduty:
+    enabled: false
+    integration_key: "${PAGERDUTY_INTEGRATION_KEY}"
+    
+  # Communication
+  slack:
+    enabled: true
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#oracle-security-alerts"
+    
+  # External Security Services
+  threat_intelligence:
+    enabled: false
+    provider: "recorded_future"
+    api_key: "${THREAT_INTEL_API_KEY}"
+
+# Environment Variables Template
+# Copy to .env file and fill in actual values
+environment_variables:
+  # Blockchain
+  ETHEREUM_RPC_URL: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID"
+  POLYGON_RPC_URL: "https://polygon-rpc.com"
+  
+  # API Keys
+  CHAINLINK_API_KEY: "your_chainlink_api_key"
+  COINGECKO_API_KEY: "your_coingecko_api_key"
+  CMC_API_KEY: "your_coinmarketcap_api_key"
+  
+  # Email
+  EMAIL_USERNAME: "your_email@company.com"
+  EMAIL_PASSWORD: "your_email_password"
+  
+  # Slack
+  SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+  SLACK_TOKEN: "your_slack_bot_token"
+  
+  # Telegram
+  TELEGRAM_BOT_TOKEN: "your_telegram_bot_token"
+  TELEGRAM_CHAT_ID: "your_telegram_chat_id"
+  
+  # SMS
+  TWILIO_ACCOUNT_SID: "your_twilio_account_sid"
+  TWILIO_AUTH_TOKEN: "your_twilio_auth_token"
+  
+  # Database
+  DB_USERNAME: "oracle_security_user"
+  DB_PASSWORD: "your_database_password"
+  
+  # Security
+  JWT_SECRET: "your_jwt_secret_key"
+  ENCRYPTION_KEY: "your_encryption_key"
+  
+  # External Services
+  PAGERDUTY_INTEGRATION_KEY: "your_pagerduty_key"
+  THREAT_INTEL_API_KEY: "your_threat_intelligence_api_key"

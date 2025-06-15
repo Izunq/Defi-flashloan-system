@@ -1,0 +1,99 @@
+C:\Users\mahia\New_Flashloan
+├── abi
+│   ├── ArbitrageExecutorV33.json
+│   ├── GenericStrategy.json
+│   ├── StrategyFactoryV33.json
+│   └── StrategyIncubatorV33.json
+├── ADVANCED_BACKTESTING_OPTIMIZER_V1.py
+├── advanced_backtest_config.yaml
+├── ADVANCED_SYSTEM_README.md
+├── ALL_PROJECT_FILES_COMPILATION.txt
+├── ArbitrageExecutorV20.sol
+├── bytecode
+│   └── GenericStrategy.bin
+├── CLEAN_PROJECT_COMPILATION.txt
+├── compile_project.ps1
+├── COMPLETE_PROJECT_COMPILATION.txt
+├── config_ultimate.yaml
+├── contracts
+│   ├── AIStrategyV34.sol
+│   ├── ArbitrageExecutorV33.sol
+│   ├── GenericStrategy.sol
+│   ├── InstitutionalArbitrageVaultV35.sol
+│   ├── interfaces
+│   │   ├── IAavePool.sol
+│   │   ├── IFlashLoanSimpleReceiver.sol
+│   │   └── IGenericStrategy.sol
+│   ├── StrategyFactoryV33.sol
+│   ├── StrategyIncubatorV33.sol
+│   └── UltimateArbitrageExecutorV34.sol
+├── deploy_contracts.py
+├── deploy_institutional_v35.py
+├── enhanced_arbitrage_agent_v33.py
+├── FINAL_COMPLETE_COMPILATION.txt
+├── folder2txt.cjs
+├── folder2txt.js
+├── frontend_files.txt
+├── FULL_PROJECT_ALL_CODE.txt
+├── FULL_PROJECT_ALL_CODE_ACTUAL.txt
+├── FULL_PROJECT_EVERYTHING.txt
+├── FULL_PROJECT_SNAPSHOT.txt
+├── INSTALLATION_GUIDE.md
+├── institutional_config.yaml
+├── INSTITUTIONAL_GRADE_V35.py
+├── INSTITUTIONAL_SUMMARY.md
+├── launch_advanced_system.py
+├── MASTER_PROJECT_COMPILATION.txt
+├── MAXIMUM_PROFIT_ARBITRAGE_V2.py
+├── max_profit_config.yaml
+├── MICRO_CAPITAL_ARBITRAGE_V1.py
+├── micro_config.yaml
+├── MICRO_README.md
+├── package-lock.json
+├── package.json
+├── PRODUCTION_ARBITRAGE_SYSTEM.py
+├── production_config.yaml
+├── python_agent_v26.py
+├── python_agent_v33_improved.py
+├── python_agent_v34_ultimate.py
+├── README.md
+├── requirements.txt
+├── requirements_fixed.txt
+├── requirements_production.txt
+├── requirements_ultimate.txt
+├── setup.py
+├── setup_production.py
+├── setup_ultimate.py
+├── solidity_contracts_v26.sol
+├── src
+│   ├── App.tsx
+│   ├── components
+│   │   ├── EnhancedDashboard.css
+│   │   ├── EnhancedDashboard.tsx
+│   │   ├── IncubatorDashboard.css
+│   │   ├── IncubatorDashboard.tsx
+│   │   ├── UltimateDashboard.css
+│   │   ├── UltimateDashboard.tsx
+│   │   └── Web3Provider.tsx
+│   ├── hooks
+│   │   └── useIncubatorData.ts
+│   ├── main.tsx
+│   ├── styles
+│   │   └── main.css
+│   └── types
+│       └── index.ts
+├── start_maximum_profits.py
+├── start_micro_bot.py
+├── StrategyIncubatorV18.sol
+├── streamlit_dashboard.py
+├── tsconfig.json
+├── ULTIMATE_LAUNCHER.py
+├── ULTIMATE_PROJECT_COMPILATION.txt
+├── untitled
+├── Untitled-1.py
+├── Untitled-2.java
+├── Untitled-3.js
+├── vite.config.ts
+└── __pycache__
+    ├── INSTITUTIONAL_GRADE_V35.cpython-313.pyc
+    └── python_agent_v34_ultimate.cpython-313.pyc

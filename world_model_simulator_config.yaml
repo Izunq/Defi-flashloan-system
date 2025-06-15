@@ -1,0 +1,186 @@
+# World Model Simulator Configuration
+
+# Simulation parameters
+simulation:
+  num_parallel_envs: 8  # Number of parallel environments to run
+  num_episodes: 100     # Number of episodes to run for evaluation
+  max_steps_per_episode: 1000  # Maximum steps per episode
+  random_seed: 42       # Random seed for reproducibility
+
+# Environment configuration
+environment:
+  # Available protocols
+  protocols:
+    - "uniswap_v3"
+    - "aave_v3"
+    - "compound_v3"
+    - "curve"
+    - "balancer"
+    - "maker"
+    - "yearn"
+    - "convex"
+  
+  # Available assets
+  assets:
+    - "eth"
+    - "wbtc"
+    - "usdc"
+    - "usdt"
+    - "dai"
+    - "aave"
+    - "comp"
+    - "uni"
+    - "link"
+    - "mkr"
+    - "crv"
+    - "cvx"
+    - "yfi"
+  
+  # Initial portfolio balance in USD
+  initial_balance: 100000
+
+# Market scenarios
+scenarios:
+  - name: "bull_market"
+    description: "Simulates a bull market with rising prices"
+    price_trend_factor: 0.001  # 0.1% upward trend per step
+    volatility_factor: 1.0
+    liquidity_factor: 1.2
+    gas_price_factor: 1.1
+    probability: 0.3  # 30% chance of this scenario
+  
+  - name: "bear_market"
+    description: "Simulates a bear market with falling prices"
+    price_trend_factor: -0.001  # 0.1% downward trend per step
+    volatility_factor: 1.5
+    liquidity_factor: 0.8
+    gas_price_factor: 0.9
+    probability: 0.3  # 30% chance of this scenario
+  
+  - name: "sideways_market"
+    description: "Simulates a sideways market with no clear trend"
+    price_trend_factor: 0.0
+    volatility_factor: 0.7
+    liquidity_factor: 1.0
+    gas_price_factor: 1.0
+    probability: 0.4  # 40% chance of this scenario
+  
+  - name: "high_volatility"
+    description: "Simulates a market with high volatility"
+    price_trend_factor: 0.0
+    volatility_factor: 2.5
+    liquidity_factor: 0.7
+    gas_price_factor: 1.3
+    probability: 0.1  # 10% chance of this scenario
+  
+  - name: "low_volatility"
+    description: "Simulates a market with low volatility"
+    price_trend_factor: 0.0005
+    volatility_factor: 0.4
+    liquidity_factor: 1.1
+    gas_price_factor: 0.8
+    probability: 0.1  # 10% chance of this scenario
+
+# Black swan events
+black_swan_events:
+  - name: "flash_crash"
+    description: "Sudden market crash with quick recovery"
+    price_impact: -0.3  # 30% drop
+    duration_steps: 10
+    recovery_factor: 0.8  # 80% recovery
+    probability: 0.05  # 5% chance per episode
+  
+  - name: "liquidity_crisis"
+    description: "Severe reduction in market liquidity"
+    liquidity_impact: -0.7  # 70% reduction
+    duration_steps: 50
+    recovery_factor: 0.9  # 90% recovery
+    probability: 0.03  # 3% chance per episode
+  
+  - name: "protocol_hack"
+    description: "Security breach in a protocol"
+    affected_protocols: ["aave_v3", "compound_v3"]  # Randomly select one
+    tvl_impact: -0.5  # 50% TVL reduction
+    duration_steps: 100
+    recovery_factor: 0.7  # 70% recovery
+    probability: 0.02  # 2% chance per episode
+  
+  - name: "regulatory_crackdown"
+    description: "Regulatory action against crypto assets"
+    affected_assets: ["usdt", "usdc"]  # Stablecoins most affected
+    price_impact: -0.2  # 20% drop for affected assets
+    market_impact: -0.15  # 15% drop for other assets
+    duration_steps: 200
+    recovery_factor: 0.6  # 60% recovery
+    probability: 0.02  # 2% chance per episode
+  
+  - name: "defi_contagion"
+    description: "Cascading failures across DeFi protocols"
+    affected_protocols: ["aave_v3", "compound_v3", "maker", "curve"]
+    tvl_impact: -0.6  # 60% TVL reduction
+    liquidation_cascade: true
+    duration_steps: 150
+    recovery_factor: 0.5  # 50% recovery
+    probability: 0.01  # 1% chance per episode
+
+# Protocol-specific parameters
+protocol_params:
+  uniswap_v3:
+    fee_tiers: [0.0005, 0.003, 0.01]  # 0.05%, 0.3%, 1%
+    max_slippage: 0.05  # 5% max slippage
+  
+  aave_v3:
+    liquidation_threshold: 0.825  # 82.5% liquidation threshold
+    liquidation_bonus: 0.05  # 5% liquidation bonus
+  
+  compound_v3:
+    liquidation_threshold: 0.8  # 80% liquidation threshold
+    liquidation_bonus: 0.08  # 8% liquidation bonus
+  
+  curve:
+    pool_types: ["stable", "crypto", "factory"]
+    admin_fee: 0.5  # 50% of fees go to admin
+  
+  balancer:
+    pool_types: ["weighted", "stable", "boosted"]
+    protocol_fee: 0.5  # 50% of fees go to protocol
+
+# Asset-specific parameters
+asset_params:
+  eth:
+    base_volatility: 0.03  # 3% daily volatility
+    correlation:
+      wbtc: 0.8
+      link: 0.7
+      uni: 0.6
+  
+  wbtc:
+    base_volatility: 0.025  # 2.5% daily volatility
+    correlation:
+      eth: 0.8
+  
+  usdc:
+    base_volatility: 0.001  # 0.1% daily volatility
+    depeg_probability: 0.001  # 0.1% chance of depeg per episode
+  
+  usdt:
+    base_volatility: 0.002  # 0.2% daily volatility
+    depeg_probability: 0.002  # 0.2% chance of depeg per episode
+
+# Gas price model
+gas_price_model:
+  base_price: 30  # Base gas price in gwei
+  volatility: 0.2  # 20% volatility
+  time_of_day_factor: true  # Whether gas price varies by time of day
+  congestion_factor: true  # Whether gas price varies by network congestion
+
+# Data and results storage
+data_dir: "data/world_model_simulator"
+results_dir: "results/world_model_simulator"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/world_model_simulator.log"
+  max_size: 10485760  # 10 MB
+  backup_count: 5

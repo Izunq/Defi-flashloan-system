@@ -1,0 +1,61 @@
+{
+  "oracle_security_testing_suite": {
+    "timestamp": "2025-06-14T18:02:22.964249",
+    "total_duration": 5.495392084121704,
+    "test_summary": {
+      "total": 4,
+      "passed": 1,
+      "failed": 3,
+      "error": 0,
+      "skipped": 0,
+      "timeout": 0
+    },
+    "success_rate": 25.0,
+    "test_results": {
+      "unit_tests": {
+        "status": "FAILED",
+        "duration": 0.07960033416748047,
+        "return_code": 1,
+        "stdout": "",
+        "stderr": "  File \"C:\\Users\\mahia\\New_Flashloan\\test_enhanced_oracle_security_fixed.py\", line 126\r\n    def _try_load_actual_monitor(self):\r\n                                       ^\r\nIndentationError: unindent does not match any outer indentation level\r\n",
+        "reports": []
+      },
+      "integration_tests": {
+        "status": "FAILED",
+        "duration": 2.2629568576812744,
+        "return_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_security_integration_fixed.py\", line 23, in <module>\r\n    from web3.middleware import geth_poa_middleware\r\nImportError: cannot import name 'geth_poa_middleware' from 'web3.middleware' (C:\\Users\\mahia\\miniconda3\\Lib\\site-packages\\web3\\middleware\\__init__.py)\r\n",
+        "reports": []
+      },
+      "attack_simulation_tests": {
+        "status": "FAILED",
+        "duration": 3.0001673698425293,
+        "return_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_attack_scenarios_fixed.py\", line 813, in <module>\r\n    asyncio.run(main())\r\n    ~~~~~~~~~~~^^^^^^^^\r\n  File \"C:\\Users\\mahia\\miniconda3\\Lib\\asyncio\\runners.py\", line 195, in run\r\n    return runner.run(main)\r\n           ~~~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\mahia\\miniconda3\\Lib\\asyncio\\runners.py\", line 118, in run\r\n    return self._loop.run_until_complete(task)\r\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\mahia\\miniconda3\\Lib\\asyncio\\base_events.py\", line 725, in run_until_complete\r\n    return future.result()\r\n           ~~~~~~~~~~~~~^^\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_attack_scenarios_fixed.py\", line 803, in main\r\n    simulator = OracleAttackSimulator()\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_attack_scenarios_fixed.py\", line 259, in __init__\r\n    self.monitor = self._setup_monitor(config_path)\r\n                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_attack_scenarios_fixed.py\", line 308, in _setup_monitor\r\n    return UniversalOracleMonitor(config_path=config_path)\r\n  File \"C:\\Users\\mahia\\New_Flashloan\\test_oracle_attack_scenarios_fixed.py\", line 80, in __init__\r\n    self.circuit_breaker_threshold = self.config.get('security', {}).get('circuit_breaker_threshold', 1000)\r\n                                     ^^^^^^^^^^^^^^^\r\nAttributeError: 'NoneType' object has no attribute 'get'\r\n",
+        "reports": []
+      },
+      "performance_tests": {
+        "status": "PASSED",
+        "duration": 0.1483769416809082,
+        "return_code": 0,
+        "stdout": "\r\n============================================================\r\nORACLE SECURITY TEST RESULTS\r\n============================================================\r\nTests Run: 0\r\nTests Passed: 0\r\nTests Failed: 0\r\nSuccess Rate: 0.00%\r\nOverall Status: FAILED\r\n============================================================\r\n",
+        "stderr": "INFO:OracleSecurityTesting:Starting Oracle Security Testing Suite\r\nINFO:OracleSecurityTesting:Starting comprehensive oracle security tests\r\nINFO:OracleSecurityTesting:Running basic security tests...\r\nINFO:OracleSecurityTesting:Running attack simulation tests...\r\nINFO:OracleSecurityTesting:Simulating attack: Flash Loan Price Manipulation\r\nINFO:OracleSecurityTesting:Simulating attack: Oracle Coordination Attack\r\nINFO:OracleSecurityTesting:Simulating attack: Volume Manipulation\r\nINFO:OracleSecurityTesting:Simulating attack: Timestamp Manipulation\r\nINFO:OracleSecurityTesting:Simulating attack: Statistical Anomaly\r\nINFO:OracleSecurityTesting:Simulating attack: Gradual Manipulation\r\nINFO:OracleSecurityTesting:Running statistical analysis tests...\r\nINFO:OracleSecurityTesting:Running performance tests...\r\nINFO:OracleSecurityTesting:Running circuit breaker tests...\r\nINFO:OracleSecurityTesting:Running integration tests...\r\nINFO:OracleSecurityTesting:Testing completed in 0.02 seconds\r\nINFO:OracleSecurityTesting:Test report saved to oracle_security_test_report_1749920542.json\r\nWARNING:OracleSecurityTesting:\\u26a0\\ufe0f Some oracle security tests failed!\r\n",
+        "reports": []
+      }
+    }
+  },
+  "environment": {
+    "python_version": "3.13.2 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:49:14) [MSC v.1929 64 bit (AMD64)]",
+    "working_directory": "C:\\Users\\mahia\\New_Flashloan",
+    "test_config": "test_oracle_config.yaml"
+  },
+  "recommendations": [
+    "Investigate and fix failed tests: unit_tests, integration_tests, attack_simulation_tests",
+    "Ensure all oracle security monitors are properly configured",
+    "Verify smart contract deployments are successful",
+    "Test with different network conditions",
+    "Implement continuous monitoring in production"
+  ]
+}

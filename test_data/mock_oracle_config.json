@@ -1,0 +1,19 @@
+{
+  "oracles": {
+    "chainlink": {
+      "url": "http://localhost:8546/chainlink",
+      "timeout": 30,
+      "weight": 0.4
+    },
+    "uniswap": {
+      "url": "http://localhost:8546/uniswap",
+      "timeout": 30,
+      "weight": 0.3
+    },
+    "binance": {
+      "url": "http://localhost:8546/binance",
+      "timeout": 30,
+      "weight": 0.3
+    }
+  }
+}

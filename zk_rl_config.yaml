@@ -1,0 +1,54 @@
+# ZK-RL Agent V40 Configuration
+
+# Web3 Connection Settings
+web3:
+  provider_url: "http://localhost:8545"
+  chain_id: 1
+  gas_limit: 3000000  gas_price: "auto"  
+  # SECURITY: Private key support removed - use secure transaction signer instead
+  # Secure HSM-based signing required for production
+
+# Contract Addresses
+contracts:
+  trust_curve_address: "0x0000000000000000000000000000000000000000"  # Replace with actual address
+  strategy_generator_address: "0x0000000000000000000000000000000000000000"  # Replace with actual address
+  strategy_incubator_address: "0x0000000000000000000000000000000000000000"  # Replace with actual address
+
+# Reinforcement Learning Parameters
+rl_params:
+  learning_rate: 0.001
+  gamma: 0.95  # Discount factor
+  epsilon: 0.1  # Exploration rate
+  batch_size: 32
+  hidden_layers: [64, 128, 64]
+
+# Zero-Knowledge Proof Parameters
+zk_params:
+  circuit_path: "prover/circuit_v40.circom"
+  prover_path: "prover"
+  witness_generator: "prover/generate_witness.js"
+  proving_key: "prover/proving_key.json"
+  verification_key: "prover/verification_key.json"
+  
+  # Circuit parameters
+  num_model_weights: 100  # Number of model weights to include in the proof
+  num_parameters: 5  # Number of strategy parameters
+
+# Data Storage
+data_dir: "data/zk_rl"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "zk_rl_agent_v40.log"
+
+# Training Parameters
+training:
+  min_executions_per_strategy: 10
+  epochs: 50
+  validation_split: 0.2
+  
+# Proof Generation
+proof:
+  verification_threshold: 0.9  # Minimum verification score required
+  max_parameter_deviation: 0.1  # Maximum allowed deviation between model output and actual parameters

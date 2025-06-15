@@ -1,0 +1,102 @@
+/* ZKProofVerifier.css */
+
+/* Input focus styles */
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+}
+
+/* Button styles */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Table styles */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th {
+  font-weight: 600;
+  text-align: left;
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Custom scrollbar for tables */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Utility classes */
+.text-green-400 {
+  color: rgb(74, 222, 128);
+}
+
+.text-blue-400 {
+  color: rgb(96, 165, 250);
+}
+
+.text-purple-400 {
+  color: rgb(192, 132, 252);
+}
+
+.text-purple-300 {
+  color: rgb(216, 180, 254);
+}
+
+.text-purple-200 {
+  color: rgb(233, 213, 255);
+}
+
+.text-red-400 {
+  color: rgb(248, 113, 113);
+}
+
+.text-slate-400 {
+  color: rgb(148, 163, 184);
+}
+
+.text-gray-400 {
+  color: rgb(156, 163, 175);
+}
+
+.text-gray-300 {
+  color: rgb(209, 213, 219);
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Animation for verification process */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.verifying {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Glow effect for valid proofs */
+.text-green-400 {
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+}
+
+/* Glow effect for invalid proofs */
+.text-red-400 {
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+}

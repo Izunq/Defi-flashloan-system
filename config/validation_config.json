@@ -1,0 +1,313 @@
+{
+  "validation_mode": "strict",
+  "enable_monitoring": true,
+  "enable_rate_limiting": true,
+  "enable_caching": true,
+  "enable_circuit_breaker": true,
+  
+  "security_settings": {
+    "max_string_length": 10000,
+    "max_array_length": 1000,
+    "max_json_size": 10485760,
+    "max_number": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    "min_number": "-57896044618658097711785492504343953926634992332820282019728792003956564819968"
+  },
+  
+  "rate_limiting": {
+    "max_requests_per_minute": 1000,
+    "max_requests_per_hour": 10000,
+    "window_seconds": 60,
+    "block_duration_base": 60,
+    "block_duration_max": 300,
+    "suspicious_pattern_threshold": 5
+  },
+  
+  "ethereum_settings": {
+    "max_eth_amount": "1000000000000000000000000000000",
+    "max_gas_price": "1000000000000",
+    "max_gas_limit": 30000000,
+    "min_gas_limit": 21000,
+    "dangerous_addresses": [
+      "0x0000000000000000000000000000000000000000",
+      "0x0000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000004",
+      "0x0000000000000000000000000000000000000005",
+      "0x0000000000000000000000000000000000000006",
+      "0x0000000000000000000000000000000000000007",
+      "0x0000000000000000000000000000000000000008",
+      "0x0000000000000000000000000000000000000009",
+      "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "0x000000000000000000000000000000000000dEaD"
+    ]
+  },
+  
+  "security_thresholds": {
+    "max_incidents_per_minute": 10,
+    "max_incidents_per_hour": 100,
+    "consecutive_failures_threshold": 5,
+    "response_time_threshold": 1000,
+    "price_deviation_threshold": 1000,
+    "oracle_staleness_threshold": 3600
+  },
+  
+  "monitoring": {
+    "enabled": true,
+    "log_level": "WARNING",
+    "log_file": "logs/input_validation.log",
+    "security_log_file": "logs/security_incidents.log",
+    "metrics_retention_hours": 720,
+    "incident_retention_hours": 168,
+    "alert_webhooks": [],
+    "email_alerts": [],
+    "enable_real_time_monitoring": true
+  },
+  
+  "caching": {
+    "enabled": true,
+    "max_cache_size": 10000,
+    "cache_ttl_seconds": 300,
+    "cache_cleanup_interval": 60
+  },
+  
+  "circuit_breaker": {
+    "enabled": true,
+    "failure_threshold": 10,
+    "recovery_timeout": 60,
+    "half_open_max_calls": 5
+  },
+  
+  "contract_settings": {
+    "validation_mode": 1,
+    "gas_limit": 500000,
+    "deploy_emergency_validator": true,
+    "enable_rate_limiting": true,
+    "enable_circuit_breaker": true
+  },
+  
+  "sql_injection_patterns": [
+    "[\\'\\\";]",
+    "--",
+    "/\\*.*?\\*/",
+    "\\bunion\\s+select\\b",
+    "\\bselect\\s+.*\\bfrom\\b",
+    "\\binsert\\s+into\\b",
+    "\\bupdate\\s+.*\\bset\\b",
+    "\\bdelete\\s+from\\b",
+    "\\bdrop\\s+(table|database|schema)\\b",
+    "\\bexec(ute)?\\s*\\(",
+    "\\bor\\s+\\d+\\s*=\\s*\\d+",
+    "\\band\\s+\\d+\\s*=\\s*\\d+",
+    "\\bhaving\\s+\\d+\\s*=\\s*\\d+",
+    "\\bwaitfor\\s+delay\\b",
+    "\\bbenchmark\\s*\\(",
+    "\\bsleep\\s*\\(",
+    "\\bload_file\\s*\\(",
+    "\\binformation_schema\\b",
+    "\\bsys\\.(objects|tables|columns)\\b",
+    "\\bmysql\\.(user|db)\\b",
+    "\\bpg_\\w+\\b",
+    "\\bxp_cmdshell\\b",
+    "\\bopenrowset\\b",
+    "\\bopendatasource\\b"
+  ],
+  
+  "xss_patterns": [
+    "<script[^>]*>.*?</script>",
+    "<iframe[^>]*>.*?</iframe>",
+    "<object[^>]*>.*?</object>",
+    "<embed[^>]*>.*?</embed>",
+    "<form[^>]*>.*?</form>",
+    "<input[^>]*>",
+    "<img[^>]*onerror[^>]*>",
+    "<img[^>]*onload[^>]*>",
+    "<[^>]*on\\w+\\s*=",
+    "javascript:",
+    "vbscript:",
+    "data:.*base64",
+    "<svg[^>]*>.*?</svg>",
+    "<math[^>]*>.*?</math>",
+    "<style[^>]*>.*?</style>",
+    "<link[^>]*>",
+    "<meta[^>]*>",
+    "expression\\s*\\(",
+    "@import",
+    "behavior:",
+    "&#\\d+;",
+    "&#x[0-9a-f]+;",
+    "\\\\u[0-9a-f]{4}",
+    "\\\\x[0-9a-f]{2}"
+  ],
+  
+  "command_injection_patterns": [
+    "[;&|`]",
+    "\\$\\(",
+    "`.*?`",
+    "\\|\\s*\\w+",
+    "&&",
+    "\\|\\|",
+    ">\\s*[/\\w]",
+    "<\\s*[/\\w]",
+    "\\b(nc|netcat|telnet|ssh|curl|wget|ping|nslookup)\\b",
+    "\\b(ps|top|kill|pkill|killall)\\b",
+    "\\b(chmod|chown|su|sudo)\\b",
+    "\\b(rm|mv|cp|cat|head|tail)\\b",
+    "\\b(grep|sed|awk|find|locate)\\b",
+    "\\b(export|env|set)\\b"
+  ],
+  
+  "path_traversal_patterns": [
+    "\\.\\./",
+    "\\.\\.\\\\",
+    "~[/\\\\]",
+    "[/\\\\]etc[/\\\\]",
+    "[/\\\\]proc[/\\\\]",
+    "[/\\\\]sys[/\\\\]",
+    "%2e%2e%2f",
+    "%2e%2e%5c",
+    "file:",
+    "[cC]:[/\\\\]"
+  ],
+  
+  "validation_schemas": {
+    "strategy_params": {
+      "type": "object",
+      "required": ["strategy_address", "tokens", "amounts"],
+      "properties": {
+        "strategy_address": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{40}$"
+          },
+          "maxItems": 100
+        },
+        "amounts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "maxItems": 100
+        },
+        "slippage_tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
+        },
+        "deadline": {
+          "type": "number",
+          "minimum": 60,
+          "maximum": 3600
+        },
+        "max_gas": {
+          "type": "number",
+          "minimum": 21000,
+          "maximum": 30000000
+        }
+      }
+    },
+    
+    "transaction_data": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "gasPrice": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "gas": {
+          "type": "number",
+          "minimum": 21000,
+          "maximum": 30000000
+        },
+        "data": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]*$"
+        },
+        "nonce": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    
+    "flash_loan_params": {
+      "type": "object",
+      "required": ["asset", "amount"],
+      "properties": {
+        "asset": {
+          "type": "string",
+          "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "premium": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "params": {
+          "type": "string",
+          "maxLength": 10000
+        }
+      }
+    }
+  },
+  
+  "network_configurations": {
+    "mainnet": {
+      "chain_id": 1,
+      "validation_mode": "strict",
+      "rate_limit_multiplier": 1.0,
+      "enhanced_security": true
+    },
+    "polygon": {
+      "chain_id": 137,
+      "validation_mode": "strict",
+      "rate_limit_multiplier": 1.5,
+      "enhanced_security": true
+    },
+    "arbitrum": {
+      "chain_id": 42161,
+      "validation_mode": "strict",
+      "rate_limit_multiplier": 1.2,
+      "enhanced_security": true
+    },
+    "localhost": {
+      "chain_id": 31337,
+      "validation_mode": "permissive",
+      "rate_limit_multiplier": 10.0,
+      "enhanced_security": false
+    }
+  },
+  
+  "compliance": {
+    "enable_audit_logging": true,
+    "audit_log_file": "logs/audit.log",
+    "retention_policy_days": 90,
+    "enable_gdpr_compliance": true,
+    "enable_data_anonymization": true
+  },
+  
+  "performance": {
+    "enable_async_validation": true,
+    "max_concurrent_validations": 100,
+    "validation_timeout_ms": 5000,
+    "enable_batch_processing": true,
+    "batch_size": 50
+  }
+}

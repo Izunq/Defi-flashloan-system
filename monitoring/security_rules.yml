@@ -1,0 +1,451 @@
+groups:
+  - name: security_alerts
+    rules:
+      # Critical Security Alerts
+      - alert: PrivateKeyExposureDetected
+        expr: rate(log_entries{level="error",message=~".*private.*key.*"}[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Potential private key exposure in logs"
+          description: "Private key references detected in application logs - immediate investigation required."
+          
+      - alert: ReentrancyAttackDetected
+        expr: rate(blockchain_reentrant_calls_total[1m]) > 5
+        for: 30s
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Potential reentrancy attack detected"
+          description: "Multiple reentrant calls detected within short timeframe - possible attack in progress."
+          
+      - alert: FlashLoanExploitAttempt
+        expr: flash_loan_amount > 1000000 and flash_loan_repayment_ratio < 0.95
+        for: 30s
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Potential flash loan exploit detected"
+          description: "Large flash loan with suspicious repayment ratio detected."
+          
+      - alert: UnauthorizedContractCall
+        expr: rate(contract_unauthorized_calls_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unauthorized contract calls detected"
+          description: "High rate of unauthorized contract calls - possible attack attempt."
+
+      # Authentication and Authorization Alerts
+      - alert: HighLoginFailureRate
+        expr: rate(auth_login_failures_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "High rate of login failures detected"
+          description: "There have been more than 5 login failures per minute for the past 2 minutes, which may indicate a brute force attack."
+          
+      - alert: UnauthorizedAccessAttempts
+        expr: rate(auth_unauthorized_access_total[5m]) > 3
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unauthorized access attempts detected"
+          description: "Multiple unauthorized access attempts detected in the last minute."
+          
+      - alert: PrivilegeEscalationAttempt
+        expr: rate(auth_privilege_escalation_attempts[5m]) > 1
+        for: 30s
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Privilege escalation attempt detected"
+          description: "Attempt to gain unauthorized elevated privileges detected."
+
+      # Smart Contract Security Alerts
+      - alert: ContractGasAnomalies
+        expr: contract_transaction_gas > 1000000
+        for: 30s
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Abnormally high gas usage detected"
+          description: "A transaction is using an unusually high amount of gas, which could indicate a potential attack or inefficient operation."
+          
+      - alert: FlashloanVolumeSpike
+        expr: rate(flashloan_volume_total[5m]) > 2 * avg_over_time(rate(flashloan_volume_total[1h])[1h:5m])
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Unusual spike in flashloan volume"
+          description: "The volume of flashloans has increased significantly above the hourly average, which may indicate unusual activity."
+          
+      - alert: SuspiciousContractDeployment
+        expr: rate(contract_deployments_total[10m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High rate of contract deployments"
+          description: "Unusual number of contract deployments detected - possible attack preparation."
+          
+      - alert: OracleManipulationDetected
+        expr: abs(oracle_price_deviation) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Oracle price manipulation detected"
+          description: "Oracle price has deviated more than 10% from consensus - possible manipulation."
+
+      # Wallet and Transaction Security
+      - alert: WalletBalanceDrain
+        expr: (wallet_balance_current / wallet_balance_max) < 0.1 and wallet_balance_max > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Wallet balance critically low"
+          description: "Wallet balance has dropped below 10% of its maximum value, which may indicate unauthorized withdrawals."
+          
+      - alert: UnusualWithdrawalPattern
+        expr: rate(wallet_withdrawal_amount_total[5m]) > 3 * avg_over_time(rate(wallet_withdrawal_amount_total[24h])[24h:5m])
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unusual withdrawal pattern detected"
+          description: "The rate of withdrawals is significantly higher than the 24-hour average, which may indicate unauthorized activity."
+          
+      - alert: SuspiciousTransactionPattern
+        expr: rate(transaction_failed_total[5m]) > 0.3 * rate(transaction_total[5m])
+        for: 3m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High transaction failure rate"
+          description: "More than 30% of transactions are failing - possible attack or system issue."
+          
+      - alert: LargeValueTransactionSpike
+        expr: rate(transaction_value_high_total[10m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Spike in large value transactions"
+          description: "Unusual number of high-value transactions detected."
+
+      # Infrastructure Security Alerts
+      - alert: ContainerPrivilegeEscalation
+        expr: container_privileged_count > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Privileged containers detected"
+          description: "One or more containers are running with privileged mode, which poses a security risk."
+          
+      - alert: UnauthorizedPortExposure
+        expr: count(container_network_tcp_usage_total{port=~"22|3306|27017|6379"}) > 0
+        for: 1m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Sensitive ports exposed"
+          description: "Containers are exposing sensitive ports (SSH, MySQL, MongoDB, Redis) which should not be publicly accessible."
+          
+      - alert: SuspiciousNetworkActivity
+        expr: rate(network_connections_suspicious_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Suspicious network activity detected"
+          description: "High rate of suspicious network connections detected."
+          
+      - alert: FileSystemTampering
+        expr: rate(filesystem_unauthorized_changes_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unauthorized file system changes"
+          description: "Unauthorized modifications to critical system files detected."
+
+      # Network Security Alerts
+      - alert: HighRateOf4xxErrors
+        expr: sum(rate(nginx_http_requests_total{status=~"4.."}[5m])) / sum(rate(nginx_http_requests_total[5m])) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High rate of 4xx errors"
+          description: "More than 20% of HTTP requests are resulting in 4xx errors, which may indicate scanning or probing attacks."
+          
+      - alert: HighRateOf5xxErrors
+        expr: sum(rate(nginx_http_requests_total{status=~"5.."}[5m])) / sum(rate(nginx_http_requests_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "High rate of 5xx errors"
+          description: "More than 10% of HTTP requests are resulting in 5xx errors, which may indicate a service under attack or failing."
+          
+      - alert: DDoSAttackDetected
+        expr: rate(nginx_http_requests_total[1m]) > 1000
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Potential DDoS attack detected"
+          description: "Extremely high request rate detected - possible DDoS attack in progress."
+          
+      - alert: GeolocationAnomalies
+        expr: count(unique_client_countries) > 50
+        for: 10m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Unusual geographic distribution of requests"
+          description: "Requests coming from unusually high number of countries - possible distributed attack."
+
+      # API Security Alerts
+      - alert: APIRateLimitExceeded
+        expr: rate(api_rate_limit_exceeded_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "API rate limits frequently exceeded"
+          description: "Multiple API rate limit violations detected, which may indicate API abuse."
+          
+      - alert: UnusualAPIPatterns
+        expr: rate(api_requests_total{path=~".*/admin.*|.*/config.*|.*/internal.*"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unusual API access patterns detected"
+          description: "High rate of requests to sensitive API endpoints detected, which may indicate unauthorized access attempts."
+          
+      - alert: APISQLInjectionAttempt
+        expr: rate(api_requests_total{query_params=~".*['\";].*"}[5m]) > 3
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Potential SQL injection attempt"
+          description: "API requests containing SQL injection patterns detected."
+          
+      - alert: APIDataExfiltrationAttempt
+        expr: rate(api_response_size_large_total[5m]) > 10
+        for: 3m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Potential data exfiltration attempt"
+          description: "Unusually large API responses detected - possible data exfiltration."
+
+      # Blockchain-specific Security Alerts
+      - alert: ReorgDetected
+        expr: blockchain_reorg_events_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Blockchain reorganization detected"
+          description: "A blockchain reorganization has been detected, which may affect transaction finality."
+          
+      - alert: GasPriceManipulation
+        expr: abs(gas_price_current - gas_price_avg_1h) / gas_price_avg_1h > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Potential gas price manipulation"
+          description: "Gas price has deviated more than 50% from the hourly average, which may indicate market manipulation."
+          
+      - alert: MEVBotDetected
+        expr: rate(mev_sandwich_attempts_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "MEV bot activity detected"
+          description: "High rate of sandwich attack attempts detected - MEV bot activity."
+          
+      - alert: FrontRunningDetected
+        expr: rate(transaction_frontrun_attempts_total[5m]) > 3
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Front-running attempts detected"
+          description: "Multiple front-running attempts detected within short timeframe."
+
+      # AI/ML Security Alerts
+      - alert: AdversarialAttackDetected
+        expr: ai_model_confidence_drop > 0.5
+        for: 1m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Potential adversarial attack on AI model"
+          description: "Significant drop in AI model confidence detected - possible adversarial attack."
+          
+      - alert: ModelDataPoisoningDetected
+        expr: ai_model_prediction_anomaly_score > 0.8
+        for: 5m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "AI model data poisoning detected"
+          description: "Anomalous predictions detected - possible model poisoning attack."
+          
+      - alert: UnauthorizedModelAccess
+        expr: rate(ai_model_unauthorized_access_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unauthorized AI model access"
+          description: "Unauthorized access to AI models detected."
+
+      # System Performance and Availability
+      - alert: SystemResourceExhaustion
+        expr: (cpu_usage > 90 and memory_usage > 90) or disk_usage > 95
+        for: 5m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "System resource exhaustion"
+          description: "System resources critically low - possible DoS attack or resource leak."
+          
+      - alert: DatabaseConnectionExhaustion
+        expr: database_connections_active / database_connections_max > 0.9
+        for: 3m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Database connection pool exhaustion"
+          description: "Database connection pool nearly exhausted - possible connection leak or attack."
+          
+      - alert: MemoryLeakDetected
+        expr: rate(memory_usage[30m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Potential memory leak detected"
+          description: "Memory usage continuously increasing - possible memory leak or attack."
+        for: 5m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "High rate of 5xx errors"
+          description: "More than 10% of HTTP requests are resulting in 5xx errors, which may indicate a service under attack or failing."
+          
+      # API Security Alerts
+      - alert: APIRateLimitExceeded
+        expr: rate(api_rate_limit_exceeded_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "API rate limits frequently exceeded"
+          description: "Multiple API rate limit violations detected, which may indicate API abuse."
+          
+      - alert: UnusualAPIPatterns
+        expr: rate(api_requests_total{path=~".*/admin.*|.*/config.*|.*/internal.*"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unusual API access patterns detected"
+          description: "High rate of requests to sensitive API endpoints detected, which may indicate unauthorized access attempts."
+          
+      # Blockchain-specific Security Alerts
+      - alert: ReorgDetected
+        expr: blockchain_reorg_events_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Blockchain reorganization detected"
+          description: "A blockchain reorganization has been detected, which may affect transaction finality."
+          
+      - alert: GasPriceManipulation
+        expr: abs(gas_price_current - gas_price_avg_1h) / gas_price_avg_1h > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "Potential gas price manipulation"
+          description: "Gas price has deviated more than 50% from the hourly average, which may indicate market manipulation."
+
+      - alert: GasGriefingDetected
+        expr: rate(gas_used_total[5m]) > 1000000 or gas_price > 100000000000
+        for: 1m
+        labels:
+          severity: high
+          category: security
+        annotations:
+          summary: "Gas griefing attack detected"
+          description: "Abnormal gas usage or gas price spike detected - possible gas griefing attack."
+
+      - alert: MEVSandwichAttackDetected
+        expr: rate(mev_sandwich_attempts[5m]) > 0
+        for: 30s
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "MEV sandwich attack detected"
+          description: "MEV sandwich attack attempt detected - transaction may be at risk."

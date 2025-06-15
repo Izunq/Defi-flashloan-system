@@ -1,0 +1,2043 @@
+{
+  "scan_timestamp": "2025-06-14T13:19:25Z",
+  "summary": {
+    "total_files_scanned": 257,
+    "vulnerable_functions": 222,
+    "secure_functions": 354,
+    "functions_missing_modifiers": 2037,
+    "security_score": 0
+  },
+  "vulnerabilities": [
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n}\n\n// --- LIBRARIES ---\n\n// OpenZeppelin's SafeERC20 library is already imported above\n\n// --- CONTRACTS ---\n\ncontract MyArbitrageContract is AccessControl, ReentrancyGuard, Pausable",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 60,
+      "full_signature": "function executeOperation(\n        address[] calldata assets,\n        uint256[] calldata amounts,\n        uint256[] calldata premiums,\n        address initiator,\n        bytes calldata params\n    ) external returns (bool);\n}\n\n// --- LIBRARIES ---\n\n// OpenZeppelin's SafeERC20 library is already imported above\n\n// --- CONTRACTS ---\n\ncontract MyArbitrageContract is AccessControl, ReentrancyGuard, Pausable {"
+    },
+    {
+      "name": "slashStrategy",
+      "visibility": "external",
+      "modifiers": ";\n    function getProposer(uint256 _strategyId) external view returns (address);\n    function getStrategy(uint256 _strategyId) external view returns (IncubatedStrategy memory);\n    // Added for completeness based on typical incubator functionality\n    function getStrategyCount() external view returns (uint256);\n    function updateStrategyStatus(uint256 _strategyId, StrategyStatus _newStatus) external; // Typically restricted\n    function recordLiveProfit(uint256 _strategyId, uint256 _profit) external; // Typically restricted\n}\n\n// --- 1. REWARD TOKEN CONTRACT ---\ncontract CreditToken is ERC20, Ownable",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 55,
+      "full_signature": "function slashStrategy(uint256 _strategyId) external;\n    function getProposer(uint256 _strategyId) external view returns (address);\n    function getStrategy(uint256 _strategyId) external view returns (IncubatedStrategy memory);\n    // Added for completeness based on typical incubator functionality\n    function getStrategyCount() external view returns (uint256);\n    function updateStrategyStatus(uint256 _strategyId, StrategyStatus _newStatus) external; // Typically restricted\n    function recordLiveProfit(uint256 _strategyId, uint256 _profit) external; // Typically restricted\n}\n\n// --- 1. REWARD TOKEN CONTRACT ---\ncontract CreditToken is ERC20, Ownable {"
+    },
+    {
+      "name": "rewardProposer",
+      "visibility": "external",
+      "modifiers": "onlyIncubator",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 94,
+      "full_signature": "function rewardProposer(uint256 _strategyId, address _proposer) external onlyIncubator {"
+    },
+    {
+      "name": "rewardSuccessfulLiveTest",
+      "visibility": "external",
+      "modifiers": "onlyIncubator",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 101,
+      "full_signature": "function rewardSuccessfulLiveTest(uint256 _strategyId, address _proposer) external onlyIncubator {"
+    },
+    {
+      "name": "applySlashing",
+      "visibility": "external",
+      "modifiers": "onlyIncubator returns (uint256 newReputation)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 132,
+      "full_signature": "function applySlashing(uint256 _strategyId, address _proposer) external onlyIncubator returns (uint256 newReputation) {"
+    },
+    {
+      "name": "getProposer",
+      "visibility": "external",
+      "modifiers": "view returns (address)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 360,
+      "full_signature": "function getProposer(uint256 _strategyId) external view returns (address) {"
+    },
+    {
+      "name": "getProposerReputation",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 365,
+      "full_signature": "function getProposerReputation(address _proposer) external view returns (uint256) {"
+    },
+    {
+      "name": "hasAdminRole",
+      "visibility": "external",
+      "modifiers": "view returns (bool)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 270,
+      "full_signature": "function hasAdminRole(address account) external view returns (bool) {"
+    },
+    {
+      "name": "isApprovedProposer",
+      "visibility": "external",
+      "modifiers": "view returns (bool)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 311,
+      "full_signature": "function isApprovedProposer(address proposer) external view returns (bool) {"
+    },
+    {
+      "name": "getProposerNonce",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 315,
+      "full_signature": "function getProposerNonce(address proposer) external view returns (uint256) {"
+    },
+    {
+      "name": "getAllAssets",
+      "visibility": "external",
+      "modifiers": "view returns (address[] memory)",
+      "file": ".\\contracts\\AlgorithmicCentralBank.sol",
+      "line": 668,
+      "full_signature": "function getAllAssets() external view returns (address[] memory) {"
+    },
+    {
+      "name": "getAssetInfo",
+      "visibility": "external",
+      "modifiers": "view returns (AssetInfo memory)",
+      "file": ".\\contracts\\AlgorithmicCentralBank.sol",
+      "line": 722,
+      "full_signature": "function getAssetInfo(address _tokenAddress) external view returns (AssetInfo memory) {"
+    },
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "override \n        nonReentrant \n        flashLoanGuard\n        whenNotPaused \n        returns (bool)",
+      "file": ".\\contracts\\ArbitrageExecutorV33.sol",
+      "line": 399,
+      "full_signature": "function executeOperation(\n        address asset,\n        uint256 amount,\n        uint256 premium,\n        address initiator,\n        bytes calldata params\n    ) \n        external \n        override \n        nonReentrant \n        flashLoanGuard\n        whenNotPaused \n        returns (bool)\n    {"
+    },
+    {
+      "name": "mint",
+      "visibility": "public",
+      "modifiers": "override \n        nonReentrant \n        whenNotPaused \n        checkDepositCooldown \n        returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 305,
+      "full_signature": "function mint(uint256 shares, address receiver) \n        public \n        override \n        nonReentrant \n        whenNotPaused \n        checkDepositCooldown \n        returns (uint256) \n    {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "override \n        nonReentrant \n        whenNotPaused \n        checkWithdrawalCooldown \n        returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 326,
+      "full_signature": "function withdraw(uint256 assets, address receiver, address owner) \n        public \n        override \n        nonReentrant \n        whenNotPaused \n        checkWithdrawalCooldown \n        returns (uint256) \n    {"
+    },
+    {
+      "name": "maxMint",
+      "visibility": "public",
+      "modifiers": "view override returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 375,
+      "full_signature": "function maxMint(address) public view override returns (uint256) {"
+    },
+    {
+      "name": "maxWithdraw",
+      "visibility": "public",
+      "modifiers": "view override returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 390,
+      "full_signature": "function maxWithdraw(address owner) public view override returns (uint256) {"
+    },
+    {
+      "name": "totalAssets",
+      "visibility": "public",
+      "modifiers": "view override returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 414,
+      "full_signature": "function totalAssets() public view override returns (uint256) {"
+    },
+    {
+      "name": "timeUntilWithdrawalCooldownExpires",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\contracts\\ArbitrageVaultERC4626.sol",
+      "line": 454,
+      "full_signature": "function timeUntilWithdrawalCooldownExpires(address account) external view returns (uint256) {"
+    },
+    {
+      "name": "isApprovedProposer",
+      "visibility": "external",
+      "modifiers": "view returns (bool)",
+      "file": ".\\contracts\\EmergencyAccessControlManager.sol",
+      "line": 126,
+      "full_signature": "function isApprovedProposer(address proposer) external view returns (bool) {"
+    },
+    {
+      "name": "emergencyExecuteArbitrage",
+      "visibility": "external",
+      "modifiers": "whenNotEmergencyPaused\n        emergencyAddressValidation(tokenA)\n        emergencyAddressValidation(tokenB)\n        emergencyNumericValidation(amount, 1, type(uint256).max / 1e18)\n        emergencyStringValidation(strategy)\n        emergencyDeadlineValidation(deadline)\n        emergencyCircuitBreaker",
+      "file": ".\\contracts\\EmergencyInputValidator.sol",
+      "line": 366,
+      "full_signature": "function emergencyExecuteArbitrage(\n        address tokenA,\n        address tokenB,\n        uint256 amount,\n        string calldata strategy,\n        uint256 deadline\n    ) \n        external\n        whenNotEmergencyPaused\n        emergencyAddressValidation(tokenA)\n        emergencyAddressValidation(tokenB)\n        emergencyNumericValidation(amount, 1, type(uint256).max / 1e18)\n        emergencyStringValidation(strategy)\n        emergencyDeadlineValidation(deadline)\n        emergencyCircuitBreaker\n    {"
+    },
+    {
+      "name": "emergencyUpdateOraclePrice",
+      "visibility": "external",
+      "modifiers": "whenNotEmergencyPaused\n        emergencyAddressValidation(token)\n        emergencyOracleValidation(newPrice, timestamp, lastPrice)\n        emergencyCircuitBreaker",
+      "file": ".\\contracts\\EmergencyInputValidator.sol",
+      "line": 389,
+      "full_signature": "function emergencyUpdateOraclePrice(\n        address token,\n        uint256 newPrice,\n        uint256 timestamp,\n        uint256 lastPrice\n    )\n        external\n        whenNotEmergencyPaused\n        emergencyAddressValidation(token)\n        emergencyOracleValidation(newPrice, timestamp, lastPrice)\n        emergencyCircuitBreaker\n    {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "nonReentrant returns (bool success, int256 profitLoss)",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 140,
+      "full_signature": "function execute() external nonReentrant returns (bool success, int256 profitLoss) {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "virtual onlyStrategy returns (bool success);\n}\n\n/**\n * @title SwapComponent\n * @notice Component for swapping assets\n * @dev Part of the V43 Emergent Strategy Synthesis architecture\n */\ncontract SwapComponent is StrategyComponent",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 427,
+      "full_signature": "function execute() external virtual onlyStrategy returns (bool success);\n}\n\n/**\n * @title SwapComponent\n * @notice Component for swapping assets\n * @dev Part of the V43 Emergent Strategy Synthesis architecture\n */\ncontract SwapComponent is StrategyComponent {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "override onlyStrategy returns (bool success)",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 475,
+      "full_signature": "function execute() external override onlyStrategy returns (bool success) {"
+    },
+    {
+      "name": "updateAmountPercentage",
+      "visibility": "external",
+      "modifiers": "onlyStrategy",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 505,
+      "full_signature": "function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "override onlyStrategy returns (bool success)",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 557,
+      "full_signature": "function execute() external override onlyStrategy returns (bool success) {"
+    },
+    {
+      "name": "updateAmountPercentage",
+      "visibility": "external",
+      "modifiers": "onlyStrategy",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 609,
+      "full_signature": "function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy {"
+    },
+    {
+      "name": "updateActionType",
+      "visibility": "external",
+      "modifiers": "onlyStrategy",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 618,
+      "full_signature": "function updateActionType(ActionType _actionType) external onlyStrategy {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "override onlyStrategy returns (bool success)",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 667,
+      "full_signature": "function execute() external override onlyStrategy returns (bool success) {"
+    },
+    {
+      "name": "updateThresholds",
+      "visibility": "external",
+      "modifiers": "onlyStrategy",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 693,
+      "full_signature": "function updateThresholds(\n        uint256 _probabilityThreshold,\n        uint256 _confidenceThreshold\n    ) external onlyStrategy {"
+    },
+    {
+      "name": "updateEventType",
+      "visibility": "external",
+      "modifiers": "onlyStrategy",
+      "file": ".\\contracts\\EmergentStrategy.sol",
+      "line": 706,
+      "full_signature": "function updateEventType(\n        bytes32 _eventTypeId,\n        bytes32 _horizonId\n    ) external onlyStrategy {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "nonReentrant returns (bool success, int256 profitLoss)",
+      "file": ".\\contracts\\EventDrivenStrategy.sol",
+      "line": 212,
+      "full_signature": "function execute() external nonReentrant returns (bool success, int256 profitLoss) {"
+    },
+    {
+      "name": "executeFlashLoan",
+      "visibility": "external",
+      "modifiers": ";\n    function depositProfit(address token, uint256 amount) external payable;\n}\n\n/**\n * @title GenericStrategy\n * @notice Enhanced base strategy for arbitrage execution\n * @dev Includes improved security features and access controls\n */\ncontract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStrategy, IStrategyExecutor, ReentrancyGuard, Pausable",
+      "file": ".\\contracts\\GenericStrategy.sol",
+      "line": 16,
+      "full_signature": "function executeFlashLoan(address asset, uint256 amount, bytes calldata params) external;\n    function depositProfit(address token, uint256 amount) external payable;\n}\n\n/**\n * @title GenericStrategy\n * @notice Enhanced base strategy for arbitrage execution\n * @dev Includes improved security features and access controls\n */\ncontract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStrategy, IStrategyExecutor, ReentrancyGuard, Pausable {"
+    },
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "override onlyInitialized nonReentrant whenNotPaused returns (bool)",
+      "file": ".\\contracts\\GenericStrategy.sol",
+      "line": 354,
+      "full_signature": "function executeOperation(\n        address asset,\n        uint256 amount,\n        uint256 premium,\n        address initiator,\n        bytes calldata params\n    ) external override onlyInitialized nonReentrant whenNotPaused returns (bool) {"
+    },
+    {
+      "name": "getAllCompliantAssets",
+      "visibility": "external",
+      "modifiers": "view returns (address[] memory)",
+      "file": ".\\contracts\\HalalAssetRegistry.sol",
+      "line": 310,
+      "full_signature": "function getAllCompliantAssets() external view returns (address[] memory) {"
+    },
+    {
+      "name": "getCompliantAssetCount",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\contracts\\HalalAssetRegistry.sol",
+      "line": 318,
+      "full_signature": "function getCompliantAssetCount() external view returns (uint256) {"
+    },
+    {
+      "name": "executeProposal",
+      "visibility": "external",
+      "modifiers": "nonReentrant",
+      "file": ".\\contracts\\HumanAISymbiote.sol",
+      "line": 506,
+      "full_signature": "function executeProposal(uint256 _proposalId) external nonReentrant {"
+    },
+    {
+      "name": "createSystemUpgradeProposal",
+      "visibility": "external",
+      "modifiers": "returns (uint256)",
+      "file": ".\\contracts\\HumanAISymbiote.sol",
+      "line": 790,
+      "full_signature": "function createSystemUpgradeProposal(\n        address _targetContract,\n        address _newImplementation,\n        bytes32 _worldModelSimulationHash,\n        bytes32 _ethicalFrameworkHash,\n        string memory _metadataURI\n    ) external returns (uint256) {"
+    },
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "override nonReentrantCustom whenNotPaused returns (bool)",
+      "file": ".\\contracts\\MudarabahFlashSwap.sol",
+      "line": 327,
+      "full_signature": "function executeOperation(\n        address asset,\n        uint256 amount,\n        uint256 premium,\n        address initiator,\n        bytes calldata params\n    ) external override nonReentrantCustom whenNotPaused returns (bool) {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "external",
+      "modifiers": "nonReentrant whenNotPaused onlyHalalAsset(token)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 510,
+      "full_signature": "function withdraw(\n        address token,\n        uint256 amount\n    ) external nonReentrant whenNotPaused onlyHalalAsset(token) {"
+    },
+    {
+      "name": "withdrawProfitShare",
+      "visibility": "external",
+      "modifiers": "nonReentrant whenNotPaused onlyHalalAsset(token)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 546,
+      "full_signature": "function withdrawProfitShare(\n        address token\n    ) external nonReentrant whenNotPaused onlyHalalAsset(token) {"
+    },
+    {
+      "name": "executeStrategy",
+      "visibility": "external",
+      "modifiers": "onlyExecution \n        nonReentrant \n        whenNotPaused \n        notEmergencyShutdown\n        riskLimitsCheck",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 564,
+      "full_signature": "function executeStrategy(\n        bytes32 strategyId,\n        address[] calldata assets,\n        uint256[] calldata amounts,\n        bytes[] calldata executionData,\n        bytes32 aiPredictionId\n    ) \n        external \n        onlyExecution \n        nonReentrant \n        whenNotPaused \n        notEmergencyShutdown\n        riskLimitsCheck\n    {"
+    },
+    {
+      "name": "distributeProfit",
+      "visibility": "external",
+      "modifiers": "onlyMudarib nonReentrant whenNotPaused onlyHalalAsset(token)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 661,
+      "full_signature": "function distributeProfit(\n        address token,\n        uint256 amount\n    ) external onlyMudarib nonReentrant whenNotPaused onlyHalalAsset(token) {"
+    },
+    {
+      "name": "distributeLoss",
+      "visibility": "external",
+      "modifiers": "onlyMudarib nonReentrant whenNotPaused onlyHalalAsset(token)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 702,
+      "full_signature": "function distributeLoss(\n        address token,\n        uint256 amount\n    ) external onlyMudarib nonReentrant whenNotPaused onlyHalalAsset(token) {"
+    },
+    {
+      "name": "distributeZakat",
+      "visibility": "external",
+      "modifiers": "onlyZakatManager nonReentrant",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 729,
+      "full_signature": "function distributeZakat(\n        address recipient,\n        uint256 amount\n    ) external onlyZakatManager nonReentrant {"
+    },
+    {
+      "name": "approveStrategy",
+      "visibility": "external",
+      "modifiers": "onlyShariahAdvisor",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 750,
+      "full_signature": "function approveStrategy(\n        bytes32 strategyId,\n        uint256 allocation\n    ) external onlyShariahAdvisor {"
+    },
+    {
+      "name": "revokeStrategy",
+      "visibility": "external",
+      "modifiers": "onlyShariahAdvisor",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 776,
+      "full_signature": "function revokeStrategy(\n        bytes32 strategyId\n    ) external onlyShariahAdvisor {"
+    },
+    {
+      "name": "updateRiskMetrics",
+      "visibility": "external",
+      "modifiers": "onlyRiskManager",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 788,
+      "full_signature": "function updateRiskMetrics(\n        uint256 valueAtRisk99,\n        uint256 expectedShortfall,\n        uint256 portfolioVolatility,\n        uint256 maxCorrelation,\n        uint256 stressTestResult,\n        uint256 liquidityRisk\n    ) external onlyRiskManager {"
+    },
+    {
+      "name": "updateProfitDistribution",
+      "visibility": "external",
+      "modifiers": "onlyMudarib",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 811,
+      "full_signature": "function updateProfitDistribution(\n        uint256 _investorShare,\n        uint256 _mudaribShare,\n        uint256 _zakatShare,\n        uint256 _reserveShare\n    ) external onlyMudarib {"
+    },
+    {
+      "name": "activateEmergencyShutdown",
+      "visibility": "external",
+      "modifiers": "onlyMudarib",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 831,
+      "full_signature": "function activateEmergencyShutdown(\n        string calldata reason\n    ) external onlyMudarib {"
+    },
+    {
+      "name": "deactivateEmergencyShutdown",
+      "visibility": "external",
+      "modifiers": "onlyMudarib",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 844,
+      "full_signature": "function deactivateEmergencyShutdown() external onlyMudarib {"
+    },
+    {
+      "name": "requestEmergencyWithdrawal",
+      "visibility": "external",
+      "modifiers": "whenPaused nonReentrant",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 853,
+      "full_signature": "function requestEmergencyWithdrawal() external whenPaused nonReentrant {"
+    },
+    {
+      "name": "pause",
+      "visibility": "external",
+      "modifiers": "onlyMudarib",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1073,
+      "full_signature": "function pause() external onlyMudarib {"
+    },
+    {
+      "name": "unpause",
+      "visibility": "external",
+      "modifiers": "onlyMudarib",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1080,
+      "full_signature": "function unpause() external onlyMudarib {"
+    },
+    {
+      "name": "updateVaRMetrics",
+      "visibility": "external",
+      "modifiers": "onlyRiskManager",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1130,
+      "full_signature": "function updateVaRMetrics(\n        uint256 _valueAtRisk99,\n        uint256 _expectedShortfall\n    ) external onlyRiskManager {"
+    },
+    {
+      "name": "updatePortfolioVolatility",
+      "visibility": "external",
+      "modifiers": "onlyRiskManager",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1152,
+      "full_signature": "function updatePortfolioVolatility(\n        uint256 _portfolioVolatility\n    ) external onlyRiskManager {"
+    },
+    {
+      "name": "updateCorrelation",
+      "visibility": "external",
+      "modifiers": "onlyRiskManager validAssetPair(_asset1, _asset2)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1166,
+      "full_signature": "function updateCorrelation(\n        address _asset1,\n        address _asset2,\n        int256 _correlation\n    ) external onlyRiskManager validAssetPair(_asset1, _asset2) {"
+    },
+    {
+      "name": "setStressTestAssetImpact",
+      "visibility": "external",
+      "modifiers": "onlyRiskManager onlyHalalAsset(_asset)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1243,
+      "full_signature": "function setStressTestAssetImpact(\n        uint256 _scenarioId,\n        address _asset,\n        int256 _impactBasisPoints\n    ) external onlyRiskManager onlyHalalAsset(_asset) {"
+    },
+    {
+      "name": "getAssetCorrelation",
+      "visibility": "external",
+      "modifiers": "view returns (CorrelationData memory)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1309,
+      "full_signature": "function getAssetCorrelation(\n        address _asset1,\n        address _asset2\n    ) external view returns (CorrelationData memory) {"
+    },
+    {
+      "name": "getStressTestAssetImpact",
+      "visibility": "external",
+      "modifiers": "view returns (int256)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1359,
+      "full_signature": "function getStressTestAssetImpact(\n        uint256 _scenarioId,\n        address _asset\n    ) external view returns (int256) {"
+    },
+    {
+      "name": "proposeAIAction",
+      "visibility": "external",
+      "modifiers": "onlyAIAgent returns (bytes32 actionId)",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1377,
+      "full_signature": "function proposeAIAction(\n        bytes32 strategyId,\n        uint256 valueUSD,\n        bytes calldata executionData\n    ) external onlyAIAgent returns (bytes32 actionId) {"
+    },
+    {
+      "name": "executeAIAction",
+      "visibility": "external",
+      "modifiers": "onlyExecution nonReentrant",
+      "file": ".\\contracts\\MudarabahInvestmentPool.sol",
+      "line": 1457,
+      "full_signature": "function executeAIAction(\n        bytes32 actionId,\n        bytes32 strategyId,\n        uint256 valueUSD,\n        bytes calldata executionData\n    ) external onlyExecution nonReentrant {"
+    },
+    {
+      "name": "getAssetSecurityStatus",
+      "visibility": "external",
+      "modifiers": "view \n        returns (\n            SecurityMetrics memory metrics,\n            bool circuitBreakerActive,\n            bool anomalyDetected,\n            uint256 alertsCount\n        )",
+      "file": ".\\contracts\\OracleSecurityWrapper.sol",
+      "line": 679,
+      "full_signature": "function getAssetSecurityStatus(bytes32 assetId) \n        external \n        view \n        returns (\n            SecurityMetrics memory metrics,\n            bool circuitBreakerActive,\n            bool anomalyDetected,\n            uint256 alertsCount\n        ) \n    {"
+    },
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "override nonReentrant returns (bool)",
+      "file": ".\\contracts\\ProofAwareExecutorV35.sol",
+      "line": 205,
+      "full_signature": "function executeOperation(\n        address asset,\n        uint256 amount,\n        uint256 premium,\n        address initiator,\n        bytes calldata params\n    ) external override nonReentrant returns (bool) {"
+    },
+    {
+      "name": "approveDelivery",
+      "visibility": "external",
+      "modifiers": "nonReentrant whenNotPaused",
+      "file": ".\\contracts\\SalamFactory.sol",
+      "line": 272,
+      "full_signature": "function approveDelivery(\n        uint256 _salamId\n    ) external nonReentrant whenNotPaused {"
+    },
+    {
+      "name": "executeOperation",
+      "visibility": "external",
+      "modifiers": "override returns (bool)",
+      "file": ".\\contracts\\SecureArbitrageExecutorV42.sol",
+      "line": 447,
+      "full_signature": "function executeOperation(\n        address[] calldata assets,\n        uint256[] calldata amounts,\n        uint256[] calldata premiums,\n        address initiator,\n        bytes calldata params\n    ) external override returns (bool) {"
+    },
+    {
+      "name": "executeArbitrageEnhanced",
+      "visibility": "external",
+      "modifiers": "validateArbitrageExecution(strategy, tokens, amounts, deadline)\n        nonReentrant\n        whenNotPaused\n        gasGuard\n        returns (bytes32 executionId)",
+      "file": ".\\contracts\\SecureArbitrageExecutorV43.sol",
+      "line": 218,
+      "full_signature": "function executeArbitrageEnhanced(\n        address strategy,\n        address[] calldata tokens,\n        uint256[] calldata amounts,\n        uint256 deadline\n    ) \n        external \n        validateArbitrageExecution(strategy, tokens, amounts, deadline)\n        nonReentrant\n        whenNotPaused\n        gasGuard\n        returns (bytes32 executionId)\n    {"
+    },
+    {
+      "name": "executeMultiSigOperation",
+      "visibility": "external",
+      "modifiers": "nonReentrant\n        notInEmergency",
+      "file": ".\\contracts\\SecurityEnhancedExecutor.sol",
+      "line": 340,
+      "full_signature": "function executeMultiSigOperation(bytes32 operationId, bytes calldata data)\n        external\n        nonReentrant\n        notInEmergency\n    {"
+    },
+    {
+      "name": "requestEmergencyWithdrawal_SECURE",
+      "visibility": "external",
+      "modifiers": "whenPaused()                      // FIX: Only during emergency pause\n        nonReentrant()                    // FIX: Prevent reentrancy",
+      "file": ".\\contracts\\SecurityPatches.sol",
+      "line": 79,
+      "full_signature": "function requestEmergencyWithdrawal_SECURE() \n        external \n        whenPaused()                      // FIX: Only during emergency pause\n        nonReentrant()                    // FIX: Prevent reentrancy\n    {"
+    },
+    {
+      "name": "executeProposal",
+      "visibility": "external",
+      "modifiers": "nonReentrant",
+      "file": ".\\contracts\\SelfAmendingProtocol.sol",
+      "line": 248,
+      "full_signature": "function executeProposal(uint256 _proposalId) external nonReentrant {"
+    },
+    {
+      "name": "getApprovedStrategies",
+      "visibility": "external",
+      "modifiers": "view \n        returns (bytes32[] memory)",
+      "file": ".\\contracts\\StrategyFactoryV33.sol",
+      "line": 335,
+      "full_signature": "function getApprovedStrategies() \n        external \n        view \n        returns (bytes32[] memory) \n    {"
+    },
+    {
+      "name": "updateStrategy",
+      "visibility": "external",
+      "modifiers": "nonReentrant whenNotPaused",
+      "file": ".\\contracts\\StrategyLeasingPlatform.sol",
+      "line": 286,
+      "full_signature": "function updateStrategy(\n        bytes32 _strategyId,\n        uint256 _leasePrice,\n        uint256 _leasePeriod,\n        bool _active\n    ) external nonReentrant whenNotPaused {"
+    },
+    {
+      "name": "getAllTreasuryAssets",
+      "visibility": "external",
+      "modifiers": "view returns (address[] memory)",
+      "file": ".\\contracts\\ZakatManager.sol",
+      "line": 485,
+      "full_signature": "function getAllTreasuryAssets() external view returns (address[] memory) {"
+    },
+    {
+      "name": "getRoleAdmin",
+      "visibility": "public",
+      "modifiers": "view virtual returns (bytes32)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\AccessControl.sol",
+      "line": 106,
+      "full_signature": "function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {"
+    },
+    {
+      "name": "getRoleAdmin",
+      "visibility": "external",
+      "modifiers": "view returns (bytes32);\n\n    /**\n     * @dev Grants `role` to `account`.\n     *\n     * If `account` had not been already granted `role`, emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\IAccessControl.sol",
+      "line": 58,
+      "full_signature": "function getRoleAdmin(bytes32 role) external view returns (bytes32);\n\n    /**\n     * @dev Grants `role` to `account`.\n     *\n     * If `account` had not been already granted `role`, emits a {"
+    },
+    {
+      "name": "grantRole",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Revokes `role` from `account`.\n     *\n     * If `account` had been granted `role`, emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\IAccessControl.sol",
+      "line": 70,
+      "full_signature": "function grantRole(bytes32 role, address account) external;\n\n    /**\n     * @dev Revokes `role` from `account`.\n     *\n     * If `account` had been granted `role`, emits a {"
+    },
+    {
+      "name": "revokeRole",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Revokes `role` from the calling account.\n     *\n     * Roles are often managed via",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\IAccessControl.sol",
+      "line": 81,
+      "full_signature": "function revokeRole(bytes32 role, address account) external;\n\n    /**\n     * @dev Revokes `role` from the calling account.\n     *\n     * Roles are often managed via {"
+    },
+    {
+      "name": "owner",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol",
+      "line": 56,
+      "full_signature": "function owner() public view virtual returns (address) {"
+    },
+    {
+      "name": "pendingOwner",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\Ownable2Step.sol",
+      "line": 33,
+      "full_signature": "function pendingOwner() public view virtual returns (address) {"
+    },
+    {
+      "name": "acceptOwnership",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\Ownable2Step.sol",
+      "line": 60,
+      "full_signature": "function acceptOwnership() public virtual {"
+    },
+    {
+      "name": "owner",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 72,
+      "full_signature": "function owner() public view virtual returns (address) {"
+    },
+    {
+      "name": "grantRole",
+      "visibility": "public",
+      "modifiers": "virtual override(AccessControl, IAccessControl)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 83,
+      "full_signature": "function grantRole(bytes32 role, address account) public virtual override(AccessControl, IAccessControl) {"
+    },
+    {
+      "name": "revokeRole",
+      "visibility": "public",
+      "modifiers": "virtual override(AccessControl, IAccessControl)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 93,
+      "full_signature": "function revokeRole(bytes32 role, address account) public virtual override(AccessControl, IAccessControl) {"
+    },
+    {
+      "name": "defaultAdmin",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 170,
+      "full_signature": "function defaultAdmin() public view virtual returns (address) {"
+    },
+    {
+      "name": "pendingDefaultAdmin",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address newAdmin, uint48 schedule)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 177,
+      "full_signature": "function pendingDefaultAdmin() public view virtual returns (address newAdmin, uint48 schedule) {"
+    },
+    {
+      "name": "defaultAdminDelay",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint48)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 184,
+      "full_signature": "function defaultAdminDelay() public view virtual returns (uint48) {"
+    },
+    {
+      "name": "pendingDefaultAdminDelay",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint48 newDelay, uint48 schedule)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 192,
+      "full_signature": "function pendingDefaultAdminDelay() public view virtual returns (uint48 newDelay, uint48 schedule) {"
+    },
+    {
+      "name": "defaultAdminDelayIncreaseWait",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint48)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 200,
+      "full_signature": "function defaultAdminDelayIncreaseWait() public view virtual returns (uint48) {"
+    },
+    {
+      "name": "acceptDefaultAdminTransfer",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\AccessControlDefaultAdminRules.sol",
+      "line": 245,
+      "full_signature": "function acceptDefaultAdminTransfer() public virtual {"
+    },
+    {
+      "name": "defaultAdmin",
+      "visibility": "external",
+      "modifiers": "view returns (address);\n\n    /**\n     * @dev Returns a tuple of a `newAdmin` and an accept schedule.\n     *\n     * After the `schedule` passes, the `newAdmin` will be able to accept the",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 60,
+      "full_signature": "function defaultAdmin() external view returns (address);\n\n    /**\n     * @dev Returns a tuple of a `newAdmin` and an accept schedule.\n     *\n     * After the `schedule` passes, the `newAdmin` will be able to accept the {"
+    },
+    {
+      "name": "pendingDefaultAdmin",
+      "visibility": "external",
+      "modifiers": "view returns (address newAdmin, uint48 acceptSchedule);\n\n    /**\n     * @dev Returns the delay required to schedule the acceptance of a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 72,
+      "full_signature": "function pendingDefaultAdmin() external view returns (address newAdmin, uint48 acceptSchedule);\n\n    /**\n     * @dev Returns the delay required to schedule the acceptance of a {"
+    },
+    {
+      "name": "defaultAdminDelay",
+      "visibility": "external",
+      "modifiers": "view returns (uint48);\n\n    /**\n     * @dev Returns a tuple of `newDelay` and an effect schedule.\n     *\n     * After the `schedule` passes, the `newDelay` will get into effect immediately for every\n     * new",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 83,
+      "full_signature": "function defaultAdminDelay() external view returns (uint48);\n\n    /**\n     * @dev Returns a tuple of `newDelay` and an effect schedule.\n     *\n     * After the `schedule` passes, the `newDelay` will get into effect immediately for every\n     * new {"
+    },
+    {
+      "name": "pendingDefaultAdminDelay",
+      "visibility": "external",
+      "modifiers": "view returns (uint48 newDelay, uint48 effectSchedule);\n\n    /**\n     * @dev Starts a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 96,
+      "full_signature": "function pendingDefaultAdminDelay() external view returns (uint48 newDelay, uint48 effectSchedule);\n\n    /**\n     * @dev Starts a {"
+    },
+    {
+      "name": "beginDefaultAdminTransfer",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Cancels a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 108,
+      "full_signature": "function beginDefaultAdminTransfer(address newAdmin) external;\n\n    /**\n     * @dev Cancels a {"
+    },
+    {
+      "name": "cancelDefaultAdminTransfer",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Completes a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 121,
+      "full_signature": "function cancelDefaultAdminTransfer() external;\n\n    /**\n     * @dev Completes a {"
+    },
+    {
+      "name": "acceptDefaultAdminTransfer",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Initiates a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 137,
+      "full_signature": "function acceptDefaultAdminTransfer() external;\n\n    /**\n     * @dev Initiates a {"
+    },
+    {
+      "name": "changeDefaultAdminDelay",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Cancels a scheduled",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 165,
+      "full_signature": "function changeDefaultAdminDelay(uint48 newDelay) external;\n\n    /**\n     * @dev Cancels a scheduled {"
+    },
+    {
+      "name": "rollbackDefaultAdminDelay",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Maximum time in seconds for an increase to",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\extensions\\IAccessControlDefaultAdminRules.sol",
+      "line": 176,
+      "full_signature": "function rollbackDefaultAdminDelay() external;\n\n    /**\n     * @dev Maximum time in seconds for an increase to {"
+    },
+    {
+      "name": "setAuthority",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManaged.sol",
+      "line": 67,
+      "full_signature": "function setAuthority(address newAuthority) public virtual {"
+    },
+    {
+      "name": "minSetback",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint32)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManager.sol",
+      "line": 163,
+      "full_signature": "function minSetback() public view virtual returns (uint32) {"
+    },
+    {
+      "name": "getTargetAdminDelay",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint32)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManager.sol",
+      "line": 178,
+      "full_signature": "function getTargetAdminDelay(address target) public view virtual returns (uint32) {"
+    },
+    {
+      "name": "getRoleAdmin",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint64)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManager.sol",
+      "line": 183,
+      "full_signature": "function getRoleAdmin(uint64 roleId) public view virtual returns (uint64) {"
+    },
+    {
+      "name": "getRoleGrantDelay",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint32)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManager.sol",
+      "line": 193,
+      "full_signature": "function getRoleGrantDelay(uint64 roleId) public view virtual returns (uint32) {"
+    },
+    {
+      "name": "execute",
+      "visibility": "public",
+      "modifiers": "payable virtual returns (uint32)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\AccessManager.sol",
+      "line": 492,
+      "full_signature": "function execute(address target, bytes calldata data) public payable virtual returns (uint32) {"
+    },
+    {
+      "name": "minSetback",
+      "visibility": "external",
+      "modifiers": "view returns (uint32);\n\n    /**\n     * @dev Get whether the contract is closed disabling any access. Otherwise role permissions are applied.\n     *\n     * NOTE: When the manager itself is closed, admin functions are still accessible to avoid locking the contract.\n     */\n    function isTargetClosed(address target) external view returns (bool);\n\n    /**\n     * @dev Get the role required to call a function.\n     */\n    function getTargetFunctionRole(address target, bytes4 selector) external view returns (uint64);\n\n    /**\n     * @dev Get the admin delay for a target contract. Changes to contract configuration are subject to this delay.\n     */\n    function getTargetAdminDelay(address target) external view returns (uint32);\n\n    /**\n     * @dev Get the id of the role that acts as an admin for the given role.\n     *\n     * The admin permission is required to grant the role, revoke the role and update the execution delay to execute\n     * an operation that is restricted to this role.\n     */\n    function getRoleAdmin(uint64 roleId) external view returns (uint64);\n\n    /**\n     * @dev Get the role that acts as a guardian for a given role.\n     *\n     * The guardian permission allows canceling operations that have been scheduled under the role.\n     */\n    function getRoleGuardian(uint64 roleId) external view returns (uint64);\n\n    /**\n     * @dev Get the role current grant delay.\n     *\n     * Its value may change at any point without an event emitted following a call to",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 131,
+      "full_signature": "function minSetback() external view returns (uint32);\n\n    /**\n     * @dev Get whether the contract is closed disabling any access. Otherwise role permissions are applied.\n     *\n     * NOTE: When the manager itself is closed, admin functions are still accessible to avoid locking the contract.\n     */\n    function isTargetClosed(address target) external view returns (bool);\n\n    /**\n     * @dev Get the role required to call a function.\n     */\n    function getTargetFunctionRole(address target, bytes4 selector) external view returns (uint64);\n\n    /**\n     * @dev Get the admin delay for a target contract. Changes to contract configuration are subject to this delay.\n     */\n    function getTargetAdminDelay(address target) external view returns (uint32);\n\n    /**\n     * @dev Get the id of the role that acts as an admin for the given role.\n     *\n     * The admin permission is required to grant the role, revoke the role and update the execution delay to execute\n     * an operation that is restricted to this role.\n     */\n    function getRoleAdmin(uint64 roleId) external view returns (uint64);\n\n    /**\n     * @dev Get the role that acts as a guardian for a given role.\n     *\n     * The guardian permission allows canceling operations that have been scheduled under the role.\n     */\n    function getRoleGuardian(uint64 roleId) external view returns (uint64);\n\n    /**\n     * @dev Get the role current grant delay.\n     *\n     * Its value may change at any point without an event emitted following a call to {"
+    },
+    {
+      "name": "getRoleGrantDelay",
+      "visibility": "external",
+      "modifiers": "view returns (uint32);\n\n    /**\n     * @dev Get the access details for a given account for a given role. These details include the timepoint at which\n     * membership becomes active, and the delay applied to all operation by this user that requires this permission\n     * level.\n     *\n     * Returns:\n     * [0] Timestamp at which the account membership becomes valid. 0 means role is not granted.\n     * [1] Current execution delay for the account.\n     * [2] Pending execution delay for the account.\n     * [3] Timestamp at which the pending execution delay will become active. 0 means no delay update is scheduled.\n     */\n    function getAccess(\n        uint64 roleId,\n        address account\n    ) external view returns (uint48 since, uint32 currentDelay, uint32 pendingDelay, uint48 effect);\n\n    /**\n     * @dev Check if a given account currently has the permission level corresponding to a given role. Note that this\n     * permission might be associated with an execution delay.",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 171,
+      "full_signature": "function getRoleGrantDelay(uint64 roleId) external view returns (uint32);\n\n    /**\n     * @dev Get the access details for a given account for a given role. These details include the timepoint at which\n     * membership becomes active, and the delay applied to all operation by this user that requires this permission\n     * level.\n     *\n     * Returns:\n     * [0] Timestamp at which the account membership becomes valid. 0 means role is not granted.\n     * [1] Current execution delay for the account.\n     * [2] Pending execution delay for the account.\n     * [3] Timestamp at which the pending execution delay will become active. 0 means no delay update is scheduled.\n     */\n    function getAccess(\n        uint64 roleId,\n        address account\n    ) external view returns (uint48 since, uint32 currentDelay, uint32 pendingDelay, uint48 effect);\n\n    /**\n     * @dev Check if a given account currently has the permission level corresponding to a given role. Note that this\n     * permission might be associated with an execution delay. {"
+    },
+    {
+      "name": "grantRole",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Remove an account from a role, with immediate effect. If the account does not have the role, this call has\n     * no effect.\n     *\n     * Requirements:\n     *\n     * - the caller must be an admin for the role (see",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 226,
+      "full_signature": "function grantRole(uint64 roleId, address account, uint32 executionDelay) external;\n\n    /**\n     * @dev Remove an account from a role, with immediate effect. If the account does not have the role, this call has\n     * no effect.\n     *\n     * Requirements:\n     *\n     * - the caller must be an admin for the role (see {"
+    },
+    {
+      "name": "revokeRole",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Renounce role permissions for the calling account with immediate effect. If the sender is not in\n     * the role this call has no effect.\n     *\n     * Requirements:\n     *\n     * - the caller must be `callerConfirmation`.\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 239,
+      "full_signature": "function revokeRole(uint64 roleId, address account) external;\n\n    /**\n     * @dev Renounce role permissions for the calling account with immediate effect. If the sender is not in\n     * the role this call has no effect.\n     *\n     * Requirements:\n     *\n     * - the caller must be `callerConfirmation`.\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setRoleAdmin",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Change guardian role for a given role.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 262,
+      "full_signature": "function setRoleAdmin(uint64 roleId, uint64 admin) external;\n\n    /**\n     * @dev Change guardian role for a given role.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setRoleGuardian",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Update the delay for granting a `roleId`.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 273,
+      "full_signature": "function setRoleGuardian(uint64 roleId, uint64 guardian) external;\n\n    /**\n     * @dev Update the delay for granting a `roleId`.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setGrantDelay",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Set the role required to call functions identified by the `selectors` in the `target` contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 284,
+      "full_signature": "function setGrantDelay(uint64 roleId, uint32 newDelay) external;\n\n    /**\n     * @dev Set the role required to call functions identified by the `selectors` in the `target` contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setTargetFunctionRole",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Set the delay for changing the configuration of a given target contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 295,
+      "full_signature": "function setTargetFunctionRole(address target, bytes4[] calldata selectors, uint64 roleId) external;\n\n    /**\n     * @dev Set the delay for changing the configuration of a given target contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setTargetAdminDelay",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Set the closed flag for a contract.\n     *\n     * Closing the manager itself won't disable access to admin methods to avoid locking the contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 306,
+      "full_signature": "function setTargetAdminDelay(address target, uint32 newDelay) external;\n\n    /**\n     * @dev Set the closed flag for a contract.\n     *\n     * Closing the manager itself won't disable access to admin methods to avoid locking the contract.\n     *\n     * Requirements:\n     *\n     * - the caller must be a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "setTargetClosed",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Return the timepoint at which a scheduled operation will be ready for execution. This returns 0 if the\n     * operation is not yet scheduled, has expired, was executed, or was canceled.\n     */\n    function getSchedule(bytes32 id) external view returns (uint48);\n\n    /**\n     * @dev Return the nonce for the latest scheduled operation with a given id. Returns 0 if the operation has never\n     * been scheduled.\n     */\n    function getNonce(bytes32 id) external view returns (uint32);\n\n    /**\n     * @dev Schedule a delayed operation for future execution, and return the operation identifier. It is possible to\n     * choose the timestamp at which the operation becomes executable as long as it satisfies the execution delays\n     * required for the caller. The special value zero will automatically set the earliest possible time.\n     *\n     * Returns the `operationId` that was scheduled. Since this value is a hash of the parameters, it can reoccur when\n     * the same parameters are used; if this is relevant, the returned `nonce` can be used to uniquely identify this\n     * scheduled operation from other occurrences of the same `operationId` in invocations of",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 319,
+      "full_signature": "function setTargetClosed(address target, bool closed) external;\n\n    /**\n     * @dev Return the timepoint at which a scheduled operation will be ready for execution. This returns 0 if the\n     * operation is not yet scheduled, has expired, was executed, or was canceled.\n     */\n    function getSchedule(bytes32 id) external view returns (uint48);\n\n    /**\n     * @dev Return the nonce for the latest scheduled operation with a given id. Returns 0 if the operation has never\n     * been scheduled.\n     */\n    function getNonce(bytes32 id) external view returns (uint32);\n\n    /**\n     * @dev Schedule a delayed operation for future execution, and return the operation identifier. It is possible to\n     * choose the timestamp at which the operation becomes executable as long as it satisfies the execution delays\n     * required for the caller. The special value zero will automatically set the earliest possible time.\n     *\n     * Returns the `operationId` that was scheduled. Since this value is a hash of the parameters, it can reoccur when\n     * the same parameters are used; if this is relevant, the returned `nonce` can be used to uniquely identify this\n     * scheduled operation from other occurrences of the same `operationId` in invocations of {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "payable returns (uint32);\n\n    /**\n     * @dev Cancel a scheduled (delayed) operation. Returns the nonce that identifies the previously scheduled\n     * operation that is cancelled.\n     *\n     * Requirements:\n     *\n     * - the caller must be the proposer, a guardian of the targeted function, or a global admin\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\access\\manager\\IAccessManager.sol",
+      "line": 363,
+      "full_signature": "function execute(address target, bytes calldata data) external payable returns (uint32);\n\n    /**\n     * @dev Cancel a scheduled (delayed) operation. Returns the nonce that identifies the previously scheduled\n     * operation that is cancelled.\n     *\n     * Requirements:\n     *\n     * - the caller must be the proposer, a guardian of the targeted function, or a global admin\n     *\n     * Emits a {"
+    },
+    {
+      "name": "proposalProposer",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\Governor.sol",
+      "line": 214,
+      "full_signature": "function proposalProposer(uint256 proposalId) public view virtual returns (address) {"
+    },
+    {
+      "name": "propose",
+      "visibility": "public",
+      "modifiers": "virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\Governor.sol",
+      "line": 296,
+      "full_signature": "function propose(\n        address[] memory targets,\n        uint256[] memory values,\n        bytes[] memory calldatas,\n        string memory description\n    ) public virtual returns (uint256) {"
+    },
+    {
+      "name": "execute",
+      "visibility": "public",
+      "modifiers": "payable virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\Governor.sol",
+      "line": 416,
+      "full_signature": "function execute(\n        address[] memory targets,\n        uint256[] memory values,\n        bytes[] memory calldatas,\n        bytes32 descriptionHash\n    ) public payable virtual returns (uint256) {"
+    },
+    {
+      "name": "propose",
+      "visibility": "external",
+      "modifiers": "returns (uint256 proposalId);\n\n    /**\n     * @dev Queue a proposal. Some governors require this step to be performed before execution can happen. If queuing\n     * is not necessary, this function may revert.\n     * Queuing a proposal requires the quorum to be reached, the vote to be successful, and the deadline to be reached.\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\IGovernor.sol",
+      "line": 348,
+      "full_signature": "function propose(\n        address[] memory targets,\n        uint256[] memory values,\n        bytes[] memory calldatas,\n        string memory description\n    ) external returns (uint256 proposalId);\n\n    /**\n     * @dev Queue a proposal. Some governors require this step to be performed before execution can happen. If queuing\n     * is not necessary, this function may revert.\n     * Queuing a proposal requires the quorum to be reached, the vote to be successful, and the deadline to be reached.\n     *\n     * Emits a {"
+    },
+    {
+      "name": "execute",
+      "visibility": "external",
+      "modifiers": "payable returns (uint256 proposalId);\n\n    /**\n     * @dev Cancel a proposal. A proposal is cancellable by the proposer, but only while it is Pending state, i.e.\n     * before the vote starts.\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\IGovernor.sol",
+      "line": 378,
+      "full_signature": "function execute(\n        address[] memory targets,\n        uint256[] memory values,\n        bytes[] memory calldatas,\n        bytes32 descriptionHash\n    ) external payable returns (uint256 proposalId);\n\n    /**\n     * @dev Cancel a proposal. A proposal is cancellable by the proposer, but only while it is Pending state, i.e.\n     * before the vote starts.\n     *\n     * Emits a {"
+    },
+    {
+      "name": "updateDelay",
+      "visibility": "external",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\TimelockController.sol",
+      "line": 449,
+      "full_signature": "function updateDelay(uint256 newDelay) external virtual {"
+    },
+    {
+      "name": "setLateQuorumVoteExtension",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorPreventLateQuorum.sol",
+      "line": 78,
+      "full_signature": "function setLateQuorumVoteExtension(uint48 newVoteExtension) public virtual onlyGovernance {"
+    },
+    {
+      "name": "setProposalGuardian",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorProposalGuardian.sol",
+      "line": 29,
+      "full_signature": "function setProposalGuardian(address newProposalGuardian) public virtual onlyGovernance {"
+    },
+    {
+      "name": "setVotingDelay",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorSettings.sol",
+      "line": 58,
+      "full_signature": "function setVotingDelay(uint48 newVotingDelay) public virtual onlyGovernance {"
+    },
+    {
+      "name": "setVotingPeriod",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorSettings.sol",
+      "line": 67,
+      "full_signature": "function setVotingPeriod(uint32 newVotingPeriod) public virtual onlyGovernance {"
+    },
+    {
+      "name": "setProposalThreshold",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorSettings.sol",
+      "line": 76,
+      "full_signature": "function setProposalThreshold(uint256 newProposalThreshold) public virtual onlyGovernance {"
+    },
+    {
+      "name": "execute",
+      "visibility": "public",
+      "modifiers": "payable virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorStorage.sol",
+      "line": 64,
+      "full_signature": "function execute(uint256 proposalId) public payable virtual {"
+    },
+    {
+      "name": "setBaseDelaySeconds",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockAccess.sol",
+      "line": 104,
+      "full_signature": "function setBaseDelaySeconds(uint32 newBaseDelay) public virtual onlyGovernance {"
+    },
+    {
+      "name": "setAccessManagerIgnored",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockAccess.sol",
+      "line": 130,
+      "full_signature": "function setAccessManagerIgnored(\n        address target,\n        bytes4[] calldata selectors,\n        bool ignored\n    ) public virtual onlyGovernance {"
+    },
+    {
+      "name": "propose",
+      "visibility": "public",
+      "modifiers": "virtual override returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockAccess.sol",
+      "line": 184,
+      "full_signature": "function propose(\n        address[] memory targets,\n        uint256[] memory values,\n        bytes[] memory calldatas,\n        string memory description\n    ) public virtual override returns (uint256) {"
+    },
+    {
+      "name": "__acceptAdmin",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockCompound.sol",
+      "line": 142,
+      "full_signature": "function __acceptAdmin() public {"
+    },
+    {
+      "name": "updateTimelock",
+      "visibility": "external",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockCompound.sol",
+      "line": 159,
+      "full_signature": "function updateTimelock(ICompoundTimelock newTimelock) external virtual onlyGovernance {"
+    },
+    {
+      "name": "updateTimelock",
+      "visibility": "external",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorTimelockControl.sol",
+      "line": 152,
+      "full_signature": "function updateTimelock(TimelockController newTimelock) external virtual onlyGovernance {"
+    },
+    {
+      "name": "updateQuorumNumerator",
+      "visibility": "external",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotesQuorumFraction.sol",
+      "line": 76,
+      "full_signature": "function updateQuorumNumerator(uint256 newQuorumNumerator) external virtual onlyGovernance {"
+    },
+    {
+      "name": "updateSuperQuorumNumerator",
+      "visibility": "public",
+      "modifiers": "virtual onlyGovernance",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\extensions\\GovernorVotesSuperQuorumFraction.sol",
+      "line": 82,
+      "full_signature": "function updateSuperQuorumNumerator(uint256 newSuperQuorumNumerator) public virtual onlyGovernance {"
+    },
+    {
+      "name": "transfer",
+      "visibility": "public",
+      "modifiers": "override",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\governance\\utils\\VotesExtended.sol",
+      "line": 21,
+      "full_signature": "function transfer(address from, address to, uint256 tokenId) public override {"
+    },
+    {
+      "name": "executeUserOp",
+      "visibility": "external",
+      "modifiers": ";\n}\n\n/**\n * @dev Interface for a paymaster contract that agrees to pay for the gas costs of a user operation.\n *\n * NOTE: A paymaster must hold a stake to cover the required entrypoint stake and also the gas for the transaction.\n */\ninterface IPaymaster",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\draft-IERC4337.sol",
+      "line": 215,
+      "full_signature": "function executeUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash) external;\n}\n\n/**\n * @dev Interface for a paymaster contract that agrees to pay for the gas costs of a user operation.\n *\n * NOTE: A paymaster must hold a stake to cover the required entrypoint stake and also the gas for the transaction.\n */\ninterface IPaymaster {"
+    },
+    {
+      "name": "transferAndCall",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from the caller's account to `to`\n     * and then calls",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol",
+      "line": 35,
+      "full_signature": "function transferAndCall(address to, uint256 value) external returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from the caller's account to `to`\n     * and then calls {"
+    },
+    {
+      "name": "transferAndCall",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism\n     * and then calls",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol",
+      "line": 45,
+      "full_signature": "function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism\n     * and then calls {"
+    },
+    {
+      "name": "transferFromAndCall",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism\n     * and then calls",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol",
+      "line": 55,
+      "full_signature": "function transferFromAndCall(address from, address to, uint256 value) external returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism\n     * and then calls {"
+    },
+    {
+      "name": "transferFromAndCall",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\n     * caller's tokens and then calls",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol",
+      "line": 66,
+      "full_signature": "function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);\n\n    /**\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\n     * caller's tokens and then calls {"
+    },
+    {
+      "name": "approveAndCall",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\n     * caller's tokens and then calls",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1363.sol",
+      "line": 75,
+      "full_signature": "function approveAndCall(address spender, uint256 value) external returns (bool);\n\n    /**\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\n     * caller's tokens and then calls {"
+    },
+    {
+      "name": "setManager",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns the manager for `account`.\n     *\n     * See",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1820Registry.sol",
+      "line": 38,
+      "full_signature": "function setManager(address account, address newManager) external;\n\n    /**\n     * @dev Returns the manager for `account`.\n     *\n     * See {"
+    },
+    {
+      "name": "setInterfaceImplementer",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns the implementer of `interfaceHash` for `account`. If no such\n     * implementer is registered, returns the zero address.\n     *\n     * If `interfaceHash` is an",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC1820Registry.sol",
+      "line": 67,
+      "full_signature": "function setInterfaceImplementer(address account, bytes32 _interfaceHash, address implementer) external;\n\n    /**\n     * @dev Returns the implementer of `interfaceHash` for `account`. If no such\n     * implementer is registered, returns the zero address.\n     *\n     * If `interfaceHash` is an {"
+    },
+    {
+      "name": "burn",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns true if an account is an operator of `tokenHolder`.\n     * Operators can send and burn tokens on behalf of their owners. All\n     * accounts are their own operator.\n     *\n     * See",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC777.sol",
+      "line": 101,
+      "full_signature": "function burn(uint256 amount, bytes calldata data) external;\n\n    /**\n     * @dev Returns true if an account is an operator of `tokenHolder`.\n     * Operators can send and burn tokens on behalf of their owners. All\n     * accounts are their own operator.\n     *\n     * See {"
+    },
+    {
+      "name": "revokeOperator",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns the list of default operators. These accounts are operators\n     * for all token holders, even if",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\interfaces\\IERC777.sol",
+      "line": 136,
+      "full_signature": "function revokeOperator(address operator) external;\n\n    /**\n     * @dev Returns the list of default operators. These accounts are operators\n     * for all token holders, even if {"
+    },
+    {
+      "name": "execute",
+      "visibility": "public",
+      "modifiers": "payable virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\metatx\\ERC2771Forwarder.sol",
+      "line": 127,
+      "full_signature": "function execute(ForwardRequestData calldata request) public payable virtual {"
+    },
+    {
+      "name": "executeBatch",
+      "visibility": "public",
+      "modifiers": "payable virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\metatx\\ERC2771Forwarder.sol",
+      "line": 163,
+      "full_signature": "function executeBatch(\n        ForwardRequestData[] calldata requests,\n        address payable refundReceiver\n    ) public payable virtual {"
+    },
+    {
+      "name": "upgradeToAndCall",
+      "visibility": "external",
+      "modifiers": "payable;\n}\n\n/**\n * @dev This contract implements a proxy that is upgradeable through an associated",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\proxy\\transparent\\TransparentUpgradeableProxy.sol",
+      "line": 19,
+      "full_signature": "function upgradeToAndCall(address newImplementation, bytes calldata data) external payable;\n}\n\n/**\n * @dev This contract implements a proxy that is upgradeable through an associated {"
+    },
+    {
+      "name": "upgradeToAndCall",
+      "visibility": "public",
+      "modifiers": "payable virtual onlyProxy",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\proxy\\utils\\UUPSUpgradeable.sol",
+      "line": 86,
+      "full_signature": "function upgradeToAndCall(address newImplementation, bytes memory data) public payable virtual onlyProxy {"
+    },
+    {
+      "name": "setApprovalForAll",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\ERC1155.sol",
+      "line": 95,
+      "full_signature": "function setApprovalForAll(address operator, bool approved) public virtual {"
+    },
+    {
+      "name": "isApprovedForAll",
+      "visibility": "public",
+      "modifiers": "view virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\ERC1155.sol",
+      "line": 102,
+      "full_signature": "function isApprovedForAll(address account, address operator) public view virtual returns (bool) {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\ERC1155.sol",
+      "line": 109,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes memory data) public virtual {"
+    },
+    {
+      "name": "safeBatchTransferFrom",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\ERC1155.sol",
+      "line": 120,
+      "full_signature": "function safeBatchTransferFrom(\n        address from,\n        address to,\n        uint256[] memory ids,\n        uint256[] memory values,\n        bytes memory data\n    ) public virtual {"
+    },
+    {
+      "name": "setApprovalForAll",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\n     *\n     * See",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\IERC1155.sol",
+      "line": 71,
+      "full_signature": "function setApprovalForAll(address operator, bool approved) external;\n\n    /**\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\n     *\n     * See {"
+    },
+    {
+      "name": "isApprovedForAll",
+      "visibility": "external",
+      "modifiers": "view returns (bool);\n\n    /**\n     * @dev Transfers a `value` amount of tokens of type `id` from `from` to `to`.\n     *\n     * WARNING: This function can potentially allow a reentrancy attack when transferring tokens\n     * to an untrusted contract, when invoking",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\IERC1155.sol",
+      "line": 78,
+      "full_signature": "function isApprovedForAll(address account, address operator) external view returns (bool);\n\n    /**\n     * @dev Transfers a `value` amount of tokens of type `id` from `from` to `to`.\n     *\n     * WARNING: This function can potentially allow a reentrancy attack when transferring tokens\n     * to an untrusted contract, when invoking {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\IERC1155.sol",
+      "line": 98,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes calldata data) external;\n\n    /**\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {"
+    },
+    {
+      "name": "burn",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\extensions\\ERC1155Burnable.sol",
+      "line": 13,
+      "full_signature": "function burn(address account, uint256 id, uint256 value) public virtual {"
+    },
+    {
+      "name": "burnBatch",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC1155\\extensions\\ERC1155Burnable.sol",
+      "line": 21,
+      "full_signature": "function burnBatch(address account, uint256[] memory ids, uint256[] memory values) public virtual {"
+    },
+    {
+      "name": "transfer",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol",
+      "line": 103,
+      "full_signature": "function transfer(address to, uint256 value) public virtual returns (bool) {"
+    },
+    {
+      "name": "approve",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol",
+      "line": 126,
+      "full_signature": "function approve(address spender, uint256 value) public virtual returns (bool) {"
+    },
+    {
+      "name": "transferFrom",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\ERC20.sol",
+      "line": 148,
+      "full_signature": "function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {"
+    },
+    {
+      "name": "transfer",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Returns the remaining number of tokens that `spender` will be\n     * allowed to spend on behalf of `owner` through",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol",
+      "line": 41,
+      "full_signature": "function transfer(address to, uint256 value) external returns (bool);\n\n    /**\n     * @dev Returns the remaining number of tokens that `spender` will be\n     * allowed to spend on behalf of `owner` through {"
+    },
+    {
+      "name": "approve",
+      "visibility": "external",
+      "modifiers": "returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the\n     * allowance mechanism. `value` is then deducted from the caller's\n     * allowance.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol",
+      "line": 67,
+      "full_signature": "function approve(address spender, uint256 value) external returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the\n     * allowance mechanism. `value` is then deducted from the caller's\n     * allowance.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a {"
+    },
+    {
+      "name": "temporaryApprove",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\draft-ERC20TemporaryApproval.sol",
+      "line": 58,
+      "full_signature": "function temporaryApprove(address spender, uint256 value) public virtual returns (bool) {"
+    },
+    {
+      "name": "transferAndCall",
+      "visibility": "public",
+      "modifiers": "returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 61,
+      "full_signature": "function transferAndCall(address to, uint256 value) public returns (bool) {"
+    },
+    {
+      "name": "transferAndCall",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 69,
+      "full_signature": "function transferAndCall(address to, uint256 value, bytes memory data) public virtual returns (bool) {"
+    },
+    {
+      "name": "transferFromAndCall",
+      "visibility": "public",
+      "modifiers": "returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 89,
+      "full_signature": "function transferFromAndCall(address from, address to, uint256 value) public returns (bool) {"
+    },
+    {
+      "name": "transferFromAndCall",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 97,
+      "full_signature": "function transferFromAndCall(\n        address from,\n        address to,\n        uint256 value,\n        bytes memory data\n    ) public virtual returns (bool) {"
+    },
+    {
+      "name": "approveAndCall",
+      "visibility": "public",
+      "modifiers": "returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 122,
+      "full_signature": "function approveAndCall(address spender, uint256 value) public returns (bool) {"
+    },
+    {
+      "name": "approveAndCall",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC1363.sol",
+      "line": 130,
+      "full_signature": "function approveAndCall(address spender, uint256 value, bytes memory data) public virtual returns (bool) {"
+    },
+    {
+      "name": "burn",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Burnable.sol",
+      "line": 20,
+      "full_signature": "function burn(uint256 value) public virtual {"
+    },
+    {
+      "name": "burnFrom",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Burnable.sol",
+      "line": 35,
+      "full_signature": "function burnFrom(address account, uint256 value) public virtual {"
+    },
+    {
+      "name": "withdrawTo",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC20Wrapper.sol",
+      "line": 73,
+      "full_signature": "function withdrawTo(address account, uint256 value) public virtual returns (bool) {"
+    },
+    {
+      "name": "asset",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 111,
+      "full_signature": "function asset() public view virtual returns (address) {"
+    },
+    {
+      "name": "totalAssets",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 116,
+      "full_signature": "function totalAssets() public view virtual returns (uint256) {"
+    },
+    {
+      "name": "convertToAssets",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 126,
+      "full_signature": "function convertToAssets(uint256 shares) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "maxMint",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 136,
+      "full_signature": "function maxMint(address) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "maxWithdraw",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 141,
+      "full_signature": "function maxWithdraw(address owner) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "previewMint",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 156,
+      "full_signature": "function previewMint(uint256 shares) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "previewWithdraw",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 161,
+      "full_signature": "function previewWithdraw(uint256 assets) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "mint",
+      "visibility": "public",
+      "modifiers": "virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 184,
+      "full_signature": "function mint(uint256 shares, address receiver) public virtual returns (uint256) {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\extensions\\ERC4626.sol",
+      "line": 197,
+      "full_signature": "function withdraw(uint256 assets, address receiver, address owner) public virtual returns (uint256) {"
+    },
+    {
+      "name": "approve",
+      "visibility": "public",
+      "modifiers": "virtual override returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC6909\\draft-ERC6909.sol",
+      "line": 49,
+      "full_signature": "function approve(address spender, uint256 id, uint256 amount) public virtual override returns (bool) {"
+    },
+    {
+      "name": "setOperator",
+      "visibility": "public",
+      "modifiers": "virtual override returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC6909\\draft-ERC6909.sol",
+      "line": 55,
+      "full_signature": "function setOperator(address spender, bool approved) public virtual override returns (bool) {"
+    },
+    {
+      "name": "transfer",
+      "visibility": "public",
+      "modifiers": "virtual override returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC6909\\draft-ERC6909.sol",
+      "line": 61,
+      "full_signature": "function transfer(address receiver, uint256 id, uint256 amount) public virtual override returns (bool) {"
+    },
+    {
+      "name": "transferFrom",
+      "visibility": "public",
+      "modifiers": "virtual override returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC6909\\draft-ERC6909.sol",
+      "line": 67,
+      "full_signature": "function transferFrom(\n        address sender,\n        address receiver,\n        uint256 id,\n        uint256 amount\n    ) public virtual override returns (bool) {"
+    },
+    {
+      "name": "ownerOf",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 67,
+      "full_signature": "function ownerOf(uint256 tokenId) public view virtual returns (address) {"
+    },
+    {
+      "name": "approve",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 107,
+      "full_signature": "function approve(address to, uint256 tokenId) public virtual {"
+    },
+    {
+      "name": "getApproved",
+      "visibility": "public",
+      "modifiers": "view virtual returns (address)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 114,
+      "full_signature": "function getApproved(uint256 tokenId) public view virtual returns (address) {"
+    },
+    {
+      "name": "setApprovalForAll",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 123,
+      "full_signature": "function setApprovalForAll(address operator, bool approved) public virtual {"
+    },
+    {
+      "name": "isApprovedForAll",
+      "visibility": "public",
+      "modifiers": "view virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 130,
+      "full_signature": "function isApprovedForAll(address owner, address operator) public view virtual returns (bool) {"
+    },
+    {
+      "name": "transferFrom",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 137,
+      "full_signature": "function transferFrom(address from, address to, uint256 tokenId) public virtual {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 152,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 tokenId) public {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol",
+      "line": 159,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients\n     * are aware of the ERC-721 protocol to prevent tokens from being forever locked.\n     *\n     * Requirements:\n     *\n     * - `from` cannot be the zero address.\n     * - `to` cannot be the zero address.\n     * - `tokenId` token must exist and be owned by `from`.\n     * - If the caller is not `from`, it must have been allowed to move this token by either",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol",
+      "line": 55,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;\n\n    /**\n     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients\n     * are aware of the ERC-721 protocol to prevent tokens from being forever locked.\n     *\n     * Requirements:\n     *\n     * - `from` cannot be the zero address.\n     * - `to` cannot be the zero address.\n     * - `tokenId` token must exist and be owned by `from`.\n     * - If the caller is not `from`, it must have been allowed to move this token by either {"
+    },
+    {
+      "name": "safeTransferFrom",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Transfers `tokenId` token from `from` to `to`.\n     *\n     * WARNING: Note that the caller is responsible to confirm that the recipient is capable of receiving ERC-721\n     * or else they may be permanently lost. Usage of",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol",
+      "line": 73,
+      "full_signature": "function safeTransferFrom(address from, address to, uint256 tokenId) external;\n\n    /**\n     * @dev Transfers `tokenId` token from `from` to `to`.\n     *\n     * WARNING: Note that the caller is responsible to confirm that the recipient is capable of receiving ERC-721\n     * or else they may be permanently lost. Usage of {"
+    },
+    {
+      "name": "transferFrom",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Gives permission to `to` to transfer `tokenId` token to another account.\n     * The approval is cleared when the token is transferred.\n     *\n     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.\n     *\n     * Requirements:\n     *\n     * - The caller must own the token or be an approved operator.\n     * - `tokenId` must exist.\n     *\n     * Emits an",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol",
+      "line": 91,
+      "full_signature": "function transferFrom(address from, address to, uint256 tokenId) external;\n\n    /**\n     * @dev Gives permission to `to` to transfer `tokenId` token to another account.\n     * The approval is cleared when the token is transferred.\n     *\n     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.\n     *\n     * Requirements:\n     *\n     * - The caller must own the token or be an approved operator.\n     * - `tokenId` must exist.\n     *\n     * Emits an {"
+    },
+    {
+      "name": "approve",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Approve or remove `operator` as an operator for the caller.\n     * Operators can call",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol",
+      "line": 106,
+      "full_signature": "function approve(address to, uint256 tokenId) external;\n\n    /**\n     * @dev Approve or remove `operator` as an operator for the caller.\n     * Operators can call {"
+    },
+    {
+      "name": "setApprovalForAll",
+      "visibility": "external",
+      "modifiers": ";\n\n    /**\n     * @dev Returns the account approved for `tokenId` token.\n     *\n     * Requirements:\n     *\n     * - `tokenId` must exist.\n     */\n    function getApproved(uint256 tokenId) external view returns (address operator);\n\n    /**\n     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.\n     *\n     * See",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\IERC721.sol",
+      "line": 118,
+      "full_signature": "function setApprovalForAll(address operator, bool approved) external;\n\n    /**\n     * @dev Returns the account approved for `tokenId` token.\n     *\n     * Requirements:\n     *\n     * - `tokenId` must exist.\n     */\n    function getApproved(uint256 tokenId) external view returns (address operator);\n\n    /**\n     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.\n     *\n     * See {"
+    },
+    {
+      "name": "burn",
+      "visibility": "public",
+      "modifiers": "virtual",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721Burnable.sol",
+      "line": 21,
+      "full_signature": "function burn(uint256 tokenId) public virtual {"
+    },
+    {
+      "name": "tokenOfOwnerByIndex",
+      "visibility": "public",
+      "modifiers": "view virtual returns (uint256)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721Enumerable.sol",
+      "line": 46,
+      "full_signature": "function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {"
+    },
+    {
+      "name": "withdrawTo",
+      "visibility": "public",
+      "modifiers": "virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\ERC721Wrapper.sol",
+      "line": 49,
+      "full_signature": "function withdrawTo(address account, uint256[] memory tokenIds) public virtual returns (bool) {"
+    },
+    {
+      "name": "tokenOfOwnerByIndex",
+      "visibility": "external",
+      "modifiers": "view returns (uint256);\n\n    /**\n     * @dev Returns a token ID at a given `index` of all the tokens stored by the contract.\n     * Use along with",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\extensions\\IERC721Enumerable.sol",
+      "line": 22,
+      "full_signature": "function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256);\n\n    /**\n     * @dev Returns a token ID at a given `index` of all the tokens stored by the contract.\n     * Use along with {"
+    },
+    {
+      "name": "paused",
+      "visibility": "public",
+      "modifiers": "view virtual returns (bool)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\utils\\Pausable.sol",
+      "line": 67,
+      "full_signature": "function paused() public view virtual returns (bool) {"
+    },
+    {
+      "name": "setup",
+      "visibility": "public",
+      "modifiers": "view returns (bytes32) fnHash\n    ) internal returns (bytes32 initialRoot)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\MerkleTree.sol",
+      "line": 86,
+      "full_signature": "function setup(\n        Bytes32PushTree storage self,\n        uint8 treeDepth,\n        bytes32 zero,\n        function(bytes32, bytes32) view returns (bytes32) fnHash\n    ) internal returns (bytes32 initialRoot) {"
+    },
+    {
+      "name": "update",
+      "visibility": "public",
+      "modifiers": "view returns (bytes32) fnHash\n    ) internal returns (bytes32 oldRoot, bytes32 newRoot)",
+      "file": ".\\node_modules\\@openzeppelin\\contracts\\utils\\structs\\MerkleTree.sol",
+      "line": 211,
+      "full_signature": "function update(\n        Bytes32PushTree storage self,\n        uint256 index,\n        bytes32 oldValue,\n        bytes32 newValue,\n        bytes32[] memory proof,\n        function(bytes32, bytes32) view returns (bytes32) fnHash\n    ) internal returns (bytes32 oldRoot, bytes32 newRoot) {"
+    },
+    {
+      "name": "setAsset44",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EncoderV2.sol",
+      "line": 15,
+      "full_signature": "function setAsset44(uint _id, Asset memory _a) public {"
+    },
+    {
+      "name": "getAsset",
+      "visibility": "public",
+      "modifiers": "view returns (Asset memory)",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EncoderV2.sol",
+      "line": 20,
+      "full_signature": "function getAsset() public view returns (Asset memory) {"
+    },
+    {
+      "name": "setCompleted",
+      "visibility": "public",
+      "modifiers": "restricted",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\Migrations.sol",
+      "line": 15,
+      "full_signature": "function setCompleted(uint completed) public restricted {"
+    },
+    {
+      "name": "upgrade",
+      "visibility": "public",
+      "modifiers": "restricted",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\Migrations.sol",
+      "line": 19,
+      "full_signature": "function upgrade(address new_address) public restricted {"
+    },
+    {
+      "name": "setString",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\VariableCosts.sol",
+      "line": 42,
+      "full_signature": "function setString(string memory _someString) public {"
+    },
+    {
+      "name": "setResolver",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EtherRouter\\EtherRouter.sol",
+      "line": 59,
+      "full_signature": "function setResolver(address _resolver) public\n  {"
+    },
+    {
+      "name": "setValue",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EtherRouter\\VersionA.sol",
+      "line": 7,
+      "full_signature": "function setValue() public {"
+    },
+    {
+      "name": "setValue",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EtherRouter\\VersionB.sol",
+      "line": 8,
+      "full_signature": "function setValue() public {"
+    },
+    {
+      "name": "setAnotherValue",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\EtherRouter\\VersionB.sol",
+      "line": 11,
+      "full_signature": "function setAnotherValue() public {"
+    },
+    {
+      "name": "transferPayment",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\eth-gas-reporter\\mock\\contracts\\Wallets\\Wallet.sol",
+      "line": 7,
+      "full_signature": "function transferPayment(uint payment, address payable recipient) public {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\hardhat\\sample-projects\\javascript\\contracts\\Lock.sol",
+      "line": 23,
+      "full_signature": "function withdraw() public {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\hardhat\\sample-projects\\javascript-esm\\contracts\\Lock.sol",
+      "line": 23,
+      "full_signature": "function withdraw() public {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\hardhat\\sample-projects\\typescript\\contracts\\Lock.sol",
+      "line": 23,
+      "full_signature": "function withdraw() public {"
+    },
+    {
+      "name": "withdraw",
+      "visibility": "public",
+      "modifiers": "",
+      "file": ".\\node_modules\\hardhat\\sample-projects\\typescript-viem\\contracts\\Lock.sol",
+      "line": 23,
+      "full_signature": "function withdraw() public {"
+    }
+  ],
+  "secure_functions": [
+    {
+      "name": "emergencyPause",
+      "visibility": "external",
+      "modifiers": "onlyRole(EMERGENCY_ADMIN_ROLE)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 176,
+      "full_signature": "function emergencyPause() external onlyRole(EMERGENCY_ADMIN_ROLE) {"
+    },
+    {
+      "name": "emergencyUnpause",
+      "visibility": "external",
+      "modifiers": "onlyRole(EMERGENCY_ADMIN_ROLE)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 181,
+      "full_signature": "function emergencyUnpause() external onlyRole(EMERGENCY_ADMIN_ROLE) {"
+    },
+    {
+      "name": "setMaxGasPrice",
+      "visibility": "external",
+      "modifiers": "onlyRole(DEFAULT_ADMIN_ROLE)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 190,
+      "full_signature": "function setMaxGasPrice(uint256 newMaxGasPrice) \n        external \n        onlyRole(DEFAULT_ADMIN_ROLE) \n    {"
+    },
+    {
+      "name": "setCircuitBreakerThreshold",
+      "visibility": "external",
+      "modifiers": "onlyRole(EMERGENCY_ADMIN_ROLE)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 202,
+      "full_signature": "function setCircuitBreakerThreshold(uint256 threshold) \n        external \n        onlyRole(EMERGENCY_ADMIN_ROLE) \n    {"
+    },
+    {
+      "name": "resetCircuitBreaker",
+      "visibility": "external",
+      "modifiers": "onlyRole(EMERGENCY_ADMIN_ROLE)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 213,
+      "full_signature": "function resetCircuitBreaker() \n        external \n        onlyRole(EMERGENCY_ADMIN_ROLE) \n    {"
+    },
+    {
+      "name": "proposeStrategy",
+      "visibility": "external",
+      "modifiers": "onlyRole(STRATEGY_PROPOSER_ROLE) whenNotPaused",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 236,
+      "full_signature": "function proposeStrategy(\n        string memory topology,\n        string[] memory dexTypes,\n        string memory volatilityTolerance,\n        string memory gasTolerance\n    ) external onlyRole(STRATEGY_PROPOSER_ROLE) whenNotPaused {"
+    },
+    {
+      "name": "executeArbitrage",
+      "visibility": "external",
+      "modifiers": "onlyRole(STRATEGY_EXECUTOR_ROLE) nonReentrant flashLoanGuard whenNotPaused returns (bool)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 244,
+      "full_signature": "function executeArbitrage(\n        address[] calldata assets,\n        uint256[] calldata amounts,\n        uint256[] calldata premiums,\n        address initiator,\n        bytes calldata params\n    ) external onlyRole(STRATEGY_EXECUTOR_ROLE) nonReentrant flashLoanGuard whenNotPaused returns (bool) {"
+    },
+    {
+      "name": "initiateFlashLoan",
+      "visibility": "external",
+      "modifiers": "onlyRole(STRATEGY_EXECUTOR_ROLE) nonReentrant whenNotPaused circuitNotBroken gasProtection validStrategy(strategyId)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 358,
+      "full_signature": "function initiateFlashLoan(\n        uint256 strategyId,\n        address asset,\n        uint256 amount\n    ) external onlyRole(STRATEGY_EXECUTOR_ROLE) nonReentrant whenNotPaused circuitNotBroken gasProtection validStrategy(strategyId) {"
+    },
+    {
+      "name": "recordLiveProfit",
+      "visibility": "external",
+      "modifiers": "onlyRole(STRATEGY_EXECUTOR_ROLE)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 8,
+      "full_signature": "function recordLiveProfit(uint256 _strategyId, uint256 _profit) external onlyRole(STRATEGY_EXECUTOR_ROLE) {"
+    },
+    {
+      "name": "mint",
+      "visibility": "public",
+      "modifiers": "onlyOwner",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 67,
+      "full_signature": "function mint(address to, uint256 amount) public onlyOwner {"
+    }
+  ],
+  "missing_modifiers": [
+    {
+      "name": "flashLoan",
+      "visibility": "external",
+      "modifiers": ";\n}\n\n// Interface for our Incubator contract\ninterface IStrategyIncubator",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 15,
+      "full_signature": "function flashLoan(\n        address receiverAddress,\n        address[] calldata assets,\n        uint256[] calldata amounts,\n        uint256[] calldata interestRateModes,\n        address onBehalfOf,\n        bytes calldata params,\n        uint16 referralCode\n    ) external;\n}\n\n// Interface for our Incubator contract\ninterface IStrategyIncubator {"
+    },
+    {
+      "name": "recordLiveTestProfit",
+      "visibility": "external",
+      "modifiers": ";\n    // V20 UPDATE: Ensure getStrategy returns the full IncubatedStrategy struct\n    function getStrategy(uint256 _strategyId) external view returns (IncubatedStrategy memory);\n}\n\n// A generic interface for any arbitrage strategy we deploy.\ninterface IArbitrageStrategy",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 53,
+      "full_signature": "function recordLiveTestProfit(uint256 _strategyId, uint256 _profit) external;\n    // V20 UPDATE: Ensure getStrategy returns the full IncubatedStrategy struct\n    function getStrategy(uint256 _strategyId) external view returns (IncubatedStrategy memory);\n}\n\n// A generic interface for any arbitrage strategy we deploy.\ninterface IArbitrageStrategy {"
+    },
+    {
+      "name": "_grantRole",
+      "visibility": "internal",
+      "modifiers": "override",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 227,
+      "full_signature": "function _grantRole(bytes32 role, address account) internal override {"
+    },
+    {
+      "name": "_revokeRole",
+      "visibility": "internal",
+      "modifiers": "override",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 231,
+      "full_signature": "function _revokeRole(bytes32 role, address account) internal override {"
+    },
+    {
+      "name": "getExecutionDetails",
+      "visibility": "external",
+      "modifiers": "view \n        returns (ExecutionDetails memory)",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 446,
+      "full_signature": "function getExecutionDetails(bytes32 executionId) \n        external \n        view \n        returns (ExecutionDetails memory) \n    {"
+    },
+    {
+      "name": "_incrementFailedExecutions",
+      "visibility": "internal",
+      "modifiers": "",
+      "file": ".\\ArbitrageExecutorV20.sol",
+      "line": 457,
+      "full_signature": "function _incrementFailedExecutions() internal {"
+    },
+    {
+      "name": "submitBacktestReport",
+      "visibility": "external",
+      "modifiers": "onlyOracle",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 283,
+      "full_signature": "function submitBacktestReport(uint256 _strategyId, BacktestReport memory _report) external onlyOracle {"
+    },
+    {
+      "name": "moveToLiveTesting",
+      "visibility": "external",
+      "modifiers": "onlyOracle",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 294,
+      "full_signature": "function moveToLiveTesting(uint256 _strategyId) external onlyOracle {"
+    },
+    {
+      "name": "finalizeStrategy",
+      "visibility": "external",
+      "modifiers": "onlyOracle",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 304,
+      "full_signature": "function finalizeStrategy(uint256 _strategyId, bool _approved) external onlyOracle {"
+    },
+    {
+      "name": "getStrategy",
+      "visibility": "external",
+      "modifiers": "view returns (IncubatedStrategy memory)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 351,
+      "full_signature": "function getStrategy(uint256 _strategyId) external view returns (IncubatedStrategy memory) {"
+    },
+    {
+      "name": "getStrategyCount",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\solidity_contracts_v26.sol",
+      "line": 356,
+      "full_signature": "function getStrategyCount() external view returns (uint256) {"
+    },
+    {
+      "name": "getAccountRoles",
+      "visibility": "external",
+      "modifiers": "view returns (bytes32[] memory roles)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 279,
+      "full_signature": "function getAccountRoles(address account) external view returns (bytes32[] memory roles) {"
+    },
+    {
+      "name": "getLastProposalTime",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 319,
+      "full_signature": "function getLastProposalTime(address proposer) external view returns (uint256) {"
+    },
+    {
+      "name": "timeUntilNextProposal",
+      "visibility": "external",
+      "modifiers": "view returns (uint256)",
+      "file": ".\\contracts\\AccessControlSecurityFix.sol",
+      "line": 323,
+      "full_signature": "function timeUntilNextProposal(address proposer) external view returns (uint256) {"
+    },
+    {
+      "name": "makePrediction",
+      "visibility": "external",
+      "modifiers": "returns (PredictionOutput memory prediction)",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 123,
+      "full_signature": "function makePrediction(\n        address token,\n        MarketFeatures calldata features\n    ) external returns (PredictionOutput memory prediction) {"
+    },
+    {
+      "name": "_runNeuralNetworkInference",
+      "visibility": "internal",
+      "modifiers": "view returns (PredictionOutput memory)",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 194,
+      "full_signature": "function _runNeuralNetworkInference(\n        MarketFeatures memory features\n    ) internal view returns (PredictionOutput memory) {"
+    },
+    {
+      "name": "_applyRLAdjustment",
+      "visibility": "internal",
+      "modifiers": "returns (PredictionOutput memory)",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 218,
+      "full_signature": "function _applyRLAdjustment(\n        address token,\n        MarketFeatures memory features,\n        PredictionOutput memory prediction\n    ) internal returns (PredictionOutput memory) {"
+    },
+    {
+      "name": "_executeArbitrageStrategy",
+      "visibility": "internal",
+      "modifiers": "returns (bool success, uint256 profit)",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 250,
+      "full_signature": "function _executeArbitrageStrategy(\n        address token,\n        uint256 amount,\n        bytes memory executionData\n    ) internal returns (bool success, uint256 profit) {"
+    },
+    {
+      "name": "_provideLearningFeedback",
+      "visibility": "internal",
+      "modifiers": "",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 280,
+      "full_signature": "function _provideLearningFeedback(\n        address token,\n        bool success,\n        uint256 profit,\n        PredictionOutput memory prediction\n    ) internal {"
+    },
+    {
+      "name": "_adaptModel",
+      "visibility": "internal",
+      "modifiers": "",
+      "file": ".\\contracts\\AIStrategyV34.sol",
+      "line": 314,
+      "full_signature": "function _adaptModel() internal {"
+    }
+  ],
+  "recommendations": [
+    "\ud83d\udea8 CRITICAL: 222 vulnerable functions detected! Add proper access control modifiers immediately.",
+    "\u26a0\ufe0f  WARNING: 2037 functions lack access control modifiers. Review and add appropriate restrictions.",
+    "\u2705 GOOD: 354 functions have proper access control.",
+    "1. Implement role-based access control using OpenZeppelin's AccessControl",
+    "2. Add reentrancy protection using OpenZeppelin's ReentrancyGuard",
+    "3. Implement pause mechanisms for emergency situations",
+    "4. Use time-locks for critical administrative functions",
+    "5. Regularly audit access control patterns",
+    "6. Test access control enforcement in unit tests"
+  ]
+}

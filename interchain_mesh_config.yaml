@@ -1,0 +1,166 @@
+# Inter-Chain Cognitive Mesh Configuration
+
+# Account Configuration
+account:
+  private_key: ${PRIVATE_KEY}
+
+# Chain Configurations
+chains:
+  - chain_id: 1
+    name: "Ethereum Mainnet"
+    rpc_url: ${ETH_RPC_URL}
+    mesh_address: ${ETH_MESH_ADDRESS}
+    block_confirmations: 12
+    gas_price_multiplier: 1.1
+    priority_fee: 2.0
+  
+  - chain_id: 137
+    name: "Polygon"
+    rpc_url: ${POLYGON_RPC_URL}
+    mesh_address: ${POLYGON_MESH_ADDRESS}
+    block_confirmations: 64
+    gas_price_multiplier: 1.2
+    priority_fee: 30.0
+  
+  - chain_id: 42161
+    name: "Arbitrum"
+    rpc_url: ${ARBITRUM_RPC_URL}
+    mesh_address: ${ARBITRUM_MESH_ADDRESS}
+    block_confirmations: 20
+    gas_price_multiplier: 1.0
+    priority_fee: 0.1
+  
+  - chain_id: 10
+    name: "Optimism"
+    rpc_url: ${OPTIMISM_RPC_URL}
+    mesh_address: ${OPTIMISM_MESH_ADDRESS}
+    block_confirmations: 15
+    gas_price_multiplier: 1.0
+    priority_fee: 0.1
+  
+  - chain_id: 56
+    name: "Binance Smart Chain"
+    rpc_url: ${BSC_RPC_URL}
+    mesh_address: ${BSC_MESH_ADDRESS}
+    block_confirmations: 15
+    gas_price_multiplier: 1.1
+    priority_fee: 5.0
+
+# File Paths
+paths:
+  contract_abi: "./abi/InterChainCognitiveMesh.json"
+  state_dir: "./mesh_state"
+  operations_dir: "./mesh_operations"
+
+# Synchronization Configuration
+sync:
+  # Interval between synchronization cycles (in seconds)
+  interval_seconds: 15
+  
+  # Maximum number of operations to process per batch
+  max_operations_per_batch: 10
+  
+  # Maximum number of retries for failed operations
+  max_retries: 3
+  
+  # Delay between retries (in seconds)
+  retry_delay_seconds: 5
+  
+  # Timeout for operations (in seconds)
+  operation_timeout_seconds: 3600
+
+# Bridge Configuration
+bridge:
+  # Minimum confirmations required before bridging
+  min_confirmations: 12
+  
+  # Maximum gas price (in gwei) for bridge transactions
+  max_gas_price_gwei: 500
+  
+  # Maximum value (in ETH) for bridge transactions
+  max_value_eth: 10.0
+  
+  # Bridges to use
+  bridges:
+    - name: "Wormhole"
+      chains: [1, 137, 56]
+      address: ${WORMHOLE_ADDRESS}
+    
+    - name: "Connext"
+      chains: [1, 137, 42161, 10]
+      address: ${CONNEXT_ADDRESS}
+    
+    - name: "Hop"
+      chains: [1, 137, 42161, 10]
+      address: ${HOP_ADDRESS}
+    
+    - name: "Across"
+      chains: [1, 137, 42161, 10]
+      address: ${ACROSS_ADDRESS}
+
+# Global State Configuration
+global_state:
+  # State keys to synchronize
+  keys:
+    - name: "treasury_balances"
+      description: "Treasury balances across all chains"
+      update_frequency_seconds: 300
+    
+    - name: "protocol_metrics"
+      description: "Protocol performance metrics"
+      update_frequency_seconds: 600
+    
+    - name: "market_conditions"
+      description: "Current market conditions"
+      update_frequency_seconds: 60
+    
+    - name: "active_strategies"
+      description: "Currently active strategies"
+      update_frequency_seconds: 120
+    
+    - name: "risk_parameters"
+      description: "Risk management parameters"
+      update_frequency_seconds: 3600
+
+# Security Configuration
+security:
+  # Minimum number of confirmations for high-value operations
+  high_value_confirmations: 32
+  
+  # Threshold for high-value operations (in ETH)
+  high_value_threshold_eth: 5.0
+  
+  # Maximum gas limit for operations
+  max_gas_limit: 8000000
+  
+  # Rate limiting (operations per minute)
+  rate_limit_per_minute: 10
+  
+  # Whitelisted addresses
+  whitelisted_addresses:
+    - ${ADMIN_ADDRESS}
+    - ${TREASURY_ADDRESS}
+    - ${EXECUTOR_ADDRESS}
+
+# Monitoring Configuration
+monitoring:
+  # Enable Prometheus metrics
+  enable_prometheus: true
+  
+  # Prometheus port
+  prometheus_port: 9090
+  
+  # Enable health checks
+  enable_health_checks: true
+  
+  # Health check port
+  health_check_port: 8080
+  
+  # Log level
+  log_level: "INFO"
+  
+  # Alert thresholds
+  alert_thresholds:
+    operation_delay_seconds: 300
+    chain_sync_delay_seconds: 120
+    high_gas_price_gwei: 300

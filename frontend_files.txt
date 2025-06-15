@@ -1,0 +1,467 @@
+
+// =================================================================================================
+// FILE: package.json
+// =================================================================================================
+{
+  "name": "arbitrage-dao-portal",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  }
+}
+
+// =================================================================================================
+// FILE: vite.config.ts
+// =================================================================================================
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+
+// =================================================================================================
+// FILE: tsconfig.json
+// =================================================================================================
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+// =================================================================================================
+// FILE: src/main.tsx
+// =================================================================================================
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './styles/main.css'
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+// =================================================================================================
+// FILE: src/styles/main.css
+// =================================================================================================
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.dao-portal {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.portal-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.portal-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.portal-header p {
+  color: #9ca3af;
+  max-width: 600px;
+  margin: 0.5rem auto 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background-color: #1f2937;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #374151;
+}
+
+.panel h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 0.75rem;
+}
+
+.strategy-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.strategy-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: 1px solid transparent;
+}
+
+.strategy-item:hover {
+  background-color: #374151;
+}
+
+.strategy-item.selected {
+  background-color: #3b82f6;
+  border-color: #60a5fa;
+}
+
+.strategy-item .address {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+.strategy-item .status {
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-Approved { background-color: #10b981; color: #fff; }
+.status-LiveTesting { background-color: #f59e0b; color: #fff; }
+.status-Proposed { background-color: #6b7280; color: #fff; }
+.status-Rejected { background-color: #ef4444; color: #fff; }
+.status-Slashed { background-color: #991b1b; color: #fecaca; }
+
+.report-panel .placeholder,
+.report-panel .loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+.report-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.kpi {
+  background-color: #374151;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.kpi .label {
+  font-size: 0.8rem;
+  color: #d1d5db;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.kpi .value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.address-display {
+  font-family: 'Roboto Mono', monospace;
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+// =================================================================================================
+// FILE: src/types/index.ts
+// =================================================================================================
+export const STRATEGY_STATUS = {
+    APPROVED: 'Approved',
+    LIVE_TESTING: 'LiveTesting',
+    PROPOSED: 'Proposed',
+    REJECTED: 'Rejected',
+    SLASHED: 'Slashed',
+} as const;
+
+type ValueOf<T> = T[keyof T];
+export type StrategyStatus = ValueOf<typeof STRATEGY_STATUS>;
+
+export interface StrategyReport {
+    aiConfidenceScore: number;
+    simulatedProfit: number;
+}
+
+export interface Strategy {
+    id: string;
+    address: string;
+    status: StrategyStatus;
+    proposer: string;
+    reputation: number;
+    report: StrategyReport | null;
+}
+
+// =================================================================================================
+// FILE: src/App.tsx
+// =================================================================================================
+import React from 'react';
+import IncubatorDashboard from './components/IncubatorDashboard';
+
+const App: React.FC = () => {
+  return (
+    <div className="dao-portal">
+      <header className="portal-header">
+        <h1>Strategy Incubator</h1>
+        <p>The central hub for proposing, backtesting, and vetting new arbitrage strategies for the protocol.</p>
+      </header>
+      <main>
+        <IncubatorDashboard />
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+// =================================================================================================
+// FILE: src/constants/mockData.ts
+// =================================================================================================
+import { Strategy, STRATEGY_STATUS } from "../types";
+
+export const MOCK_STRATEGIES: Strategy[] = [
+  { id: 'd8f8-4f8f-f8f8', address: '0x123AbC456Def7890123AbC456Def7890123AbC45', status: STRATEGY_STATUS.APPROVED, proposer: '0xMember1', reputation: 110, report: { aiConfidenceScore: 0.96, simulatedProfit: 15730 } },
+  { id: 'a1b2-4a7b-8c9d', address: '0x456Def7890123AbC456Def7890123AbC456Def78', status: STRATEGY_STATUS.LIVE_TESTING, proposer: '0xMember2', reputation: 100, report: { aiConfidenceScore: 0.91, simulatedProfit: 8945 } },
+  { id: 'c3d4-4c9d-0e1f', address: '0xabcDef1234567890AbcDef1234567890abCdeF', status: STRATEGY_STATUS.PROPOSED, proposer: '0xMember2', reputation: 100, report: null },
+  { id: 'e5f6-9d0e-3b4c', address: '0xBadStrategyAddress12345678901234567890', status: STRATEGY_STATUS.SLASHED, proposer: '0xMember3', reputation: 0, report: { aiConfidenceScore: 0.45, simulatedProfit: -5000 } }
+];
+
+// =================================================================================================
+// FILE: src/hooks/useIncubatorData.ts
+// =================================================================================================
+import { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import { Strategy } from '../types';
+import { MOCK_STRATEGIES } from '../constants/mockData';
+
+// Placeholder for ABI and address
+// In a real app, these would come from a config file
+const INCUBATOR_ABI = [
+    // ... minimal ABI for getStrategyCount and getStrategy
+];
+const INCUBATOR_ADDRESS = "0xYourIncubatorContractAddress";
+
+export const useIncubatorData = () => {
+    const [strategies, setStrategies] = useState<Strategy[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            setError(null);
+            
+            // This is where you would connect to the blockchain.
+            // For now, we simulate a network delay and use mock data.
+            try {
+                // Example of real web3 logic:
+                // const provider = new ethers.providers.Web3Provider(window.ethereum);
+                // const incubatorContract = new ethers.Contract(INCUBATOR_ADDRESS, INCUBATOR_ABI, provider);
+                // const count = await incubatorContract.getStrategyCount();
+                // const fetchedStrategies = [];
+                // for (let i = 0; i < count; i++) {
+                //     const onChainStrategy = await incubatorContract.getStrategy(i);
+                //     // ... logic to format on-chain data into our `Strategy` type
+                //     fetchedStrategies.push(formattedStrategy);
+                // }
+                // setStrategies(fetchedStrategies);
+                
+                await new Promise(res => setTimeout(res, 1000)); // Simulate loading
+                setStrategies(MOCK_STRATEGIES);
+
+            } catch (err) {
+                console.error("Failed to fetch incubator data:", err);
+                setError("Could not connect to the blockchain. Please check your wallet connection.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    return { strategies, isLoading, error };
+};
+
+// =================================================================================================
+// FILE: src/components/ReputationKPI.tsx
+// =================================================================================================
+import React from 'react';
+
+interface ReputationKPIProps {
+  reputation: number;
+}
+
+const ReputationKPI: React.FC<ReputationKPIProps> = ({ reputation }) => (
+    <div className="kpi">
+        <div className="label">Proposer Reputation</div>
+        <div className="value">{reputation}</div>
+    </div>
+);
+
+export default ReputationKPI;
+
+// =================================================================================================
+// FILE: src/components/BacktestReportViewer.tsx
+// =================================================================================================
+import React from 'react';
+import { Strategy } from '../types';
+import ReputationKPI from './ReputationKPI';
+
+interface BacktestReportViewerProps {
+    strategy: Strategy | undefined;
+}
+
+const BacktestReportViewer: React.FC<BacktestReportViewerProps> = ({ strategy }) => {
+    if (!strategy) {
+        return (
+            <div className="panel report-panel">
+                <h2>Strategy Details</h2>
+                <div className="placeholder">Select a strategy from the list to view its details.</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="panel report-panel">
+            <h2>Details: <span className="address-display">{strategy.address}</span></h2>
+            {!strategy.report ? (
+                <div className="placeholder">This strategy is 'Proposed'. No report available yet.</div>
+            ) : (
+                <div className="report-kpis">
+                    <ReputationKPI reputation={strategy.reputation} />
+                    <div className="kpi">
+                        <div className="label">AI Confidence</div>
+                        <div className="value">{(strategy.report.aiConfidenceScore * 100).toFixed(1)}%</div>
+                    </div>
+                    <div className="kpi">
+                        <div className="label">Simulated PnL</div>
+                        <div className="value">${strategy.report.simulatedProfit.toLocaleString()}</div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default BacktestReportViewer;
+
+// =================================================================================================
+// FILE: src/components/IncubatorDashboard.tsx
+// =================================================================================================
+import React, { useState, useEffect } from 'react';
+import { useIncubatorData } from '../hooks/useIncubatorData';
+import { Strategy } from '../types';
+import BacktestReportViewer from './BacktestReportViewer';
+
+const IncubatorDashboard: React.FC = () => {
+    const { strategies, isLoading, error } = useIncubatorData();
+    const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Select the first strategy by default once data is loaded
+        if (!isLoading && strategies.length > 0 && !selectedStrategyId) {
+            setSelectedStrategyId(strategies[0].id);
+        }
+    }, [isLoading, strategies, selectedStrategyId]);
+
+    const selectedStrategy = strategies.find(s => s.id === selectedStrategyId);
+
+    if (error) {
+        return <div className="loading">{error}</div>;
+    }
+
+    return (
+        <div className="dashboard-grid">
+            <div className="panel">
+                <h2>Incubated Strategies</h2>
+                {isLoading ? (
+                    <div className="loading">Loading strategies...</div>
+                ) : (
+                    <ul className="strategy-list">
+                        {strategies.map(strategy => (
+                            <li
+                                key={strategy.id}
+                                className={`strategy-item ${selectedStrategyId === strategy.id ? 'selected' : ''}`}
+                                onClick={() => setSelectedStrategyId(strategy.id)}
+                            >
+                                <span className="address">{strategy.address.substring(0, 6)}...{strategy.address.substring(38)}</span>
+                                <span className={`status status-${strategy.status}`}>{strategy.status}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <BacktestReportViewer strategy={selectedStrategy} />
+        </div>
+    );
+};
+
+export default IncubatorDashboard;

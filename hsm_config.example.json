@@ -1,0 +1,34 @@
+{
+  "aws": {
+    "region": "us-east-1",
+    "key_id": "YOUR_AWS_KMS_KEY_ID",
+    "key_alias": "alias/ethereum-signing-key",
+    "role_arn": "arn:aws:iam::123456789012:role/KMSSigningRole",
+    "ethereum_address": "0x0000000000000000000000000000000000000000"
+  },
+  "azure": {
+    "vault_url": "https://your-vault.vault.azure.net/",
+    "key_name": "ethereum-signing-key",
+    "tenant_id": "YOUR_AZURE_TENANT_ID",
+    "client_id": "YOUR_AZURE_CLIENT_ID",
+    "client_secret_env_var": "AZURE_CLIENT_SECRET",
+    "ethereum_address": "0x0000000000000000000000000000000000000000"
+  },
+  "hashicorp": {
+    "vault_addr": "https://vault.example.com:8200",
+    "token_env_var": "VAULT_TOKEN",
+    "key_path": "secret/data/ethereum/signing-key",
+    "ethereum_address": "0x0000000000000000000000000000000000000000"
+  },
+  "fortanix": {
+    "api_endpoint": "https://sdkms.fortanix.com",
+    "api_key_env_var": "FORTANIX_API_KEY",
+    "key_name": "ethereum-signing-key",
+    "ethereum_address": "0x0000000000000000000000000000000000000000"
+  },
+  "local_signer": {
+    "keystore_path": "/path/to/keystore.json",
+    "password_env_var": "KEYSTORE_PASSWORD",
+    "ethereum_address": "0x0000000000000000000000000000000000000000"
+  }
+}

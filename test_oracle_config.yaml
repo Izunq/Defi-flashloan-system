@@ -1,0 +1,55 @@
+# Oracle Security Test Configuration
+web3:
+  provider_url: "http://localhost:8545"
+  gas_limit: 3000000
+  timeout: 30
+
+security:
+  max_price_deviation: 500  # Maximum allowed price deviation (basis points)
+  circuit_breaker_threshold: 1000  # Circuit breaker trigger threshold
+  min_oracle_consensus: 3  # Minimum oracles required for consensus
+  staleness_threshold: 3600  # Price staleness threshold (seconds)
+  monitoring_interval: 30  # Monitoring interval (seconds)
+  anomaly_detection_window: 100  # Window size for anomaly detection
+  max_alerts_per_hour: 10  # Rate limiting for alerts
+
+tracked_assets:
+  - "ETH"
+  - "BTC"
+  - "USDC"
+  - "USDT"
+  - "DAI"
+  - "LINK"
+  - "UNI"
+
+contracts:
+  oracle_registry: "0x0000000000000000000000000000000000000000"
+  price_feed_validator: "0x0000000000000000000000000000000000000000"
+  security_module: "0x0000000000000000000000000000000000000000"
+
+testing:
+  use_mock_data: true
+  mock_blockchain: true
+  test_data_size: 1000
+  performance_test_iterations: 10000
+  load_test_concurrent_requests: 100
+
+alerts:
+  email_notifications: false
+  webhook_url: ""
+  telegram_bot_token: ""
+  telegram_chat_id: ""
+  log_level: "INFO"
+
+performance:
+  max_memory_usage_mb: 512
+  max_processing_time_ms: 1000
+  batch_size: 100
+  concurrent_workers: 4
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "oracle_security_test.log"
+  max_size_mb: 10
+  backup_count: 5

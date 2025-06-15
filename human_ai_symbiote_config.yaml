@@ -1,0 +1,242 @@
+# Human-AI Symbiote Configuration
+
+# Account Configuration
+account:
+  private_key: ${PRIVATE_KEY}
+
+# Contract Addresses
+contracts:
+  human_ai_symbiote: ${HUMAN_AI_SYMBIOTE_ADDRESS}
+  governance_token: ${GOVERNANCE_TOKEN_ADDRESS}
+  self_amending_protocol: ${SELF_AMENDING_PROTOCOL_ADDRESS}
+  protocol_genesis_engine: ${PROTOCOL_GENESIS_ENGINE_ADDRESS}
+  inter_chain_cognitive_mesh: ${INTER_CHAIN_COGNITIVE_MESH_ADDRESS}
+  algorithmic_central_bank: ${ALGORITHMIC_CENTRAL_BANK_ADDRESS}
+
+# Web3 Connections
+web3:
+  ethereum:
+    rpc_url: ${ETH_RPC_URL}
+    chain_id: 1
+  
+  polygon:
+    rpc_url: ${POLYGON_RPC_URL}
+    chain_id: 137
+  
+  arbitrum:
+    rpc_url: ${ARBITRUM_RPC_URL}
+    chain_id: 42161
+  
+  optimism:
+    rpc_url: ${OPTIMISM_RPC_URL}
+    chain_id: 10
+  
+  binance:
+    rpc_url: ${BSC_RPC_URL}
+    chain_id: 56
+
+# File Paths
+paths:
+  contract_abis: "./abi"
+  data_dir: "./symbiote_data"
+  models_dir: "./symbiote_models"
+
+# Governance Configuration
+governance:
+  # Voting period in seconds (7 days)
+  voting_period: 604800
+  
+  # Execution delay in seconds (2 days)
+  execution_delay: 172800
+  
+  # Quorum percentage (10% of total supply)
+  quorum_percentage: 10
+  
+  # AI confidence threshold (80% confidence required)
+  ai_confidence_threshold: 80
+  
+  # Minimum proposal creation threshold (in governance tokens)
+  min_proposal_threshold: 1000
+  
+  # Maximum number of active proposals
+  max_active_proposals: 20
+  
+  # Proposal types
+  proposal_types:
+    - ethical_principle
+    - system_upgrade
+    - resource_allocation
+    - emergency_action
+    - protocol_creation
+    - governance_change
+
+# Ethical Framework Configuration
+ethical_framework:
+  # Principles
+  principles:
+    - name: "decentralization"
+      description: "The system should maintain and promote decentralization, avoiding single points of failure or control."
+      weight: 0.9
+    
+    - name: "transparency"
+      description: "All system operations should be transparent and verifiable by participants."
+      weight: 0.8
+    
+    - name: "fairness"
+      description: "The system should treat all participants fairly and avoid unfair advantages."
+      weight: 0.85
+    
+    - name: "security"
+      description: "The system should prioritize security and protect user assets."
+      weight: 0.95
+    
+    - name: "privacy"
+      description: "The system should respect user privacy and minimize data collection."
+      weight: 0.8
+    
+    - name: "sustainability"
+      description: "The system should be environmentally and economically sustainable."
+      weight: 0.75
+    
+    - name: "human_oversight"
+      description: "Critical decisions should always have human oversight and approval."
+      weight: 1.0
+  
+  # Minimum compliance score for proposals
+  min_compliance_score: 0.7
+  
+  # Compliance model configuration
+  compliance_model:
+    type: "random_forest"
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+
+# Monitoring Configuration
+monitoring:
+  # Interval between main loop iterations (in seconds)
+  interval_seconds: 60
+  
+  # Interval between proposal checks (in seconds)
+  proposal_check_interval: 300
+  
+  # Interval between metrics updates (in seconds)
+  metrics_update_interval: 3600
+  
+  # Enable Prometheus metrics
+  enable_prometheus: true
+  
+  # Prometheus port
+  prometheus_port: 9092
+  
+  # Enable health checks
+  enable_health_checks: true
+  
+  # Health check port
+  health_check_port: 8082
+  
+  # Log level
+  log_level: "INFO"
+
+# AI Decision Making Configuration
+ai_decision_making:
+  # Model type (options: "random_forest", "neural_network", "ensemble")
+  model_type: "ensemble"
+  
+  # Feature importance threshold
+  feature_importance_threshold: 0.05
+  
+  # Minimum accuracy required for model use
+  min_accuracy: 0.8
+  
+  # Neural network configuration (if type is "neural_network")
+  neural_network:
+    layers: [128, 64, 32]
+    dropout: 0.2
+    learning_rate: 0.001
+    epochs: 100
+    batch_size: 32
+  
+  # Random forest configuration (if type is "random_forest")
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+  
+  # Ensemble configuration (if type is "ensemble")
+  ensemble:
+    models:
+      - type: "random_forest"
+        weight: 0.4
+      - type: "neural_network"
+        weight: 0.6
+    voting: "soft"
+
+# Human Council Configuration
+human_council:
+  # Minimum number of council members
+  min_members: 7
+  
+  # Maximum number of council members
+  max_members: 21
+  
+  # Term length in days
+  term_length_days: 180
+  
+  # Minimum token stake required to be a council member
+  min_stake: 10000
+  
+  # Council member roles
+  roles:
+    - name: "ethics_committee"
+      min_members: 3
+      description: "Responsible for ethical oversight of the system"
+    
+    - name: "technical_committee"
+      min_members: 3
+      description: "Responsible for technical oversight of the system"
+    
+    - name: "governance_committee"
+      min_members: 3
+      description: "Responsible for governance oversight of the system"
+
+# System Metrics Configuration
+system_metrics:
+  # Metrics to track
+  metrics:
+    - name: "total_value_locked"
+      description: "Total value locked in the system"
+      unit: "USD"
+    
+    - name: "daily_active_users"
+      description: "Number of daily active users"
+      unit: "users"
+    
+    - name: "protocol_count"
+      description: "Number of protocols in the system"
+      unit: "protocols"
+    
+    - name: "transaction_count"
+      description: "Number of transactions processed"
+      unit: "transactions"
+    
+    - name: "average_gas_price"
+      description: "Average gas price"
+      unit: "gwei"
+    
+    - name: "treasury_balance"
+      description: "Treasury balance"
+      unit: "USD"
+    
+    - name: "governance_participation"
+      description: "Governance participation rate"
+      unit: "percentage"
+  
+  # Alert thresholds
+  alert_thresholds:
+    tvl_decrease_percentage: 10
+    user_decrease_percentage: 20
+    transaction_decrease_percentage: 30
+    governance_participation_minimum: 5

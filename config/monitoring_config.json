@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "thresholds": {
+    "max_incidents_per_minute": 10,
+    "max_incidents_per_hour": 100,
+    "response_time_threshold": 1000
+  },
+  "log_level": "WARNING",
+  "incident_retention_hours": 168,
+  "metrics_retention_hours": 720
+}

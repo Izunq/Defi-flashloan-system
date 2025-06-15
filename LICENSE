@@ -1,0 +1,121 @@
+MIT License
+
+Copyright (c) 2025 Mahia - Advanced DeFi Flashloan & Arbitrage System
+Including: Sentinel Agents, AI Strategies, Cross-Chain Security, Oracle Protection, MEV Defense
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+⚠️  CRITICAL DISCLAIMERS FOR DEFI/BLOCKCHAIN SOFTWARE ⚠️
+
+1. 💸 FINANCIAL RISK DISCLAIMER:
+   This software is designed for use with blockchain technologies, smart contracts,
+   and cryptocurrency assets. Use involves SIGNIFICANT FINANCIAL RISK including:
+   - Total loss of cryptocurrency assets
+   - Smart contract vulnerabilities and exploits
+   - Market volatility and liquidation risk
+   - Failed transactions and gas fee losses
+   - Oracle manipulation and price feed attacks
+   - MEV (Maximum Extractable Value) extraction by other parties
+
+2. 🚫 NO FINANCIAL ADVICE:
+   This software is provided for educational, research, and utility purposes only.
+   It does NOT constitute financial, investment, trading, or legal advice.
+   Users must conduct their own research and consult qualified professionals.
+
+3. ⚡ SMART CONTRACT & PROTOCOL RISKS:
+   This system interacts with experimental blockchain technologies including:
+   - Smart contracts (may contain bugs or vulnerabilities)
+   - DeFi protocols (subject to governance changes, hacks, exploits)
+   - Cross-chain bridges (additional complexity and attack vectors)
+   - Oracle systems (potential manipulation or failure)
+   - Flash loan protocols (liquidation and reentrancy risks)
+
+4. 🏛️ REGULATORY COMPLIANCE:
+   Cryptocurrency trading and DeFi activities may be regulated or prohibited
+   in certain jurisdictions. Users are SOLELY responsible for ensuring
+   compliance with all applicable laws and regulations.
+
+5. ⚔️ MEV, ARBITRAGE & TRADING RISKS:
+   This software enables advanced trading strategies with additional risks:
+   - Front-running and sandwich attacks by other traders
+   - Failed arbitrage attempts and negative profit trades
+   - High gas costs during network congestion
+   - Slippage and price impact on large trades
+   - Competition from sophisticated MEV bots and institutional traders
+
+6. 🤖 AI/ML & AUTOMATED TRADING RISKS:
+   The system includes AI-powered features with inherent limitations:
+   - Machine learning models may produce incorrect predictions
+   - Automated trading systems may execute unintended trades
+   - Algorithm performance may degrade over time
+   - No guarantee of profitability or performance
+
+7. 🚨 SECURITY & MONITORING LIMITATIONS:
+   The sentinel agents and security features are provided "as-is":
+   - No guarantee of 100% uptime or availability
+   - Security monitoring may miss threats or produce false positives
+   - Emergency response systems may fail during critical situations
+   - Real-time alerts may be delayed or fail to deliver
+
+8. 🔧 TECHNICAL RISKS:
+   Users acknowledge risks related to:
+   - Software bugs and unexpected behavior
+   - Network connectivity and infrastructure failures
+   - Blockchain network congestion or downtime
+   - Wallet and private key management
+   - Version compatibility and upgrade requirements
+
+9. 🌍 HALAL COMPLIANCE FEATURES:
+   The Islamic finance features are provided for informational purposes.
+   Users seeking Sharia-compliant solutions should consult qualified
+   Islamic finance scholars for religious guidance.
+
+10. 📊 FORMAL VERIFICATION & ZK PROOFS:
+    Mathematical proofs and formal verification provide additional assurance
+    but do not guarantee absence of all bugs or vulnerabilities.
+    Zero-knowledge proof systems are experimental technologies.
+
+⚠️  IMPORTANT USAGE REQUIREMENTS ⚠️
+
+- NEVER invest more than you can afford to lose completely
+- Start with small amounts and testnet deployments
+- Regularly update and patch the software
+- Monitor all automated systems continuously
+- Maintain secure backup and recovery procedures
+- Keep private keys and mnemonics absolutely secure
+- Use hardware wallets for significant funds
+- Understand all risks before operating the system
+
+🔒 SECURITY NOTICE:
+This software handles private keys, manages funds, and executes financial transactions.
+Improper use or configuration could result in total loss of funds.
+Users must implement proper security practices and operational procedures.
+
+📋 SUPPORT & LIABILITY:
+The author(s) provide this software on a best-effort basis with no warranty
+of support, maintenance, or updates. Users operate the system entirely at
+their own risk and liability.
+
+BY USING THIS SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD,
+AND AGREE TO BE BOUND BY ALL TERMS, CONDITIONS, AND DISCLAIMERS ABOVE.
+
+YOU ASSUME FULL RESPONSIBILITY FOR ANY LOSSES, DAMAGES, OR LEGAL ISSUES
+THAT MAY ARISE FROM YOUR USE OF THIS SOFTWARE.

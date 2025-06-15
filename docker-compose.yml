@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:8080
+      - REACT_APP_WS_ENDPOINT=ws://backend:8080
+    depends_on:
+      - backend
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+
+  # Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DB=flashloan_v35
+      - RPC_URL=${RPC_URL}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - TRUST_CURVE_ADDRESS=${TRUST_CURVE_ADDRESS}
+      - PROOF_EXECUTOR_ADDRESS=${PROOF_EXECUTOR_ADDRESS}
+      - API_KEY=${API_KEY}
+      - PYTHON_AGENT_URL=http://python_agent:5000
+    depends_on:
+      - mongodb
+      - python_agent
+    volumes:
+      - ./backend/src:/app/src
+
+  # Python Agent
+  python_agent:
+    build:
+      context: ./python_agent
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - RPC_URL=${RPC_URL}
+      - TRUST_CURVE_ADDRESS=${TRUST_CURVE_ADDRESS}
+      - PROOF_EXECUTOR_ADDRESS=${PROOF_EXECUTOR_ADDRESS}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./python_agent:/app
+
+  # MongoDB
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

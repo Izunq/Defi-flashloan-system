@@ -1,0 +1,369 @@
+# Production Oracle Security Deployment Configuration
+# Enterprise-grade deployment settings
+
+# Network Configuration
+network:
+  name: "localhost"  # localhost, mainnet, polygon, arbitrum
+  rpc_url: "http://localhost:8545"
+  chain_id: 31337
+  gas_price: 20000000000  # 20 Gwei
+  gas_limit: 8000000
+  confirmation_blocks: 3
+
+# Account Configuration
+accounts:
+  admin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  security_manager: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+  emergency_responder: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+  ml_analyzer: "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+  compliance_officer: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65"
+  treasury: "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"
+
+# Contract Deployment Order
+contracts:
+  deploy_order:
+    - "SecureMultiOracle"
+    - "PreCognitiveOracle"
+    - "OracleSecurityWrapper"
+    - "ProductionOracleSecurityValidator"
+    - "AdvancedOracleSecurityValidator"
+    - "OracleManipulationMonitor"
+    - "SecureArbitrageExecutorV42"
+  
+  # Constructor Arguments (contract_name -> args)
+  constructor_args:
+    SecureMultiOracle:
+      - "${ADMIN_ADDRESS}"
+    
+    PreCognitiveOracle:
+      - "${ADMIN_ADDRESS}"
+      - "${SECURE_MULTI_ORACLE_ADDRESS}"
+    
+    OracleSecurityWrapper:
+      - "${SECURE_MULTI_ORACLE_ADDRESS}"
+      - "${PRE_COGNITIVE_ORACLE_ADDRESS}"
+      - "${ADMIN_ADDRESS}"
+    
+    ProductionOracleSecurityValidator:
+      - "${ADMIN_ADDRESS}"
+      - "${SECURITY_MANAGER_ADDRESS}"
+      - "${EMERGENCY_RESPONDER_ADDRESS}"
+    
+    AdvancedOracleSecurityValidator:
+      - "${ADMIN_ADDRESS}"
+    
+    OracleManipulationMonitor:
+      - "${SECURE_MULTI_ORACLE_ADDRESS}"
+      - "${ORACLE_SECURITY_WRAPPER_ADDRESS}"
+      - "${ADMIN_ADDRESS}"
+    
+    SecureArbitrageExecutorV42:
+      - "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"  # Aave Pool V3
+      - "${SECURE_MULTI_ORACLE_ADDRESS}"
+      - "${PRE_COGNITIVE_ORACLE_ADDRESS}"
+      - "${TREASURY_ADDRESS}"
+      - "${ADMIN_ADDRESS}"
+
+# Security Configuration
+security:
+  # Price deviation thresholds (basis points)
+  max_price_deviation: 500  # 5%
+  circuit_breaker_threshold: 1000  # 10%
+  critical_threshold: 1500  # 15%
+  
+  # Oracle consensus settings
+  min_oracle_consensus: 3
+  min_consensus_weight: 7000  # 70%
+  oracle_weight_threshold: 1000  # 10%
+  
+  # Time-based settings
+  staleness_threshold: 3600  # 1 hour
+  update_frequency_threshold: 300  # 5 minutes
+  response_time_threshold: 60  # 60 seconds
+  
+  # ML and statistical settings
+  anomaly_threshold: 3.0  # Z-score
+  ml_confidence_threshold: 8000  # 80%
+  volatility_threshold: 500  # 5%
+  
+  # Emergency settings
+  emergency_cooldown: 3600  # 1 hour
+  circuit_breaker_cooldown: 3600  # 1 hour
+
+# Deployment Settings
+deployment:
+  # Gas settings
+  gas_limit: 8000000
+  gas_price: 20000000000  # 20 Gwei
+  gas_multiplier: 1.2  # 20% buffer
+  
+  # Verification settings
+  verification_enabled: true
+  etherscan_api_key: "${ETHERSCAN_API_KEY}"
+  
+  # Post-deployment setup
+  monitoring_setup: true
+  compliance_setup: true
+  integration_tests: true
+  
+  # Retry settings
+  max_retries: 3
+  retry_delay: 30  # seconds
+  
+  # Safety settings
+  simulation_enabled: true
+  dry_run_enabled: false
+  require_confirmation: true
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  
+  # Real-time monitoring
+  price_monitoring_interval: 30  # seconds
+  health_check_interval: 60  # seconds
+  threat_assessment_interval: 300  # 5 minutes
+  
+  # Alerting thresholds
+  alert_thresholds:
+    price_deviation: 300  # 3%
+    volume_spike: 200  # 2x
+    oracle_failure: 2  # consecutive failures
+    response_time: 30  # seconds
+  
+  # External monitoring services
+  external_services:
+    prometheus:
+      enabled: false
+      endpoint: "http://localhost:9090"
+    
+    grafana:
+      enabled: false
+      endpoint: "http://localhost:3000"
+    
+    datadog:
+      enabled: false
+      api_key: "${DATADOG_API_KEY}"
+
+# Compliance Configuration
+compliance:
+  enabled: true
+  
+  # Regulatory frameworks
+  frameworks:
+    - "MiFID_II"
+    - "GDPR"
+    - "SOX"
+    - "PCI_DSS"
+  
+  # Data retention (days)
+  data_retention:
+    price_data: 365
+    incident_data: 2555  # 7 years
+    audit_logs: 2555  # 7 years
+    compliance_records: 2555  # 7 years
+  
+  # Reporting requirements
+  reporting:
+    incident_reporting_time: 24  # hours
+    compliance_check_frequency: "daily"
+    audit_frequency: "quarterly"
+  
+  # Access controls
+  access_controls:
+    role_based_access: true
+    multi_signature_required: true
+    audit_logging: true
+
+# Integration Configuration
+integrations:
+  # External oracles
+  external_oracles:
+    chainlink:
+      enabled: true
+      feeds:
+        - "ETH/USD"
+        - "BTC/USD"
+        - "LINK/USD"
+    
+    uniswap:
+      enabled: true
+      version: "v3"
+      pools:
+        - "ETH/USDC"
+        - "WBTC/ETH"
+    
+    curve:
+      enabled: false
+  
+  # DeFi protocols
+  defi_protocols:
+    aave:
+      enabled: true
+      version: "v3"
+      pool_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+    
+    compound:
+      enabled: false
+    
+    maker:
+      enabled: false
+  
+  # External services
+  external_services:
+    coingecko:
+      enabled: true
+      api_key: "${COINGECKO_API_KEY}"
+    
+    coinmarketcap:
+      enabled: false
+      api_key: "${CMC_API_KEY}"
+
+# Testing Configuration
+testing:
+  enabled: true
+  
+  # Unit tests
+  unit_tests:
+    enabled: true
+    coverage_threshold: 90  # %
+  
+  # Integration tests
+  integration_tests:
+    enabled: true
+    test_scenarios:
+      - "normal_operation"
+      - "price_manipulation_attack"
+      - "oracle_failure"
+      - "circuit_breaker_activation"
+      - "emergency_protocol"
+  
+  # Stress tests
+  stress_tests:
+    enabled: true
+    duration: 3600  # 1 hour
+    concurrent_transactions: 100
+  
+  # Security tests
+  security_tests:
+    enabled: true
+    penetration_testing: true
+    vulnerability_scanning: true
+
+# Environment Configuration
+environment:
+  # Development settings
+  development:
+    debug_mode: true
+    verbose_logging: true
+    mock_external_services: true
+    fast_confirmations: true
+  
+  # Staging settings
+  staging:
+    debug_mode: false
+    verbose_logging: true
+    mock_external_services: false
+    fast_confirmations: false
+  
+  # Production settings
+  production:
+    debug_mode: false
+    verbose_logging: false
+    mock_external_services: false
+    fast_confirmations: false
+    high_availability: true
+    load_balancing: true
+
+# Backup and Recovery
+backup:
+  enabled: true
+  
+  # Backup settings
+  backup_frequency: "daily"
+  backup_retention: 30  # days
+  
+  # Recovery settings
+  recovery_testing: true
+  recovery_time_objective: 60  # minutes
+  recovery_point_objective: 15  # minutes
+  
+  # Disaster recovery
+  disaster_recovery:
+    enabled: true
+    backup_locations:
+      - "primary_datacenter"
+      - "secondary_datacenter"
+      - "cloud_storage"
+
+# Performance Configuration
+performance:
+  # Optimization settings
+  optimization:
+    gas_optimization: true
+    storage_optimization: true
+    computation_optimization: true
+  
+  # Scaling settings
+  scaling:
+    horizontal_scaling: true
+    vertical_scaling: true
+    auto_scaling: true
+  
+  # Caching settings
+  caching:
+    enabled: true
+    cache_duration: 300  # 5 minutes
+    cache_size: 1000  # MB
+
+# Security Hardening
+security_hardening:
+  # Access controls
+  access_controls:
+    multi_factor_authentication: true
+    role_based_access_control: true
+    principle_of_least_privilege: true
+  
+  # Network security
+  network_security:
+    firewall_enabled: true
+    ddos_protection: true
+    vpn_required: true
+  
+  # Application security
+  application_security:
+    input_validation: true
+    output_encoding: true
+    secure_coding_practices: true
+  
+  # Infrastructure security
+  infrastructure_security:
+    encryption_at_rest: true
+    encryption_in_transit: true
+    secure_key_management: true
+
+# Environment Variables Template
+environment_variables:
+  # Required variables
+  PRIVATE_KEY_ADMIN: "your_admin_private_key"
+  PRIVATE_KEY_SECURITY_MANAGER: "your_security_manager_private_key"
+  PRIVATE_KEY_EMERGENCY_RESPONDER: "your_emergency_responder_private_key"
+  
+  # API keys
+  ETHERSCAN_API_KEY: "your_etherscan_api_key"
+  COINGECKO_API_KEY: "your_coingecko_api_key"
+  CMC_API_KEY: "your_coinmarketcap_api_key"
+  
+  # Monitoring
+  DATADOG_API_KEY: "your_datadog_api_key"
+  
+  # Alerting
+  SLACK_WEBHOOK_URL: "your_slack_webhook_url"
+  TELEGRAM_BOT_TOKEN: "your_telegram_bot_token"
+  
+  # Database
+  DATABASE_URL: "your_database_connection_string"
+  
+  # Security
+  JWT_SECRET: "your_jwt_secret"
+  ENCRYPTION_KEY: "your_encryption_key"

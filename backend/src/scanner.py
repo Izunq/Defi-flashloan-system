@@ -98,7 +98,7 @@ class ArbitrageScanner:
         )
         # SushiSwap V3 Quoter (same interface as Uniswap V3 Quoter)
         self.sushi_quoter: Contract = w3.eth.contract(
-            address=Web3.to_checksum_address(chain.sushiswap_v3_router),
+            address=Web3.to_checksum_address(chain.sushiswap_v3_quoter),
             abi=SUSHISWAP_V3_QUOTER_ABI,
         )
 

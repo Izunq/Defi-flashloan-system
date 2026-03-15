@@ -640,4 +640,92 @@ describe("MudarabahPool", function () {
       );
     });
   });
+
+  // -----------------------------------------------------------------------
+  //  Reentrancy protection on deposit (P4.3)
+  // -----------------------------------------------------------------------
+  describe("deposit reentrancy protection", function () {
+    it("should revert when a malicious token attempts reentrancy during deposit", async function () {
+      const { pool, halalRegistry, providerA } = await loadFixture(
+        deployPoolFixture
+      );
+
+      // Deploy malicious reentrant token
+      const MockReentrantToken = await ethers.getContractFactory(
+        "MockReentrantToken"
+      );
+      const reentrantToken = await MockReentrantToken.deploy();
+      await reentrantToken.waitForDeployment();
+      const tokenAddr = await reentrantToken.getAddress();
+
+      // Mark as halal (for testing purposes)
+      await halalRegistry.setCompliant(tokenAddr, true);
+
+      // Mint tokens to providerA and approve pool
+      const amount = ethers.parseEther("100");
+      await reentrantToken.mint(providerA.address, amount * 10n);
+      await reentrantToken
+        .connect(providerA)
+        .approve(await pool.getAddress(), ethers.MaxUint256);
+
+      // Arm the reentrant token: on transferFrom to pool, it will
+      // try to call pool.deposit() again before the first deposit completes.
+      await reentrantToken.arm(await pool.getAddress(), amount);
+
+      // The deposit should revert with ReentrancyGuardReentrantCall
+      await expect(
+        pool.connect(providerA).deposit(tokenAddr, amount)
+      ).to.be.revertedWithCustomError(pool, "ReentrancyGuardReentrantCall");
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  //  Division-by-zero edge case on deposit (P4.4)
+  // -----------------------------------------------------------------------
+  describe("deposit division-by-zero edge case", function () {
+    it("should handle deposit after totalDeposited reaches zero while totalShares > 0 due to rounding", async function () {
+      const { pool, token, providerA, providerB } = await loadFixture(
+        deployPoolFixture
+      );
+
+      // Use small amounts to provoke rounding
+      const smallDeposit = 3n; // 3 wei
+
+      // Provider A deposits 3 wei -> gets 3 shares
+      await pool
+        .connect(providerA)
+        .deposit(await token.getAddress(), smallDeposit);
+
+      // Provider B deposits 3 wei -> gets 3 shares (totalShares=6, totalDeposited=6)
+      await pool
+        .connect(providerB)
+        .deposit(await token.getAddress(), smallDeposit);
+
+      // Provider A withdraws all 3 shares
+      // tokenAmount = (3 * 6) / 6 = 3
+      await pool
+        .connect(providerA)
+        .withdraw(await token.getAddress(), smallDeposit);
+
+      // Provider B withdraws all 3 shares
+      // tokenAmount = (3 * 3) / 3 = 3
+      await pool
+        .connect(providerB)
+        .withdraw(await token.getAddress(), smallDeposit);
+
+      // Now totalShares=0, totalDeposited=0
+      // Deposit again — should not revert
+      const newDeposit = ethers.parseEther("10");
+      await expect(
+        pool
+          .connect(providerA)
+          .deposit(await token.getAddress(), newDeposit)
+      ).to.not.be.reverted;
+
+      // Verify shares were issued correctly (first deposit: shares == amount)
+      expect(
+        await pool.shares(await token.getAddress(), providerA.address)
+      ).to.equal(newDeposit);
+    });
+  });
 });

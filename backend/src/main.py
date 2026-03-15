@@ -119,7 +119,7 @@ async def run() -> None:
 
     # -- Load config -------------------------------------------------------
     settings = Settings()
-    chain = load_chain_config()
+    chain = load_chain_config(settings.CHAIN_CONFIG)
     w3 = settings.get_web3()
 
     account = w3.eth.account.from_key(settings.PRIVATE_KEY)

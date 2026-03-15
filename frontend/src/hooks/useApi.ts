@@ -23,20 +23,26 @@ export function useApi() {
 
   const pollAll = useCallback(async () => {
     try {
-      const [s, o, t, p, pl] = await Promise.all([
+      const [s, oRaw, tRaw, p, pl] = await Promise.all([
         fetchJson<SystemStatus>('/api/status'),
-        fetchJson<Opportunity[]>('/api/opportunities'),
-        fetchJson<Trade[]>('/api/trades'),
-        fetchJson<PnL>('/api/pnl'),
+        fetchJson<{ total_found: number; recent: Opportunity[] }>('/api/opportunities'),
+        fetchJson<{ total_executed: number; total_successful: number; recent: Trade[] }>('/api/trades'),
+        fetchJson<any>('/api/pnl'),
         fetchJson<PoolStatus>('/api/pool'),
       ]);
 
       if (!mountedRef.current) return;
 
       setStatus(s);
-      setOpportunities(o);
-      setTrades(t);
-      setPnl(p);
+      setOpportunities(oRaw.recent);
+      setTrades(tRaw.recent);
+      setPnl({
+        total_profit_wei: p.total_profit_wei?.toString() ?? '0',
+        total_profit_usd: p.total_profit_usd ?? 0,
+        total_gas_spent: p.total_gas_spent?.toString() ?? '0',
+        net_profit: p.net_profit_usd ?? 0,
+        trade_count: p.trade_count ?? 0,
+      });
       setPool(pl);
       setError(null);
     } catch (err) {

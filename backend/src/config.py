@@ -57,6 +57,7 @@ class ChainConfig:
     uniswap_v3_router: str
     uniswap_v3_quoter: str
     sushiswap_v3_router: str
+    sushiswap_v3_quoter: str
     chainlink_eth_usd: str
     chainlink_btc_usd: str
     # Token registry  {symbol -> TokenInfo}
@@ -90,6 +91,7 @@ class Settings(BaseSettings):
     MIN_PROFIT_USD: float = 5.0
     SCAN_PAIRS: str = "WETH/USDC,WETH/USDT,WBTC/WETH,ARB/WETH"
     MONITOR_PORT: int = 8080
+    CHAIN_CONFIG: str = "arbitrum"  # or "arbitrum-sepolia"
 
     model_config = {
         "env_file": str(PROJECT_ROOT / ".env"),
@@ -160,12 +162,12 @@ def _load_json(path: pathlib.Path) -> dict[str, Any]:
         return json.load(fh)
 
 
-def load_chain_config() -> ChainConfig:
+def load_chain_config(network: str = "arbitrum") -> ChainConfig:
     """
-    Load ``config/arbitrum.json`` and ``config/tokens.json`` and return a
+    Load ``config/<network>.json`` and ``config/tokens.json`` and return a
     fully-typed :class:`ChainConfig`.
     """
-    arb = _load_json(CONFIG_DIR / "arbitrum.json")
+    arb = _load_json(CONFIG_DIR / f"{network}.json")
     tokens_raw = _load_json(CONFIG_DIR / "tokens.json")
 
     # Build token registry from tokens.json -> "arbitrum" section
@@ -181,6 +183,8 @@ def load_chain_config() -> ChainConfig:
 
     contracts = arb.get("contracts", {})
 
+    _zero = "0x" + "0" * 40
+
     return ChainConfig(
         chain_id=arb["chain_id"],
         chain_name=arb["chain_name"],
@@ -188,8 +192,9 @@ def load_chain_config() -> ChainConfig:
         aave_v3_pool=Web3.to_checksum_address(contracts["aave_v3_pool"]),
         uniswap_v3_router=Web3.to_checksum_address(contracts["uniswap_v3_router"]),
         uniswap_v3_quoter=Web3.to_checksum_address(contracts["uniswap_v3_quoter"]),
-        sushiswap_v3_router=Web3.to_checksum_address(contracts["sushiswap_v3_router"]),
-        chainlink_eth_usd=Web3.to_checksum_address(contracts["chainlink_eth_usd"]),
-        chainlink_btc_usd=Web3.to_checksum_address(contracts["chainlink_btc_usd"]),
+        sushiswap_v3_router=Web3.to_checksum_address(contracts.get("sushiswap_v3_router", _zero)),
+        sushiswap_v3_quoter=Web3.to_checksum_address(contracts.get("sushiswap_v3_quoter", _zero)),
+        chainlink_eth_usd=Web3.to_checksum_address(contracts.get("chainlink_eth_usd", _zero)),
+        chainlink_btc_usd=Web3.to_checksum_address(contracts.get("chainlink_btc_usd", _zero)),
         tokens=tokens,
     )

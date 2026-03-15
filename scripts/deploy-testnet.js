@@ -84,6 +84,25 @@ async function main() {
     console.log("        MUDARIB_ROLE granted.");
   }
 
+  // Approve halal tokens if any are configured
+  const halalTokens = [
+    { addr: config.tokens.WETH, name: "WETH", reason: "Wrapped native ETH" },
+    { addr: config.tokens.USDC, name: "USDC", reason: "Fiat-backed stablecoin" },
+    { addr: config.tokens.USDT, name: "USDT", reason: "Fiat-backed stablecoin" },
+    { addr: config.tokens.WBTC, name: "WBTC", reason: "Wrapped Bitcoin" },
+    { addr: config.tokens.ARB, name: "ARB", reason: "Arbitrum governance token" },
+  ].filter(t => t.addr);
+  if (halalTokens.length > 0) {
+    console.log("\n[Setup] Approving halal tokens ...");
+    for (const t of halalTokens) {
+      const tx = await halalRegistry.approveAsset(t.addr, t.name, t.reason);
+      await tx.wait();
+      console.log(`        Approved: ${t.name} (${t.addr})`);
+    }
+  } else {
+    console.log("\n[Setup] No tokens configured for testnet -- skipping halal approvals.");
+  }
+
   // Set up oracle feeds if Chainlink addresses are available on testnet
   // Arbitrum Sepolia may not have official Chainlink feeds — set up only if
   // addresses are present in the config.

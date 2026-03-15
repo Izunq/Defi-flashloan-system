@@ -28,6 +28,7 @@ def _make_chain() -> ChainConfig:
         uniswap_v3_router="0xE592427A0AEce92De3Edee1F18E0157C05861564",
         uniswap_v3_quoter="0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
         sushiswap_v3_router="0x8A21F6768C1f8075791D08546Dadf6daA0bE820c",
+        sushiswap_v3_quoter="0x0524E833cCD057e4d7A296e3aaAb9f7675964ce1",
         chainlink_eth_usd="0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
         chainlink_btc_usd="0x6ce185860a4963106506C203335A2910413708e9",
         tokens={

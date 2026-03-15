@@ -99,6 +99,23 @@ async function main() {
     console.log("        MUDARIB_ROLE granted.");
   }
 
+  // Approve standard tokens as halal
+  console.log("\n[Setup] Approving halal tokens ...");
+  const halalTokens = [
+    { addr: config.tokens.WETH, name: "WETH", reason: "Wrapped native ETH" },
+    { addr: config.tokens.USDC, name: "USDC", reason: "Fiat-backed stablecoin" },
+    { addr: config.tokens.USDT, name: "USDT", reason: "Fiat-backed stablecoin" },
+    { addr: config.tokens.WBTC, name: "WBTC", reason: "Wrapped Bitcoin" },
+    { addr: config.tokens.ARB, name: "ARB", reason: "Arbitrum governance token" },
+  ];
+  for (const t of halalTokens) {
+    if (t.addr) {
+      const tx = await halalRegistry.approveAsset(t.addr, t.name, t.reason);
+      await tx.wait();
+      console.log(`        Approved: ${t.name} (${t.addr})`);
+    }
+  }
+
   // Add Chainlink ETH/USD feed
   const WETH = config.tokens.WETH;
   const USDC = config.tokens.USDC;

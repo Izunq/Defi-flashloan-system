@@ -71,6 +71,7 @@ class SystemMonitor:
         self.trades_executed: int = 0
         self.trades_successful: int = 0
         self.total_profit_wei: int = 0
+        self.total_profit_usd: float = 0.0
         self.total_gas_spent_wei: int = 0
 
         # Ring buffers
@@ -99,6 +100,8 @@ class SystemMonitor:
         if result.success:
             self.trades_successful += 1
             self.total_profit_wei += result.profit_actual
+            # Accumulate profit in USD (already calculated by evaluator)
+            self.total_profit_usd += decision.net_profit_usd
         self.total_gas_spent_wei += result.gas_used * result.gas_price
         self.recent_trades.append(
             {
@@ -181,9 +184,7 @@ class SystemMonitor:
 
         @app.get("/api/pnl")
         async def pnl():
-            net = self.total_profit_wei - self.total_gas_spent_wei
-
-            # Fetch ETH/USD price for conversion
+            # Fetch ETH/USD price for gas cost conversion
             eth_price = self._cached_eth_price
             if self._eth_usd_feed is not None:
                 loop = asyncio.get_running_loop()
@@ -199,15 +200,15 @@ class SystemMonitor:
                 except Exception as exc:
                     logger.debug("PnL ETH/USD fetch failed: %s", exc)
 
-            profit_usd = (self.total_profit_wei / 1e18) * eth_price
+            # Gas is always in native ETH wei
             gas_usd = (self.total_gas_spent_wei / 1e18) * eth_price
-            net_usd = profit_usd - gas_usd
+            net_usd = self.total_profit_usd - gas_usd
 
             return {
                 "total_profit_wei": self.total_profit_wei,
-                "total_profit_usd": round(profit_usd, 2),
+                "total_profit_usd": round(self.total_profit_usd, 2),
                 "total_gas_spent": self.total_gas_spent_wei,
-                "net_profit_wei": net,
+                "net_profit_wei": self.total_profit_wei - self.total_gas_spent_wei,
                 "net_profit_usd": round(net_usd, 2),
                 "trade_count": self.trades_executed,
             }

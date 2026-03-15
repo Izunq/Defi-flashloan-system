@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../interfaces/IHalalAssetRegistry.sol";
+import "../interfaces/IMudarabahPool.sol";
 
 /// @title MudarabahPool
 /// @notice A Sharia-compliant alternative to traditional flash loans using a
@@ -19,7 +20,7 @@ import "../interfaces/IHalalAssetRegistry.sol";
 ///         breaks even or loses, NO fee is charged -- the principal must still be
 ///         returned. This is Sharia-compliant because the fee is profit-sharing
 ///         on actual economic activity, not a predetermined interest charge.
-contract MudarabahPool is AccessControl, ReentrancyGuard, Pausable {
+contract MudarabahPool is IMudarabahPool, AccessControl, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
 
     // -----------------------------------------------------------------------
@@ -147,7 +148,7 @@ contract MudarabahPool is AccessControl, ReentrancyGuard, Pausable {
     /// @notice Deposit tokens into the pool and receive shares in return.
     /// @param token  The ERC-20 token to deposit.
     /// @param amount The number of tokens to deposit.
-    function deposit(address token, uint256 amount) external whenNotPaused {
+    function deposit(address token, uint256 amount) external nonReentrant whenNotPaused {
         if (!halalRegistry.isHalalCompliant(token)) {
             revert AssetNotHalalCompliant();
         }
@@ -157,7 +158,7 @@ contract MudarabahPool is AccessControl, ReentrancyGuard, Pausable {
 
         // Calculate shares to issue.
         uint256 sharesIssued;
-        if (totalShares[token] == 0) {
+        if (totalShares[token] == 0 || totalDeposited[token] == 0) {
             sharesIssued = amount;
         } else {
             sharesIssued = (amount * totalShares[token]) / totalDeposited[token];
@@ -373,6 +374,25 @@ contract MudarabahPool is AccessControl, ReentrancyGuard, Pausable {
     /// @notice Unpause the contract.
     function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
+    }
+
+    // -----------------------------------------------------------------------
+    //  Interface view functions
+    // -----------------------------------------------------------------------
+
+    /// @notice Get the total pool balance for a given token.
+    function getPoolBalance(address token) external view returns (uint256) {
+        return IERC20(token).balanceOf(address(this));
+    }
+
+    /// @notice Get the share balance for a specific capital provider.
+    function getShareBalance(address token, address provider) external view returns (uint256) {
+        return shares[token][provider];
+    }
+
+    /// @notice Get the profit-sharing ratio.
+    function getProfitRatio() external view returns (uint256 providerShare, uint256 mudaribShare) {
+        return (providerShareBps, mudaribShareBps);
     }
 
     // -----------------------------------------------------------------------

@@ -2,11 +2,11 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./TrustCurve.sol";
 import "./interfaces/IGenericStrategy.sol";
 import "./interfaces/IZKVerifier.sol";
@@ -269,7 +269,8 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
         // This would contain the actual arbitrage logic
         // For now, we'll just return a mock result
         
-        // Mock implementation - in a real contract this would execute the actual strategy        (address[] memory tokens, uint256[] memory amounts) = abi.decode(_data, (address[], uint256[]));
+        // Mock implementation - in a real contract this would execute the actual strategy
+        (address[] memory tokens, uint256[] memory amounts) = abi.decode(_data, (address[], uint256[]));
         
         // Gas griefing protection
         require(tokens.length <= MAX_TOKEN_ARRAY_LENGTH, "Too many tokens");
@@ -356,7 +357,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     function submitZKProof(
         uint256[] calldata _publicInputs,
         bytes calldata _proof
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         // Generate proof hash from inputs and proof
         bytes32 proofHash = keccak256(abi.encodePacked(_publicInputs, _proof));
         
@@ -383,7 +384,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     function verifyZKProof(
         uint256[] calldata _publicInputs,
         bytes calldata _proof
-    ) external whenNotPaused {
+    ) external whenNotPaused nonReentrant{
         // Generate proof hash from inputs and proof
         bytes32 proofHash = keccak256(abi.encodePacked(_publicInputs, _proof));
         
@@ -420,7 +421,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     function initiateMetadataUpdate(
         string memory _name,
         string memory _description
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         require(bytes(_name).length > 0, "Name cannot be empty");
         
         bytes32 operationId = keccak256(abi.encodePacked(
@@ -442,7 +443,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     function executeMetadataUpdate(
         string memory _name,
         string memory _description
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateMetadata",
             _name,
@@ -464,7 +465,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
      * @dev Cancel timelock operation
      * @param _operationId Operation ID to cancel
      */
-    function cancelTimelock(bytes32 _operationId) external onlyOwner {
+    function cancelTimelock(bytes32 _operationId) external onlyOwner nonReentrant{
         require(timelockExpirations[_operationId] > 0, "Timelock not initiated");
         
         delete timelockExpirations[_operationId];
@@ -486,7 +487,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
         uint256 _maxSlippage,
         uint256 _maxGasPrice,
         uint256 _emergencyThreshold
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         require(_maxCapital <= MAX_CAPITAL_LIMIT, "Max capital too high");
         require(_minProfit >= MIN_PROFIT_THRESHOLD, "Min profit too low");
         require(_maxSlippage <= MAX_SLIPPAGE_LIMIT, "Max slippage too high");
@@ -519,7 +520,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
         uint256 _maxSlippage,
         uint256 _maxGasPrice,
         uint256 _emergencyThreshold
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateRiskParameters",
             _maxCapital,
@@ -558,7 +559,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
         address _token,
         uint256 _amount,
         address _recipient
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         require(_recipient != address(0), "Invalid recipient");
         require(_amount > 0, "Amount must be greater than 0");
         
@@ -584,7 +585,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
         address _token,
         uint256 _amount,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         bytes32 operationId = keccak256(abi.encodePacked(
             "withdrawTokens",
             _token,
@@ -615,7 +616,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     function emergencyWithdraw(
         address _token,
         address _recipient
-    ) external onlyOwner whenPaused {
+    ) external onlyOwner whenPaused nonReentrant{
         require(_recipient != address(0), "Invalid recipient");
         
         uint256 balance = IERC20(_token).balanceOf(address(this));
@@ -628,7 +629,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
      * @dev Trigger emergency shutdown
      * @param _reason Reason for emergency shutdown
      */
-    function triggerEmergencyShutdown(string memory _reason) external onlyOwner {
+    function triggerEmergencyShutdown(string memory _reason) external onlyOwner nonReentrant{
         _pause();
         
         emit EmergencyShutdown(strategyId, msg.sender, _reason);
@@ -637,7 +638,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     /**
      * @dev Resume after emergency shutdown (requires timelock)
      */
-    function initiateEmergencyResume() external onlyOwner whenPaused {
+    function initiateEmergencyResume() external onlyOwner whenPaused nonReentrant{
         bytes32 operationId = keccak256(abi.encodePacked("emergencyResume"));
         
         timelockExpirations[operationId] = block.timestamp + TIMELOCK_PERIOD;
@@ -648,7 +649,7 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
     /**
      * @dev Execute emergency resume
      */
-    function executeEmergencyResume() external onlyOwner whenPaused {
+    function executeEmergencyResume() external onlyOwner whenPaused nonReentrant{
         bytes32 operationId = keccak256(abi.encodePacked("emergencyResume"));
         
         require(timelockExpirations[operationId] > 0, "Timelock not initiated");
@@ -667,7 +668,8 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
      * @return _name Strategy name
      * @return _description Strategy description
      */
-    function getStrategyInfo() external view override returns (uint256 _strategyId, string memory _name, string memory _description) {
+    function getStrategyInfo() external view override returns (uint256 _strategyId, string memory _name, string memory _description)  {
+        // TODO: Add nonReentrant modifier
         return (strategyId, name, description);
     }
     
@@ -675,7 +677,8 @@ contract AIStrategyV35 is Ownable, ReentrancyGuard, Pausable, IGenericStrategy {
      * @dev Get current risk parameters
      * @return Risk parameters struct
      */
-    function getRiskParameters() external view returns (RiskParameters memory) {
+    function getRiskParameters() external view returns (RiskParameters memory)  {
+        // TODO: Add nonReentrant modifier
         return currentRiskParams;
     }
     

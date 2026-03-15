@@ -1,0 +1,62 @@
+# DataIngestionService Configuration
+
+# Service settings
+service:
+  name: data_ingestion_service
+  polling_interval: 5  # seconds
+  health_check_port: 8080
+
+# Database configuration
+database:
+  type: postgresql  # Options: postgresql, mongodb, json_files
+  connection:
+    host: localhost
+    port: 5432
+    database: blockchain_data
+    username: postgres
+    password: postgres
+    ssl_mode: disable
+  collections:
+    blocks: blocks
+    transactions: transactions
+
+# Message queue configuration
+message_queue:
+  enabled: false
+  type: rabbitmq  # Options: rabbitmq, kafka
+  connection:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual_host: /
+  exchanges:
+    blocks: blockchain.blocks
+    transactions: blockchain.transactions
+
+# Metrics configuration
+metrics:
+  enabled: true
+  prometheus_port: 9090
+
+# Blockchain settings
+blockchain:
+  network: arbitrum
+  rpc_url_env_var: ARBITRUM_RPC_URL
+  block_confirmation_count: 5  # Number of confirmations before processing
+
+# Filtering settings
+filtering:
+  enabled: true
+  contracts:
+    # List of contract addresses to monitor
+    - address: "0x0000000000000000000000000000000000000000"
+      name: "Example Contract"
+      events:
+        - name: "Transfer"
+        - name: "Approval"
+    # Add more contracts as needed
+  transaction_types:
+    - "contract_creation"
+    - "contract_interaction"
+    - "token_transfer"

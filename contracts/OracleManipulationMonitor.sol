@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./SecureMultiOracle.sol";
 import "./OracleSecurityWrapper.sol";
 
@@ -190,7 +191,7 @@ contract OracleManipulationMonitor is AccessControl, ReentrancyGuard {
         securityWrapper = OracleSecurityWrapper(_securityWrapper);
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), _admin);
         _grantRole(MONITOR_ADMIN_ROLE, _admin);
         _grantRole(ALERT_MANAGER_ROLE, _admin);
         _grantRole(RESPONSE_TEAM_ROLE, _admin);
@@ -206,7 +207,7 @@ contract OracleManipulationMonitor is AccessControl, ReentrancyGuard {
      * @notice Perform comprehensive monitoring check for an asset
      * @param assetId Asset to monitor
      */
-    function performMonitoringCheck(bytes32 assetId) external nonReentrant {
+    function performMonitoringCheck(bytes32 assetId) external nonReentrant{
         require(
             block.timestamp >= assetMonitoring[assetId].lastUpdate + CRITICAL_MONITORING_INTERVAL,
             "Monitoring interval not elapsed"
@@ -259,7 +260,8 @@ contract OracleManipulationMonitor is AccessControl, ReentrancyGuard {
     /**
      * @notice Perform system-wide monitoring
      */
-    function performSystemMonitoring() external onlyRole(MONITOR_ADMIN_ROLE) {
+    function performSystemMonitoring() external onlyRole(MONITOR_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(
             block.timestamp >= lastGlobalCheck + STANDARD_MONITORING_INTERVAL,
             "System monitoring interval not elapsed"
@@ -653,7 +655,8 @@ contract OracleManipulationMonitor is AccessControl, ReentrancyGuard {
         string calldata name,
         string calldata role,
         string[] calldata specializations
-    ) external onlyRole(MONITOR_ADMIN_ROLE) {
+    ) external onlyRole(MONITOR_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         responseTeam[member] = ResponseTeamMember({
             name: name,
             role: role,

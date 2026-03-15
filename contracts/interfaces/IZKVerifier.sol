@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IZKVerifier
  * @notice Interface for ZK proof verification
- * @dev Implement this interface to verify ZK proofs
+ * @dev Implement this
+
+interface to verify ZK proofs
  */
+
 interface IZKVerifier {
     /**
      * @dev Get the verification key hash

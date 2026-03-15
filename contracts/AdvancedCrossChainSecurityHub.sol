@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./CrossChainSecurityValidator.sol";
@@ -126,7 +127,7 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
     constructor(address _securityValidator) {
         securityValidator = CrossChainSecurityValidator(_securityValidator);
         
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(SECURITY_ADMIN_ROLE, msg.sender);
         _grantRole(THREAT_ANALYST_ROLE, msg.sender);
         _grantRole(EMERGENCY_RESPONDER_ROLE, msg.sender);
@@ -150,7 +151,8 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
         address operatorAddress,
         bytes calldata payload,
         uint256 value
-    ) external view returns (bool isValid, uint256 riskScore) {
+    ) external view returns (bool isValid, uint256 riskScore)  {
+        // TODO: Add nonReentrant modifier
         // Check if system is in emergency mode
         if (emergencyMode) {
             return (false, 1000);
@@ -190,7 +192,7 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
         bytes32 operationHash,
         string calldata threatType,
         bytes calldata evidence
-    ) external onlyThreatAnalyst {
+    ) external onlyThreatAnalyst nonReentrant{
         uint256 threatId = ++threatCounter;
         
         // Calculate risk score based on threat type and evidence
@@ -225,7 +227,7 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
      * @notice Activates emergency mode to halt all cross-chain operations
      * @param reason Reason for activating emergency mode
      */
-    function activateEmergencyMode(string calldata reason) external onlyEmergencyResponder {
+    function activateEmergencyMode(string calldata reason) external onlyEmergencyResponder nonReentrant{
         emergencyMode = true;
         emergencyModeActivatedAt = block.timestamp;
         
@@ -240,7 +242,7 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
     /**
      * @notice Deactivates emergency mode
      */
-    function deactivateEmergencyMode() external onlySecurityAdmin {
+    function deactivateEmergencyMode() external onlySecurityAdmin nonReentrant{
         require(emergencyMode, "Emergency mode not active");
         require(
             block.timestamp >= emergencyModeActivatedAt + 1 hours, 
@@ -265,7 +267,8 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
         bytes calldata classicSig,
         bytes calldata quantumProof,
         address signer
-    ) external onlyRole(ORACLE_COORDINATOR_ROLE) {
+    ) external onlyRole(ORACLE_COORDINATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         // Verify classic signature
         bytes32 ethSignedMessageHash = operationHash.toEthSignedMessageHash();
         address recoveredSigner = ethSignedMessageHash.recover(classicSig);
@@ -287,7 +290,7 @@ contract AdvancedCrossChainSecurityHub is AccessControl, ReentrancyGuard, Pausab
      * @notice Detects and reports anomaly patterns
      * @param operationData Array of operation data for pattern analysis
      */
-    function detectAnomalyPattern(bytes[] calldata operationData) external onlyThreatAnalyst {
+    function detectAnomalyPattern(bytes[] calldata operationData) external onlyThreatAnalyst nonReentrant{
         bytes32 patternHash = keccak256(abi.encodePacked(operationData));
         
         AnomalyPattern storage pattern = anomalyPatterns[patternHash];

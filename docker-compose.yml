@@ -1,69 +1,108 @@
+# Docker Compose for development environment
 version: '3.8'
 
 services:
-  # Frontend
+  # Frontend - React/Vite application
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile
+    container_name: flashloan-frontend
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_BACKEND_URL=http://backend:8080
-      - REACT_APP_WS_ENDPOINT=ws://backend:8080
-    depends_on:
-      - backend
+      - NODE_ENV=development
+      - VITE_API_URL=http://backend:8080
+      - VITE_PROXY_URL=http://server:3001
     volumes:
       - ./src:/app/src
-      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.ts:/app/vite.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - backend
+      - server
+    networks:
+      - flashloan-network
+    restart: unless-stopped
 
-  # Backend
+  # Backend - Node.js Express API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: flashloan-backend
     ports:
       - "8080:8080"
     environment:
+      - NODE_ENV=development
       - PORT=8080
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongodb:27017
-      - MONGODB_DB=flashloan_v35
-      - RPC_URL=${RPC_URL}
-      - PRIVATE_KEY=${PRIVATE_KEY}
-      - TRUST_CURVE_ADDRESS=${TRUST_CURVE_ADDRESS}
-      - PROOF_EXECUTOR_ADDRESS=${PROOF_EXECUTOR_ADDRESS}
-      - API_KEY=${API_KEY}
-      - PYTHON_AGENT_URL=http://python_agent:5000
-    depends_on:
-      - mongodb
-      - python_agent
+      - MONGODB_URI=mongodb://mongo:27017/flashloan
+      - REDIS_URL=redis://redis:6379
+      - INFURA_URL=${INFURA_URL}
+      - EXECUTOR_PRIVATE_KEY=${EXECUTOR_PRIVATE_KEY}
+      - ARBITRAGE_CONTRACT_ADDRESS=${ARBITRAGE_CONTRACT_ADDRESS}
     volumes:
       - ./backend/src:/app/src
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - flashloan-network
+    restart: unless-stopped
 
-  # Python Agent
-  python_agent:
+  # API Proxy Server - Security layer
+  server:
     build:
-      context: ./python_agent
+      context: ./server
       dockerfile: Dockerfile
+    container_name: flashloan-proxy
     ports:
-      - "5000:5000"
+      - "3001:3001"
     environment:
-      - PORT=5000
-      - RPC_URL=${RPC_URL}
-      - TRUST_CURVE_ADDRESS=${TRUST_CURVE_ADDRESS}
-      - PROOF_EXECUTOR_ADDRESS=${PROOF_EXECUTOR_ADDRESS}
-      - API_KEY=${API_KEY}
+      - NODE_ENV=development
+      - PORT=3001
+      - BACKEND_URL=http://backend:8080
     volumes:
-      - ./python_agent:/app
+      - ./server:/app
+    depends_on:
+      - backend
+    networks:
+      - flashloan-network
+    restart: unless-stopped
 
-  # MongoDB
-  mongodb:
-    image: mongo:6.0
+  # MongoDB database
+  mongo:
+    image: mongo:7-alpine
+    container_name: flashloan-mongo
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin123}
     volumes:
-      - mongodb_data:/data/db
+      - mongo-data:/data/db
+    networks:
+      - flashloan-network
+    restart: unless-stopped
+
+  # Redis cache
+  redis:
+    image: redis:7-alpine
+    container_name: flashloan-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - flashloan-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
 
 volumes:
-  mongodb_data:
+  mongo-data:
+  redis-data:
+
+networks:
+  flashloan-network:
+    driver: bridge

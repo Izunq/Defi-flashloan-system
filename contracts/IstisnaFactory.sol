@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./HalalAssetRegistry.sol";
 
 /**
@@ -173,7 +174,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
         address _paymentAsset,
         uint256 _totalPaymentAmount,
         uint256 _completionDeadline
-    ) external nonReentrant whenNotPaused onlyHalalAsset(_paymentAsset) returns (uint256) {
+    ) external nonReentrant whenNotPaused onlyHalalAsset(_paymentAsset) returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(_manufacturer != address(0), "Invalid manufacturer address");
         require(bytes(_projectName).length > 0, "Project name cannot be empty");
         require(bytes(_projectDescription).length > 0, "Project description cannot be empty");
@@ -231,7 +233,7 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
         string calldata _description,
         uint256 _paymentAmount,
         uint256 _deadline
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         
         require(istisnaContract.funder == msg.sender, "Not the funder");
@@ -277,7 +279,7 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function startIstisnaContract(
         uint256 _istisnaId
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         
         require(istisnaContract.funder == msg.sender, "Not the funder");
@@ -321,7 +323,7 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
     function completeMilestone(
         uint256 _istisnaId,
         uint256 _milestoneIndex
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         
         require(istisnaContract.manufacturer == msg.sender, "Not the manufacturer");
@@ -352,7 +354,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
     function verifyAndReleaseMilestonePayment(
         uint256 _istisnaId,
         uint256 _milestoneIndex
-    ) external nonReentrant whenNotPaused onlyRole(AUDITOR_ROLE) {
+    ) external nonReentrant whenNotPaused onlyRole(AUDITOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         require(istisnaContract.status == IstisnaStatus.InProgress, "Invalid contract status");
         
@@ -409,7 +412,7 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
     function disputeIstisnaContract(
         uint256 _istisnaId,
         string calldata _reason
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         
         require(
@@ -444,7 +447,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
         bool _continueContract,
         bool _refundRemainingFunds,
         string calldata _reason
-    ) external nonReentrant onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external nonReentrant onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         IstisnaContract storage istisnaContract = istisnaContracts[_istisnaId];
         
         require(istisnaContract.status == IstisnaStatus.Disputed, "Contract not disputed");
@@ -491,7 +495,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function getFunderContracts(
         address _funder
-    ) external view returns (uint256[] memory) {
+    ) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return funderContracts[_funder];
     }
 
@@ -502,7 +507,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function getManufacturerContracts(
         address _manufacturer
-    ) external view returns (uint256[] memory) {
+    ) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return manufacturerContracts[_manufacturer];
     }
 
@@ -513,7 +519,8 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function getMilestoneCount(
         uint256 _istisnaId
-    ) external view returns (uint256) {
+    ) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return istisnaContractMilestones[_istisnaId].length;
     }
 
@@ -521,21 +528,22 @@ contract IstisnaFactory is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get contract count
      * @return Number of Istisna contracts
      */
-    function getContractCount() external view returns (uint256) {
+    function getContractCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return nextIstisnaId - 1;
     }
 
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

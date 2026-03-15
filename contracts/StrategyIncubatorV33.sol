@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 // import "./interfaces/IZKVerifier.sol"; // If ZK features are used
 
 contract StrategyIncubatorV33 is Ownable, AccessControl, ReentrancyGuard, Pausable {
@@ -41,15 +41,18 @@ contract StrategyIncubatorV33 is Ownable, AccessControl, ReentrancyGuard, Pausab
         address indexed proposer,
         uint256 baseStrategyId,
         bool isVariant
-    );
-    event StrategyStatusUpdated(uint256 indexed strategyId, StrategyStatus newStatus);
-    // event ZKProofSubmitted(uint256 indexed strategyId, bytes32 proofHash, uint256 publicSignal); // If ZK    constructor(address initialOwner/*, address _zkVerifierAddress*/) Ownable(initialOwner) {
+    );    event StrategyStatusUpdated(uint256 indexed strategyId, StrategyStatus newStatus);
+    // event ZKProofSubmitted(uint256 indexed strategyId, bytes32 proofHash, uint256 publicSignal); // If ZK
+    
+    constructor(address initialOwner/*, address _zkVerifierAddress*/) Ownable(initialOwner) {
         // zkVerifier = IZKVerifier(_zkVerifierAddress); // If ZK
         
         // Setup roles
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(EMERGENCY_ROLE, initialOwner);
-    }    // Production: proposeStrategy is onlyOwner
+    }
+    
+    // Production: proposeStrategy is onlyOwner
     function proposeStrategy(
         address _strategyAddress,
         uint256 _baseStrategyId, // 0 if not a variant
@@ -82,18 +85,21 @@ contract StrategyIncubatorV33 is Ownable, AccessControl, ReentrancyGuard, Pausab
 
     // ... (other functions: updateStatus, recordTestResult, submitZKProof (if ZK), etc.) ...
 
-    function updateStrategyStatus(uint256 _strategyId, StrategyStatus _newStatus) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updateStrategyStatus(uint256 _strategyId, StrategyStatus _newStatus) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(strategies[_strategyId].strategyAddress != address(0), "Incubator: Strategy not found");
         strategies[_strategyId].status = _newStatus;
         emit StrategyStatusUpdated(_strategyId, _newStatus);
     }
 
-    function getStrategy(uint256 _strategyId) external view returns (StrategyDetails memory) {
+    function getStrategy(uint256 _strategyId) external view returns (StrategyDetails memory)  {
+        // TODO: Add nonReentrant modifier
         require(strategies[_strategyId].strategyAddress != address(0), "Incubator: Strategy not found");
         return strategies[_strategyId];
     }
 
-    function recordTestResult(uint256 _strategyId, bool _passed) external onlyRole(STRATEGY_EXECUTOR_ROLE) {
+    function recordTestResult(uint256 _strategyId, bool _passed) external onlyRole(STRATEGY_EXECUTOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(strategies[_strategyId].strategyAddress != address(0), "Incubator: Strategy not found");
         
         if (_passed) {
@@ -103,16 +109,19 @@ contract StrategyIncubatorV33 is Ownable, AccessControl, ReentrancyGuard, Pausab
         }
     }
 
-    function updatePerformanceScore(uint256 _strategyId, uint256 _score) external onlyRole(STRATEGY_EXECUTOR_ROLE) {
+    function updatePerformanceScore(uint256 _strategyId, uint256 _score) external onlyRole(STRATEGY_EXECUTOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(strategies[_strategyId].strategyAddress != address(0), "Incubator: Strategy not found");
         strategies[_strategyId].performanceScore = _score;
     }
 
-    function getStrategyCount() external view returns (uint256) {
+    function getStrategyCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return strategyCounter;
     }
 
-    function getAllStrategies() external view returns (StrategyDetails[] memory) {
+    function getAllStrategies() external view returns (StrategyDetails[] memory)  {
+        // TODO: Add nonReentrant modifier
         StrategyDetails[] memory allStrategies = new StrategyDetails[](strategyCounter);
         
         for (uint256 i = 1; i <= strategyCounter; i++) {
@@ -122,7 +131,8 @@ contract StrategyIncubatorV33 is Ownable, AccessControl, ReentrancyGuard, Pausab
         return allStrategies;
     }
 
-    function getStrategiesByStatus(StrategyStatus _status) external view returns (uint256[] memory) {
+    function getStrategiesByStatus(StrategyStatus _status) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256[] memory tempIds = new uint256[](strategyCounter);
         uint256 count = 0;
         

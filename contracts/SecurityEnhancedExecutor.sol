@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
@@ -21,7 +22,11 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
     bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256("TIMELOCK_ADMIN_ROLE");
     
-    // Security Constants
+        bytes32 public constant MULTISIG_SIGNER_ROLE = keccak256("MULTISIG_SIGNER_ROLE");
+
+    bytes32 public constant MULTISIG_EXECUTOR_ROLE = keccak256("MULTISIG_EXECUTOR_ROLE");
+
+// Security Constants
     uint256 public constant MIN_TIMELOCK_DELAY = 1 hours;
     uint256 public constant MAX_TIMELOCK_DELAY = 7 days;
     uint256 public constant EMERGENCY_TIMELOCK_DELAY = 15 minutes;
@@ -31,7 +36,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     // Security State
     uint256 public timelockDelay = 24 hours;
     uint256 public emergencyTimelockDelay = EMERGENCY_TIMELOCK_DELAY;
-    bool public emergencyShutdown = false;
+    bool public isEmergencyShutdown = false;
     uint256 public lastEmergencyAction;
     bool public emergencyStopped = false;
     
@@ -117,7 +122,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     }
     
     modifier notInEmergency() {
-        if (emergencyShutdown) {
+        if (isEmergencyShutdown) {
             revert EmergencyShutdownActive();
         }
         _;
@@ -159,7 +164,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     }
     
     constructor(address admin) {
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), admin);
         _grantRole(ADMIN_ROLE, admin);
         _grantRole(TIMELOCK_ADMIN_ROLE, admin);
         _grantRole(EMERGENCY_ROLE, admin);
@@ -168,8 +173,9 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @notice Emergency shutdown - can be called by EMERGENCY_ROLE holders
      */
-    function emergencyShutdown() external onlyRole(EMERGENCY_ROLE) {
-        emergencyShutdown = true;
+    function emergencyShutdown() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
+        isEmergencyShutdown = true;
         lastEmergencyAction = block.timestamp;
         _pause();
         emit EmergencyShutdownActivated(msg.sender, block.timestamp);
@@ -187,7 +193,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
             "Emergency timelock not expired"
         );
         
-        emergencyShutdown = false;
+        isEmergencyShutdown = false;
         _unpause();
         emit EmergencyShutdownDeactivated(msg.sender, block.timestamp);
     }
@@ -199,7 +205,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
         bytes32 operationId,
         bytes calldata data,
         uint256 delay
-    ) external onlyRole(TIMELOCK_ADMIN_ROLE) notInEmergency {
+    ) external onlyRole(TIMELOCK_ADMIN_ROLE) notInEmergency  nonReentrant{
         require(delay >= MIN_TIMELOCK_DELAY && delay <= MAX_TIMELOCK_DELAY, "Invalid delay");
         require(timelockOperations[operationId].executionTime == 0, "Operation already scheduled");
         
@@ -281,7 +287,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
         uint256 requiredSignatures,
         uint256 deadline,
         bytes calldata data
-    ) external onlyRole(ADMIN_ROLE) notInEmergency {
+    ) external onlyRole(ADMIN_ROLE) notInEmergency  nonReentrant{
         require(signers.length >= requiredSignatures, "Invalid signer configuration");
         require(deadline > block.timestamp, "Invalid deadline");
         require(multiSigOperations[operationId].deadline == 0, "Operation already exists");
@@ -302,7 +308,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     function signMultiSigOperation(
         bytes32 operationId,
         bytes calldata signature
-    ) external notInEmergency {
+    ) external onlyRole(MULTISIG_SIGNER_ROLE) notInEmergency  nonReentrant{
         MultiSigOperation storage operation = multiSigOperations[operationId];
         
         require(operation.deadline > block.timestamp, "Operation expired");
@@ -339,6 +345,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
      */
     function executeMultiSigOperation(bytes32 operationId, bytes calldata data)
         external
+        onlyRole(MULTISIG_EXECUTOR_ROLE)
         nonReentrant
         notInEmergency
     {
@@ -373,7 +380,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     function approveStrategy(
         address strategy,
         uint256 riskScore
-    ) external onlyRole(ADMIN_ROLE) notInEmergency {
+    ) external onlyRole(ADMIN_ROLE) notInEmergency  nonReentrant{
         require(strategy != address(0), "Invalid strategy address");
         require(riskScore <= 100, "Invalid risk score");
         
@@ -400,7 +407,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
     function updateSecurityParameter(
         string calldata parameter,
         uint256 newValue
-    ) external onlyRole(TIMELOCK_ADMIN_ROLE) notInEmergency {
+    ) external onlyRole(TIMELOCK_ADMIN_ROLE) notInEmergency  nonReentrant{
         bytes32 paramHash = keccak256(bytes(parameter));
         uint256 oldValue;
         
@@ -465,7 +472,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
      * @notice Emergency stop function for circuit breaker
      * @dev Can only be called by emergency role or admin
      */
-    function emergencyStop() external onlyRole(EMERGENCY_ROLE) {
+    function emergencyStop() external onlyRole(EMERGENCY_ROLE)  nonReentrant onlyOwner{
         emergencyStopped = true;
         emit EmergencyStop(msg.sender, block.timestamp);
     }
@@ -474,7 +481,8 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
      * @notice Resume operations after emergency stop
      * @dev Can only be called by admin role
      */
-    function resumeOperations() external onlyRole(ADMIN_ROLE) {
+    function resumeOperations() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         emergencyStopped = false;
         emit OperationsResumed(msg.sender, block.timestamp);
     }
@@ -491,7 +499,7 @@ contract SecurityEnhancedExecutor is AccessControl, ReentrancyGuard, Pausable {
         uint256 maxAllowedGasLimit
     ) {
         return (
-            emergencyShutdown,
+            isEmergencyShutdown,
             circuitBreakerActive,
             consecutiveFailures,
             timelockDelay,

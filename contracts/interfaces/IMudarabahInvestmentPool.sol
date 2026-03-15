@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IMudarabahInvestmentPool
  * @notice Interface for the Mudarabah Investment Pool
  * @dev Shariah-compliant investment pool based on profit-sharing principles
  */
+
 interface IMudarabahInvestmentPool {
     /**
      * @dev Invest capital into the Mudarabah pool

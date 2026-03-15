@@ -1,0 +1,119 @@
+{
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "db": 0
+    },
+    "dashboard": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "path": "swarm_dashboard.html"
+    },
+    "api": {
+        "host": "0.0.0.0",
+        "port": 8080,
+        "cors_origins": ["*"],
+        "rate_limit": {
+            "enabled": true,
+            "requests_per_minute": 60
+        },
+        "authentication": {
+            "enabled": false,
+            "api_key_header": "X-API-Key",
+            "api_keys": []
+        }
+    },
+    "coordinator": {
+        "config_path": "config/parallel_coordinator_config.json",
+        "enabled": true
+    },
+    "message_filter": {
+        "config_path": "config/message_filter_config.json",
+        "enabled": true
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "logs/swarm_monitoring.log",
+        "console": true,
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    },
+    "monitoring": {
+        "stats_update_interval_seconds": 5,
+        "agent_cleanup_interval_seconds": 300,
+        "opportunity_cleanup_interval_seconds": 60,
+        "alert_thresholds": {
+            "agent_error_rate": 0.1,
+            "opportunity_failure_rate": 0.2,
+            "memory_usage_percent": 80,
+            "cpu_usage_percent": 90
+        }
+    },
+    "visualization": {
+        "max_data_points": 1000,
+        "chart_update_interval_seconds": 5,
+        "default_time_range_hours": 24,
+        "color_scheme": "dark"
+    },
+    "alerts": {
+        "enabled": true,
+        "channels": {
+            "slack": {
+                "enabled": false,
+                "webhook_url": ""
+            },
+            "email": {
+                "enabled": false,
+                "smtp_server": "",
+                "smtp_port": 587,
+                "username": "",
+                "password": "",
+                "from_address": "",
+                "to_addresses": []
+            },
+            "webhook": {
+                "enabled": false,
+                "url": ""
+            }
+        },
+        "severity_levels": {
+            "critical": {
+                "color": "#ff0000",
+                "notify_channels": ["slack", "email"]
+            },
+            "high": {
+                "color": "#ff9900",
+                "notify_channels": ["slack"]
+            },
+            "medium": {
+                "color": "#ffff00",
+                "notify_channels": []
+            },
+            "low": {
+                "color": "#00ff00",
+                "notify_channels": []
+            }
+        }
+    },
+    "security": {
+        "emergency_stop": {
+            "enabled": true,
+            "require_confirmation": true,
+            "notify_channels": ["slack", "email"]
+        },
+        "auto_emergency_conditions": {
+            "enabled": true,
+            "conditions": [
+                {
+                    "metric": "opportunity_failure_rate",
+                    "threshold": 0.5,
+                    "duration_seconds": 300
+                },
+                {
+                    "metric": "agent_error_rate",
+                    "threshold": 0.3,
+                    "duration_seconds": 300
+                }
+            ]
+        }
+    }
+}

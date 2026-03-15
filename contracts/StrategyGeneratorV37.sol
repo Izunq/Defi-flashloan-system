@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -110,7 +111,7 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
         STRATEGY_INCUBATOR = StrategyIncubatorV33(_incubatorAddress);
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(GENERATOR_ROLE, msg.sender);
         _grantRole(VALIDATOR_ROLE, msg.sender);
         _grantRole(DEPLOYER_ROLE, msg.sender);
@@ -143,7 +144,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
         uint256 _baseStrategyId,
         bytes32 _bytecodeHash,
         string memory _metadataURI
-    ) external onlyRole(GENERATOR_ROLE) returns (uint256 generationId) {
+    ) external onlyRole(GENERATOR_ROLE) returns (uint256 generationId)  {
+        // TODO: Add nonReentrant modifier
         // Check if generation is allowed
         require(_canGenerateStrategy(_baseStrategyId), "Generation not allowed");
         
@@ -191,7 +193,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
     function verifyBytecode(
         uint256 _generationId,
         bytes32 _bytecodeHash
-    ) external onlyRole(VALIDATOR_ROLE) {
+    ) external onlyRole(VALIDATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         // Check if generation exists
         require(_generationId > 0 && _generationId <= generationCounter, "Invalid generation ID");
         
@@ -229,7 +232,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
         uint256 _generationId,
         address _strategyAddress,
         uint256 _baseStrategyId
-    ) external onlyRole(DEPLOYER_ROLE) returns (uint256 strategyId) {
+    ) external onlyRole(DEPLOYER_ROLE) returns (uint256 strategyId)  {
+        // TODO: Add nonReentrant modifier
         // Check if generation exists
         require(_generationId > 0 && _generationId <= generationCounter, "Invalid generation ID");
         
@@ -316,7 +320,7 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
         uint256 _minSuccessRate,
         uint256 _cooldownPeriod,
         uint256 _maxDailyGenerations
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         generationParams = GenerationParameters({
             minPerformanceThreshold: _minPerformanceThreshold,
             minExecutions: _minExecutions,
@@ -366,7 +370,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
      * @param _validator Address of the validator
      * @return hasVerified Whether the validator has verified the generation
      */
-    function hasValidatorVerified(uint256 _generationId, address _validator) external view returns (bool) {
+    function hasValidatorVerified(uint256 _generationId, address _validator) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         require(_generationId > 0 && _generationId <= generationCounter, "Invalid generation ID");
         
         BytecodeVerification storage verification = verifications[_generationId];
@@ -408,7 +413,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
      */
     function reincarnate(
         uint256 _failedStrategyId
-    ) external onlyRole(GENERATOR_ROLE) returns (uint256 generationId) {
+    ) external onlyRole(GENERATOR_ROLE) returns (uint256 generationId)  {
+        // TODO: Add nonReentrant modifier
         // Check if the strategy exists
         require(
             STRATEGY_INCUBATOR.getStrategy(_failedStrategyId).strategyAddress != address(0),
@@ -468,7 +474,8 @@ contract StrategyGeneratorV37 is Ownable, AccessControl {
      * @param _failedStrategyId ID of the failed strategy
      * @return variants Array of variant generation IDs
      */
-    function getReincarnatedVariants(uint256 _failedStrategyId) external view returns (uint256[] memory) {
+    function getReincarnatedVariants(uint256 _failedStrategyId) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return reincarnatedVariants[_failedStrategyId];
     }
 }

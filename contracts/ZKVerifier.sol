@@ -2,18 +2,20 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./interfaces/IZKVerifier.sol";
 
 /**
  * @title ZKVerifier
  * @notice Contract for verifying ZK proofs with enhanced security features
- * @dev Implements the IZKVerifier interface with replay protection and timeouts
+ * @dev Implements the IZKVerifier
+
+interface with replay protection and timeouts
  */
 contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
-    using Counters for Counters.Counter;
+    // Counter for nonces (replacing Counters library)
+    uint256 private _currentNonce;
     
     // Verification key hash
     bytes32 public verificationKeyHash;
@@ -40,7 +42,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
     uint256 public maxProofGenerationTime = 5 minutes;
     
     // Nonce for each prover to prevent replay attacks
-    mapping(address => Counters.Counter) private proverNonces;
+    mapping(address => uint256) private proverNonces;
     
     // Batch verification tracking
     struct BatchVerification {
@@ -51,7 +53,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
     }
     
     mapping(bytes32 => BatchVerification) public batchVerifications;
-    Counters.Counter private batchIdCounter;
+    uint256 private batchIdCounter;
       // Proof size limits
     uint256 public minProofSize = 100; // Minimum bytes for a valid proof
     uint256 public maxProofSize = 10000; // Maximum bytes for a valid proof
@@ -110,7 +112,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
         uint256[2][2] memory _delta2,
         uint256[2][] memory _ic,
         bytes32 _verificationReportHash
-    ) external onlyOwner whenNotPaused {
+    ) external onlyOwner whenNotPaused nonReentrant{
         // Calculate the hash of the verification key
         bytes32 newKeyHash = keccak256(abi.encode(
             _alpha1,
@@ -160,7 +162,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
     function registerFormalVerification(
         bytes32 _keyHash,
         bytes32 _verificationReportHash
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_verificationReportHash != bytes32(0), "Invalid verification report hash");
         
         verificationStatus[_keyHash] = VerificationStatus({
@@ -177,7 +179,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @dev Get the next nonce for a prover
      * @return The next nonce for the caller
      */
-    function getNextNonce() external returns (uint256) {
+    function getNextNonce() external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         proverNonces[msg.sender].increment();
         return proverNonces[msg.sender].current();
     }
@@ -187,7 +190,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @param requestId Unique identifier for the proof request
      * @return Timestamp when the proof should be ready by
      */
-    function registerProofRequest(bytes32 requestId) external whenNotPaused returns (uint256) {
+    function registerProofRequest(bytes32 requestId) external whenNotPaused returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(proofTimestamps[requestId] == 0, "Request already registered");
         
         uint256 deadline = block.timestamp + maxProofGenerationTime;
@@ -201,7 +205,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @param _minSize Minimum proof size in bytes
      * @param _maxSize Maximum proof size in bytes
      */
-    function setProofSizeLimits(uint256 _minSize, uint256 _maxSize) external onlyOwner {
+    function setProofSizeLimits(uint256 _minSize, uint256 _maxSize) external onlyOwner nonReentrant{
         require(_minSize > 0, "Min size must be greater than 0");
         require(_maxSize > _minSize, "Max size must be greater than min size");
         
@@ -224,7 +228,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
         bytes calldata proof,
         uint256 nonce,
         uint256 deadline
-    ) external nonReentrant whenNotPaused returns (bool) {
+    ) external nonReentrant whenNotPaused returns (bool)  {
+        // TODO: Add nonReentrant modifier
         require(verificationKeyHash != bytes32(0), "Verification key not set");
         require(publicInputs.length > 0, "No public inputs provided");
         require(proof.length > 0, "No proof provided");
@@ -275,7 +280,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      */    function createBatchVerification(
         bytes[] calldata proofs,
         uint256[][] calldata publicInputsArray
-    ) external nonReentrant whenNotPaused returns (bytes32) {
+    ) external nonReentrant whenNotPaused returns (bytes32)  {
+        // TODO: Add nonReentrant modifier
         require(verificationKeyHash != bytes32(0), "Verification key not set");
         require(proofs.length > 0, "No proofs provided");
         require(proofs.length <= MAX_BATCH_SIZE, "Batch size exceeds maximum");
@@ -317,7 +323,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
         bytes32 batchId,
         bytes[] calldata proofs,
         uint256[][] calldata publicInputsArray
-    ) external nonReentrant whenNotPaused returns (uint256) {
+    ) external nonReentrant whenNotPaused returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(verificationKeyHash != bytes32(0), "Verification key not set");
         require(proofs.length > 0, "No proofs provided");
         require(proofs.length <= MAX_BATCH_SIZE, "Batch size exceeds maximum");
@@ -443,7 +450,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @dev Get the verification key hash
      * @return Hash of the verification key
      */
-    function getVerificationKeyHash() external view override returns (bytes32) {
+    function getVerificationKeyHash() external view override returns (bytes32)  {
+        // TODO: Add nonReentrant modifier
         return verificationKeyHash;
     }
     
@@ -451,7 +459,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @dev Update proof validity period
      * @param newPeriod New validity period in seconds
      */
-    function updateProofValidityPeriod(uint256 newPeriod) external onlyOwner {
+    function updateProofValidityPeriod(uint256 newPeriod) external onlyOwner nonReentrant{
         require(newPeriod > 0, "Period must be greater than 0");
         proofValidityPeriod = newPeriod;
         emit ProofValidityPeriodUpdated(newPeriod);
@@ -461,7 +469,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @dev Update max proof generation time
      * @param newTime New max generation time in seconds
      */
-    function updateMaxProofGenerationTime(uint256 newTime) external onlyOwner {
+    function updateMaxProofGenerationTime(uint256 newTime) external onlyOwner nonReentrant{
         require(newTime > 0, "Time must be greater than 0");
         maxProofGenerationTime = newTime;
         emit MaxProofGenerationTimeUpdated(newTime);
@@ -472,7 +480,8 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @param requestId The request ID to check
      * @return True if the request has timed out
      */
-    function isProofRequestTimedOut(bytes32 requestId) external view returns (bool) {
+    function isProofRequestTimedOut(bytes32 requestId) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         uint256 deadline = proofTimestamps[requestId];
         if (deadline == 0) return false; // Not registered
         return block.timestamp > deadline;
@@ -482,7 +491,7 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
      * @dev Cancel a timed out proof request
      * @param requestId The request ID to cancel
      */
-    function cancelTimedOutRequest(bytes32 requestId) external whenNotPaused {
+    function cancelTimedOutRequest(bytes32 requestId) external whenNotPaused nonReentrant{
         uint256 deadline = proofTimestamps[requestId];
         require(deadline > 0, "Request not registered");
         require(block.timestamp > deadline, "Request not timed out");
@@ -496,14 +505,14 @@ contract ZKVerifier is IZKVerifier, Ownable, ReentrancyGuard, Pausable {
     /**
      * @dev Emergency pause function
      */
-    function emergencyPause() external onlyOwner {
+    function emergencyPause() external onlyOwner nonReentrant{
         _pause();
     }
     
     /**
      * @dev Emergency unpause function
      */
-    function emergencyUnpause() external onlyOwner {
+    function emergencyUnpause() external onlyOwner nonReentrant{
         _unpause();
     }
     

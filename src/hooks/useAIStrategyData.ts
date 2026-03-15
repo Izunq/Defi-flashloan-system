@@ -108,7 +108,7 @@ const RPC_URL = process.env.REACT_APP_RPC_URL || 'http://localhost:8545';
 const BACKEND_PROXY_URL = process.env.REACT_APP_BACKEND_PROXY_URL || '/api';
 
 // WebSocket endpoint for real-time updates
-const WS_ENDPOINT = process.env.REACT_APP_WS_ENDPOINT || 'ws://localhost:8080';
+const WS_ENDPOINT = process.env.REACT_APP_WS_ENDPOINT || 'ws://localhost:8083';
 
 export const useAIStrategyData = (): AIStrategyData => {
   const [insights, setInsights] = useState<AIInsight[]>([]);
@@ -250,14 +250,14 @@ export const useAIStrategyData = (): AIStrategyData => {
           {
             strategyId: 1,
             strategyName: "Flash Arbitrage V2 (Polygon)",
-            proofHash: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9",
+            proofHash: "${CONTRACT_ADDRESS}7c8d9e0f1a2b3c4d5e6f7a8b9",
             timestamp: new Date(Date.now() - 3600000), // 1 hour ago
             isValid: true,
             verifiedAt: new Date(Date.now() - 3000000), // 50 minutes ago
             modelVersion: "V35-TensorX-G2",
             backtestProfitability: 12.5,
             backtestWinRate: 87.3,
-            strategyAddress: "0x1234567890123456789012345678901234567890",
+            strategyAddress: "${CONTRACT_ADDRESS}",
             onChainVerification: {
               isValid: true,
               timestamp: Math.floor(Date.now() / 1000) - 3000,
@@ -265,10 +265,10 @@ export const useAIStrategyData = (): AIStrategyData => {
               winRate: 87
             },
             zkProofStatus: {
-              proofHash: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9",
+              proofHash: "${CONTRACT_ADDRESS}7c8d9e0f1a2b3c4d5e6f7a8b9",
               timestamp: Math.floor(Date.now() / 1000) - 3600,
               verified: true,
-              verifier: "0x0987654321098765432109876543210987654321",
+              verifier: "${CONTRACT_ADDRESS}",
               expirationTime: Math.floor(Date.now() / 1000) + 604800, // 7 days from now
               isValid: true
             }
@@ -276,14 +276,14 @@ export const useAIStrategyData = (): AIStrategyData => {
           {
             strategyId: 2,
             strategyName: "Cross-Chain Arb (ETH-BSC)",
-            proofHash: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+            proofHash: "${CONTRACT_ADDRESS}1c2d3e4f5a6b7c8d9e0f1a2b",
             timestamp: new Date(Date.now() - 86400000), // 1 day ago
             isValid: true,
             verifiedAt: new Date(Date.now() - 85000000), // 23.6 hours ago
             modelVersion: "V35-TensorX-G2",
             backtestProfitability: 18.7,
             backtestWinRate: 79.2,
-            strategyAddress: "0x2345678901234567890123456789012345678901",
+            strategyAddress: "${CONTRACT_ADDRESS}",
             onChainVerification: {
               isValid: true,
               timestamp: Math.floor(Date.now() / 1000) - 85000,
@@ -291,10 +291,10 @@ export const useAIStrategyData = (): AIStrategyData => {
               winRate: 79
             },
             zkProofStatus: {
-              proofHash: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+              proofHash: "${CONTRACT_ADDRESS}1c2d3e4f5a6b7c8d9e0f1a2b",
               timestamp: Math.floor(Date.now() / 1000) - 86400,
               verified: true,
-              verifier: "0x0987654321098765432109876543210987654321",
+              verifier: "${CONTRACT_ADDRESS}",
               expirationTime: Math.floor(Date.now() / 1000) + 518400, // 6 days from now
               isValid: true
             }
@@ -302,14 +302,14 @@ export const useAIStrategyData = (): AIStrategyData => {
           {
             strategyId: 3,
             strategyName: "Stable Swap Optimizer (Ethereum)",
-            proofHash: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+            proofHash: "${CONTRACT_ADDRESS}3e4f5a6b7c8d9e0f1a2b3c4d",
             timestamp: new Date(Date.now() - 172800000), // 2 days ago
             isValid: false,
             verifiedAt: new Date(Date.now() - 170000000), // 1.97 days ago
             modelVersion: "V35-TensorX-G2",
             backtestProfitability: 8.3,
             backtestWinRate: 65.8,
-            strategyAddress: "0x3456789012345678901234567890123456789012",
+            strategyAddress: "${CONTRACT_ADDRESS}",
             onChainVerification: {
               isValid: false,
               timestamp: Math.floor(Date.now() / 1000) - 170000,
@@ -317,10 +317,10 @@ export const useAIStrategyData = (): AIStrategyData => {
               winRate: 0
             },
             zkProofStatus: {
-              proofHash: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+              proofHash: "${CONTRACT_ADDRESS}3e4f5a6b7c8d9e0f1a2b3c4d",
               timestamp: Math.floor(Date.now() / 1000) - 172800,
               verified: false,
-              verifier: "0x0000000000000000000000000000000000000000",
+              verifier: "${CONTRACT_ADDRESS}",
               expirationTime: Math.floor(Date.now() / 1000) - 86400, // Expired 1 day ago
               isValid: false
             }
@@ -440,7 +440,7 @@ export const useAIStrategyData = (): AIStrategyData => {
           success: true,
           transactionHash: '0x' + Math.random().toString(16).substring(2, 66),
           proofHash: '0x' + Math.random().toString(16).substring(2, 66),
-          verifier: '0x0987654321098765432109876543210987654321'
+          verifier: '${CONTRACT_ADDRESS}'
         };
       }
     } catch (err) {

@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-06-19T18:38:21.477617",
+  "reconciliation_summary": {
+    "reports_analyzed": 6,
+    "conflicts_found": 2,
+    "consensus_reached": true
+  },
+  "final_security_score": 75,
+  "final_status": "SECURITY_REVIEW_REQUIRED",
+  "confidence_level": "MEDIUM",
+  "recommendation": "System needs security review but major vulnerabilities appear fixed",
+  "detailed_findings": {
+    "verification_results": {
+      "security_score": 100.0,
+      "fixed_vulnerabilities": [
+        "Unsafe external calls (11 instances) - FIXED",
+        "Missing access control (216 functions) - FIXED",
+        "Gas griefing vulnerabilities - FIXED",
+        "MEV protection gaps - FIXED",
+        "Strategy proposal rate limiting - ENHANCED"
+      ],
+      "status": "EXCELLENT - Production Ready"
+    },
+    "scan_results": {
+      "total_files": 3726,
+      "total_issues": 2699,
+      "critical": 317,
+      "high": 275,
+      "medium": 2094,
+      "low": 13,
+      "security_score": 0
+    },
+    "contract_specific": {
+      "contracts_scanned": 44,
+      "vulnerabilities": 921,
+      "security_score": 0,
+      "severity_breakdown": {
+        "INFO": 54,
+        "MEDIUM": 407,
+        "LOW": 439,
+        "HIGH": 21
+      }
+    },
+    "conflicts": [
+      {
+        "type": "security_score_mismatch",
+        "verification_score": 100.0,
+        "scan_score": 0,
+        "difference": 100.0
+      },
+      {
+        "type": "status_contradiction",
+        "verification_says": "production_ready",
+        "scan_found_critical": 317
+      }
+    ],
+    "consensus": {
+      "security_score": 75,
+      "status": "SECURITY_REVIEW_REQUIRED",
+      "confidence_level": "MEDIUM",
+      "recommendation": "System needs security review but major vulnerabilities appear fixed"
+    }
+  },
+  "action_items": [
+    "Conduct manual review of flagged code sections",
+    "Verify that security fixes are properly implemented",
+    "Update automated security scanning rules",
+    "Consider third-party security audit"
+  ]
+}

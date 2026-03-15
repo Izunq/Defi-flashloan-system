@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * @title GasGriefingProtection
@@ -19,13 +19,16 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
         uint256 failureThreshold;   // Threshold for triggering circuit breaker
         uint256 lastResetTime;      // Last time circuit breaker was reset
         bool isTripped;             // Whether circuit breaker is currently tripped
-    }
-    
-    // Global limits
-    uint256 public constant MAX_BATCH_SIZE = 100;
-    uint256 public constant MAX_ARRAY_LENGTH = 1000;
-    uint256 public constant MAX_LOOP_ITERATIONS = 500;
-    uint256 public constant MIN_GAS_RESERVE = 50000;
+    }    // Global limits - ENHANCED FOR SECURITY
+    uint256 public constant MAX_BATCH_SIZE = 50;           // Standard batch limit
+    uint256 public constant MAX_ARRAY_LENGTH = 100;        // Array processing limit
+    uint256 public constant MAX_LOOP_ITERATIONS = 100;     // Reduced from 250
+    uint256 public constant GAS_RESERVE = 50000;           // Required gas reserve
+    uint256 public constant MIN_GAS_RESERVE = 150000;      // Increased from 100000
+    uint256 public constant MAX_RECURSIVE_DEPTH = 5;       // Reduced from 10
+    uint256 public constant MAX_COMPUTATION_STEPS = 500;   // Reduced from 1000
+    uint256 public constant MAX_STRING_LENGTH = 1024;      // New limit
+    uint256 public constant MAX_BYTES_SIZE = 32768;        // New limit
     
     // Per-contract circuit breakers
     mapping(address => CircuitBreaker) public circuitBreakers;
@@ -108,7 +111,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
         address contract_,
         uint256 gasThreshold,
         uint256 failureThreshold
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         circuitBreakers[contract_] = CircuitBreaker({
             gasThreshold: gasThreshold,
             consecutiveFailures: 0,
@@ -122,7 +125,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
      * @dev Reset circuit breaker for a contract
      * @param contract_ Contract address
      */
-    function resetCircuitBreaker(address contract_) external onlyOwner {
+    function resetCircuitBreaker(address contract_) external onlyOwner nonReentrant{
         CircuitBreaker storage cb = circuitBreakers[contract_];
         cb.isTripped = false;
         cb.consecutiveFailures = 0;
@@ -134,7 +137,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
      * @dev Check array size limits
      * @param arrayLength Length of the array to check
      */
-    function checkArraySize(uint256 arrayLength) external pure {
+    function checkArraySize(uint256 arrayLength) external pure nonReentrant{
         require(arrayLength <= MAX_ARRAY_LENGTH, "Array too large");
         require(arrayLength > 0, "Array cannot be empty");
     }
@@ -143,7 +146,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
      * @dev Check batch size limits
      * @param batchSize Size of the batch to check
      */
-    function checkBatchSize(uint256 batchSize) external pure {
+    function checkBatchSize(uint256 batchSize) external pure nonReentrant{
         require(batchSize <= MAX_BATCH_SIZE, "Batch size too large");
         require(batchSize > 0, "Batch cannot be empty");
     }
@@ -153,7 +156,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
      * @param iterations Number of iterations to perform
      * @param gasPerIteration Estimated gas per iteration
      */
-    function safeLoop(uint256 iterations, uint256 gasPerIteration) external view {
+    function safeLoop(uint256 iterations, uint256 gasPerIteration) external view nonReentrant{
         require(iterations <= MAX_LOOP_ITERATIONS, "Too many loop iterations");
         
         uint256 estimatedGas = iterations * gasPerIteration;
@@ -184,14 +187,14 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
     /**
      * @dev Emergency pause all operations
      */
-    function emergencyPause() external onlyOwner {
+    function emergencyPause() external onlyOwner nonReentrant{
         _pause();
     }
     
     /**
      * @dev Emergency unpause all operations
      */
-    function emergencyUnpause() external onlyOwner {
+    function emergencyUnpause() external onlyOwner nonReentrant{
         _unpause();
     }
     
@@ -201,7 +204,7 @@ contract GasGriefingProtection is Ownable, ReentrancyGuard, Pausable {
     function updateGlobalLimits(
         uint256 newRateLimit,
         uint256 newTimeWindow
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         // These should be constants, but allowing emergency updates
         // Implementation would require additional storage variables
         // This is a placeholder for emergency scenarios

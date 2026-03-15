@@ -1,0 +1,42 @@
+# Terraform variables file for GCP deployment
+# Copy this file to terraform.tfvars and fill in your values
+
+# Required Variables
+project_id = "your-gcp-project-id"
+project_name = "flashloan-arbitrage"
+region = "us-central1"
+zone = "us-central1-a"
+environment = "development"
+
+# Database Configuration
+database_password = "your-secure-database-password"
+database_name = "flashloan_db"
+database_user = "flashloan_user"
+db_tier = "db-f1-micro"  # Use db-g1-small or higher for production
+
+# GKE Configuration
+gke_num_nodes = 2
+gke_min_nodes = 1
+gke_max_nodes = 10
+gke_machine_type = "e2-standard-4"
+use_preemptible_nodes = true  # Set to false for production
+
+# AI/ML Configuration
+gemini_api_key = "your-gemini-api-key"
+
+# Blockchain RPC URLs (optional)
+ethereum_rpc_url = "https://mainnet.infura.io/v3/YOUR_INFURA_KEY"
+polygon_rpc_url = "https://polygon-rpc.com"
+bsc_rpc_url = "https://bsc-dataseed.binance.org"
+
+# Container Images (will be built and pushed)
+artemis_image = "gcr.io/your-project-id/artemis-ai-core:latest"
+frontend_image = "gcr.io/your-project-id/flashloan-frontend:latest"
+
+# Monitoring Configuration
+notification_email = "your-email@example.com"
+enable_monitoring = true
+
+# Cost Optimization
+enable_autoscaling = true
+use_spot_instances = true

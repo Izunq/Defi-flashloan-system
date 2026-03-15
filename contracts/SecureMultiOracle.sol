@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
@@ -105,7 +106,7 @@ contract SecureMultiOracle is AccessControl, ReentrancyGuard, Pausable {
     }
 
     constructor(address admin) {
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), admin);
         _grantRole(ADMIN_ROLE, admin);
         _grantRole(EMERGENCY_ROLE, admin);
     }
@@ -117,7 +118,8 @@ contract SecureMultiOracle is AccessControl, ReentrancyGuard, Pausable {
         address oracleAddress,
         uint256 weight,
         string calldata source
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(oracleAddress != address(0), "Invalid oracle address");
         require(weight > 0 && weight <= 100, "Invalid weight");
         require(!oracles[oracleAddress].isActive, "Oracle already registered");
@@ -491,7 +493,8 @@ contract SecureMultiOracle is AccessControl, ReentrancyGuard, Pausable {
      * @return price Consensus price
      * @return valid Whether the price is valid and within deviation limits
      */
-    function getConsensusPrice(address token) external view returns (uint256 price, bool valid) {
+    function getConsensusPrice(address token) external view returns (uint256 price, bool valid)  {
+        // TODO: Add nonReentrant modifier
         require(oracleList.length >= MIN_ORACLES_REQUIRED, "Insufficient oracles");
         
         uint256[] memory prices = new uint256[](oracleList.length);

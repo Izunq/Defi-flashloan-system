@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./HalalAssetRegistry.sol";
 
 /**
@@ -155,7 +156,8 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
         address _paymentAsset,
         uint256 _paymentAmount,
         uint256 _deliveryDate
-    ) external nonReentrant whenNotPaused onlyHalalAsset(_assetToDeliver) onlyHalalAsset(_paymentAsset) returns (uint256) {
+    ) external nonReentrant whenNotPaused onlyHalalAsset(_assetToDeliver) onlyHalalAsset(_paymentAsset) returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(_seller != address(0), "Invalid seller address");
         require(_assetToDeliver != address(0), "Invalid asset address");
         require(_paymentAsset != address(0), "Invalid payment asset address");
@@ -210,7 +212,7 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function makeSalamPayment(
         uint256 _salamId
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(salamContract.buyer == msg.sender, "Not the buyer");
@@ -240,7 +242,7 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function initiateDelivery(
         uint256 _salamId
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(salamContract.seller == msg.sender, "Not the seller");
@@ -271,7 +273,7 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function approveDelivery(
         uint256 _salamId
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(salamContract.buyer == msg.sender, "Not the buyer");
@@ -325,7 +327,7 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
     function disputeSalamContract(
         uint256 _salamId,
         string calldata _reason
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(
@@ -359,7 +361,8 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
         uint256 _salamId,
         bool _refundBuyer,
         string calldata _reason
-    ) external nonReentrant onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external nonReentrant onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(salamContract.status == SalamStatus.Disputed, "Contract not disputed");
@@ -400,7 +403,7 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
     function cancelSalamContract(
         uint256 _salamId,
         string calldata _reason
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         SalamContract storage salamContract = salamContracts[_salamId];
         
         require(
@@ -436,7 +439,8 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function getBuyerContracts(
         address _buyer
-    ) external view returns (uint256[] memory) {
+    ) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return buyerContracts[_buyer];
     }
 
@@ -447,7 +451,8 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      */
     function getSellerContracts(
         address _seller
-    ) external view returns (uint256[] memory) {
+    ) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return sellerContracts[_seller];
     }
 
@@ -455,21 +460,22 @@ contract SalamFactory is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get contract count
      * @return Number of Salam contracts
      */
-    function getContractCount() external view returns (uint256) {
+    function getContractCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return nextSalamId - 1;
     }
 
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

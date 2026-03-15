@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-06-19T19:02:50.664839",
+  "security_score": 12.54545454545454,
+  "total_checks": 11,
+  "passed_checks": 6,
+  "issues_found": 5,
+  "production_ready": false,
+  "issues": [
+    {
+      "severity": "HIGH",
+      "category": "Compilation",
+      "description": "Smart contract compilation failed: \u001b[31mAn unexpected error occurred:\u001b[39m\nSyntaxError: Cannot convert ${CONTRACT_ADDRESS}fffffffffffffffefffffc2f to a BigInt\n    at BigInt (<anonymous>)\n    at Object.<anonymous> (C:\\Users\\mahia\\New_Flashloan\\node_modules\\@noble\\curves\\src\\secp256k1.ts:11:20)\n    at Module._compile (node:internal/modules/cjs/loader:1730:14)\n    at Object..js (node:internal/modules/cjs/loader:1895:10)\n    at Module.load (node:internal/modules/cjs/loader:1465:32)\n    at Function._load (node:internal/modules/cjs/loader:1282:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n    at Module.require (node:internal/modules/cjs/loader:1487:12)\n    at require (node:internal/modules/helpers:135:16)\n",
+      "file_path": "contracts/",
+      "solution": "Fix compilation errors in smart contracts",
+      "timestamp": "2025-06-19T19:02:46.348605"
+    },
+    {
+      "severity": "HIGH",
+      "category": "Dependencies",
+      "description": "Test execution failing due to BigInt conversion error",
+      "file_path": "package.json",
+      "solution": "Check for corrupted environment variables or dependency conflicts",
+      "timestamp": "2025-06-19T19:02:48.265070"
+    },
+    {
+      "severity": "LOW",
+      "category": "File Access",
+      "description": "Could not read contracts/MudarabahInvestmentPool.sol: 'charmap' codec can't decode byte 0x8f in position 778: character maps to <undefined>",
+      "file_path": "contracts/MudarabahInvestmentPool.sol",
+      "solution": "Check file permissions and accessibility",
+      "timestamp": "2025-06-19T19:02:48.267671"
+    },
+    {
+      "severity": "HIGH",
+      "category": "Secret Management",
+      "description": "Hardcoded secrets found in .env",
+      "file_path": ".env",
+      "solution": "Use environment variables or secure key management",
+      "timestamp": "2025-06-19T19:02:48.268273"
+    },
+    {
+      "severity": "HIGH",
+      "category": "Secret Management",
+      "description": "Hardcoded secrets found in .env.production",
+      "file_path": ".env.production",
+      "solution": "Use environment variables or secure key management",
+      "timestamp": "2025-06-19T19:02:48.268928"
+    }
+  ],
+  "summary": {
+    "high_severity": 4,
+    "medium_severity": 0,
+    "low_severity": 1
+  }
+}

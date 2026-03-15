@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./TrustCurve.sol";
 import "./interfaces/IFlashLoanSimpleReceiver.sol";
 import "./interfaces/IAavePool.sol";
@@ -162,7 +163,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         address _token,
         uint256 _amount,
         bytes calldata _executionData
-    ) external nonReentrant whenNotPaused onlyRole(OPERATOR_ROLE) {
+    ) external nonReentrant whenNotPaused onlyRole(OPERATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(!emergencyShutdown, "Emergency shutdown active");
         require(tx.gasprice <= maxGasPrice, "Gas price too high");
         require(strategyAddresses[_strategyId] != address(0), "Strategy not registered");
@@ -208,7 +210,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 premium,
         address initiator,
         bytes calldata params
-    ) external override nonReentrant returns (bool) {
+    ) external override nonReentrant returns (bool)  {
+        // TODO: Add nonReentrant modifier
         require(msg.sender == address(LENDING_POOL), "Caller must be lending pool");
         require(initiator == address(this), "Initiator must be this contract");
         
@@ -326,7 +329,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     function registerStrategy(
         uint256 _strategyId,
         address _strategyAddress
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_strategyAddress != address(0), "Invalid strategy address");
         require(strategyAddresses[_strategyId] == address(0), "Strategy ID already registered");
         require(strategyIds[_strategyAddress] == 0, "Strategy address already registered");
@@ -343,7 +347,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
      */
     function unregisterStrategy(
         uint256 _strategyId
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         address strategyAddress = strategyAddresses[_strategyId];
         require(strategyAddress != address(0), "Strategy not registered");
         
@@ -363,7 +368,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _minTrustScore,
         uint256 _tier1Threshold,
         uint256 _tier2Threshold
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_tier1Threshold > _tier2Threshold, "Tier 1 must be higher than Tier 2");
         require(_tier2Threshold > _minTrustScore, "Tier 2 must be higher than min score");
         
@@ -389,7 +395,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _minTrustScore,
         uint256 _tier1Threshold,
         uint256 _tier2Threshold
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateThresholds",
             _minTrustScore,
@@ -420,7 +427,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _tier1Multiplier,
         uint256 _tier2Multiplier,
         uint256 _tier3Multiplier
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_tier1Multiplier <= 10000, "Multiplier cannot exceed 100%");
         require(_tier1Multiplier >= _tier2Multiplier, "Tier 1 must be >= Tier 2");
         require(_tier2Multiplier >= _tier3Multiplier, "Tier 2 must be >= Tier 3");
@@ -447,7 +455,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _tier1Multiplier,
         uint256 _tier2Multiplier,
         uint256 _tier3Multiplier
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateMultipliers",
             _tier1Multiplier,
@@ -476,7 +485,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     function initiateFeeSettingsUpdate(
         uint256 _protocolFeeBps,
         address _feeCollector
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_protocolFeeBps <= 2000, "Fee cannot exceed 20%");
         require(_feeCollector != address(0), "Invalid fee collector");
         
@@ -499,7 +509,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     function executeFeeSettingsUpdate(
         uint256 _protocolFeeBps,
         address _feeCollector
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateFeeSettings",
             _protocolFeeBps,
@@ -528,7 +539,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _maxGasPrice,
         uint256 _maxExecutionGas,
         uint256 _maxSlippageBps
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_maxSlippageBps <= 1000, "Slippage cannot exceed 10%");
         
         bytes32 operationId = keccak256(abi.encodePacked(
@@ -553,7 +565,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         uint256 _maxGasPrice,
         uint256 _maxExecutionGas,
         uint256 _maxSlippageBps
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32 operationId = keccak256(abi.encodePacked(
             "updateExecutionLimits",
             _maxGasPrice,
@@ -577,7 +590,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
      * @dev Cancel timelock operation
      * @param _operationId Operation ID to cancel
      */
-    function cancelTimelock(bytes32 _operationId) external onlyRole(ADMIN_ROLE) {
+    function cancelTimelock(bytes32 _operationId) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(timelockExpirations[_operationId] > 0, "Timelock not initiated");
         
         delete timelockExpirations[_operationId];
@@ -588,7 +602,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     /**
      * @dev Activate emergency shutdown
      */
-    function activateEmergencyShutdown() external onlyRole(EMERGENCY_ROLE) {
+    function activateEmergencyShutdown() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(!emergencyShutdown, "Emergency shutdown already active");
         
         emergencyShutdown = true;
@@ -600,7 +615,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     /**
      * @dev Deactivate emergency shutdown (requires timelock)
      */
-    function initiateEmergencyShutdownDeactivation() external onlyRole(ADMIN_ROLE) {
+    function initiateEmergencyShutdownDeactivation() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(emergencyShutdown, "Emergency shutdown not active");
         
         bytes32 operationId = keccak256(abi.encodePacked("deactivateEmergencyShutdown"));
@@ -613,7 +629,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     /**
      * @dev Execute emergency shutdown deactivation
      */
-    function executeEmergencyShutdownDeactivation() external onlyRole(ADMIN_ROLE) {
+    function executeEmergencyShutdownDeactivation() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(emergencyShutdown, "Emergency shutdown not active");
         
         bytes32 operationId = keccak256(abi.encodePacked("deactivateEmergencyShutdown"));
@@ -640,7 +657,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         address _token,
         uint256 _amount,
         address _recipient
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_recipient != address(0), "Invalid recipient");
         
         bytes32 operationId = keccak256(abi.encodePacked(
@@ -665,7 +683,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
         address _token,
         uint256 _amount,
         address _recipient
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32 operationId = keccak256(abi.encodePacked(
             "withdrawTokens",
             _token,
@@ -696,7 +715,7 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
     function emergencyWithdraw(
         address _token,
         address _recipient
-    ) external onlyRole(EMERGENCY_ROLE) whenPaused {
+    ) external onlyRole(EMERGENCY_ROLE) whenPaused  nonReentrant{
         require(_recipient != address(0), "Invalid recipient");
         require(emergencyShutdown, "Emergency shutdown not active");
         
@@ -733,7 +752,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
      * @param _strategyId The ID of the strategy
      * @return The address of the strategy
      */
-    function getStrategyAddress(uint256 _strategyId) external view returns (address) {
+    function getStrategyAddress(uint256 _strategyId) external view returns (address)  {
+        // TODO: Add nonReentrant modifier
         return strategyAddresses[_strategyId];
     }
     
@@ -742,7 +762,8 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
      * @param _strategyAddress The address of the strategy
      * @return The ID of the strategy
      */
-    function getStrategyId(address _strategyAddress) external view returns (uint256) {
+    function getStrategyId(address _strategyAddress) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return strategyIds[_strategyAddress];
     }
     
@@ -751,21 +772,22 @@ contract ProofAwareExecutorV35 is AccessControl, ReentrancyGuard, Pausable, IFla
      * @param _strategyId The ID of the strategy
      * @return True if the strategy is registered, false otherwise
      */
-    function isStrategyRegistered(uint256 _strategyId) external view returns (bool) {
+    function isStrategyRegistered(uint256 _strategyId) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return strategyAddresses[_strategyId] != address(0);
     }
     
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(EMERGENCY_ROLE) {
+    function pause() external onlyRole(EMERGENCY_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
     
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         require(!emergencyShutdown, "Cannot unpause during emergency shutdown");
         _unpause();
     }

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./CrossChainSecurityValidator.sol";
@@ -13,7 +15,7 @@ import "./CrossChainSecurityValidator.sol";
  * @notice Next-generation cross-chain bridge with enhanced security features
  * @dev Implements multi-oracle consensus, comprehensive validation, and robust error handling
  */
-contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
+contract EnhancedCrossChainBridge is AccessControlEnumerable, ReentrancyGuard, Pausable, Ownable {
     using ECDSA for bytes32;
 
     // Enhanced role definitions
@@ -109,8 +111,14 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
     
     TimeoutConfig public timeoutConfig;
     
+    // Security features for external call protection
+    mapping(address => bool) public approvedTargets;
+    mapping(bytes4 => bool) public functionWhitelist;
+    mapping(address => uint256) public targetGasLimits;
+    
     uint256 public constant MIN_ORACLE_SIGNATURES = 3;
     uint256 public constant MAX_ORACLE_SIGNATURES = 7;
+    uint256 public constant MAX_OPERATION_VALUE = 50 ether;
     uint256 public constant MAX_PAYLOAD_SIZE = 32768; // 32KB
     uint256 public constant SIGNATURE_VALIDITY_DURATION = 600; // 10 minutes
     uint256 public constant STATE_VERIFICATION_DEPTH = 12; // blocks
@@ -118,6 +126,9 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
     uint256 public totalOperations;
     uint256 public successfulOperations;
     uint256 public failedOperations;
+      // Security mappings
+    mapping(address => bool) public isApprovedTarget;
+    mapping(bytes4 => bool) public isWhitelistedSelector;
     
     // Events
     event CrossChainOperationCreated(
@@ -171,17 +182,22 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
         string reason
     );
 
+    // Events for security tracking
+    event TargetApproved(address indexed target, address indexed approver);
+    event TargetRemoved(address indexed target, address indexed remover);
+    event FunctionWhitelisted(bytes4 indexed selector, address indexed approver);
+    event FunctionRemovedFromWhitelist(bytes4 indexed selector, address indexed remover);
+
     /**
      * @notice Initialize the enhanced cross-chain bridge
      * @param _securityValidator Address of the security validator contract
      * @param _initialOracles Array of initial oracle addresses
      * @param _supportedChainIds Array of supported chain IDs
-     */
-    constructor(
+     */    constructor(
         address _securityValidator,
         address[] memory _initialOracles,
         uint256[] memory _supportedChainIds
-    ) {
+    ) Ownable(msg.sender) {
         require(_securityValidator != address(0), "Invalid validator address");
         require(_initialOracles.length >= MIN_ORACLE_SIGNATURES, "Insufficient oracles");
         require(_initialOracles.length <= MAX_ORACLE_SIGNATURES, "Too many oracles");
@@ -189,7 +205,7 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
         securityValidator = CrossChainSecurityValidator(_securityValidator);
         
         // Set up roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(BRIDGE_ADMIN_ROLE, msg.sender);
         _grantRole(EMERGENCY_ROLE, msg.sender);
         
@@ -231,7 +247,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
         bytes calldata _payload,
         uint256 _value,
         uint256 _deadline
-    ) external payable nonReentrant whenNotPaused returns (bytes32 operationId) {
+    ) external payable nonReentrant whenNotPaused returns (bytes32 operationId)  {
+        // TODO: Add nonReentrant modifier
         // Enhanced validation checks
         require(supportedChains[_targetChainId], "Unsupported target chain");
         require(_target != address(0), "Invalid target address");
@@ -369,7 +386,7 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @notice Execute cross-chain operation after consensus
      * @param _operationId Operation identifier
      */
-    function executeOperation(bytes32 _operationId) external nonReentrant whenNotPaused {
+    function executeOperation(bytes32 _operationId) external nonReentrant whenNotPaused nonReentrant{
         CrossChainOperation storage operation = operations[_operationId];
         require(operation.operationId != bytes32(0), "Operation not found");
         require(operation.state == OperationState.EXECUTING, "Operation not ready for execution");
@@ -405,22 +422,39 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
         }
         
         emit OperationExecuted(_operationId, success, result);
-    }
-
-    /**
-     * @notice Internal function to execute operation with timeout protection
+    }    /**
+     * @notice Internal function to execute operation with timeout protection - SECURITY ENHANCED
      * @param _operationId Operation identifier
      */
-    function _executeWithTimeout(bytes32 _operationId) external returns (bool, bytes memory) {
+    function _executeWithTimeout(bytes32 _operationId) external returns (bool, bytes memory)  {
+        // TODO: Add nonReentrant modifier
         require(msg.sender == address(this), "Internal function only");
         
         CrossChainOperation storage operation = operations[_operationId];
+          // SECURITY: Enhanced validation before external call
+        require(operation.target != address(0), "Invalid target address");
+        require(operation.target.code.length > 0, "Target must be a contract");
+        require(operation.value <= MAX_OPERATION_VALUE, "Value exceeds maximum");
+        require(operation.payload.length <= MAX_PAYLOAD_SIZE, "Payload too large");
+        require(operation.payload.length >= 4, "Payload too small");
+        require(block.timestamp <= operation.deadline, "Operation expired");
+        require(gasleft() > 100000, "Insufficient gas for safe execution");
         
-        // Execute the actual cross-chain operation
+        // Validate target contract is approved
+        require(isApprovedTarget[operation.target], "Target not approved");
+        
+        // Additional security: Check function selector whitelist
+        bytes4 selector = bytes4(operation.payload);
+        require(isWhitelistedSelector[selector], "Function selector not whitelisted");
+        
+        // Execute the actual cross-chain operation with enhanced security
         (bool success, bytes memory result) = operation.target.call{
             value: operation.value,
-            gas: gasleft() - 10000 // Reserve gas for cleanup
+            gas: gasleft() - 50000 // Reserve more gas for cleanup
         }(operation.payload);
+        
+        // Validate return data size
+        require(result.length <= 8192, "Return data too large");
         
         return (success, result);
     }
@@ -600,7 +634,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
     function emergencyHalt(
         bytes32 _operationId,
         string calldata _reason
-    ) external onlyRole(EMERGENCY_ROLE) {
+    ) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         CrossChainOperation storage operation = operations[_operationId];
         require(operation.operationId != bytes32(0), "Operation not found");
         require(
@@ -621,7 +656,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      */
     function updateTimeoutConfig(
         TimeoutConfig calldata _newConfig
-    ) external onlyRole(BRIDGE_ADMIN_ROLE) {
+    ) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newConfig.operationTimeout > 0, "Invalid operation timeout");
         require(_newConfig.consensusTimeout > 0, "Invalid consensus timeout");
         require(_newConfig.executionTimeout > 0, "Invalid execution timeout");
@@ -634,7 +670,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @notice Add authorized oracle
      * @param _oracle Oracle address to add
      */
-    function addOracle(address _oracle) external onlyRole(BRIDGE_ADMIN_ROLE) {
+    function addOracle(address _oracle) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_oracle != address(0), "Invalid oracle address");
         require(!authorizedOracles[_oracle], "Oracle already authorized");
         require(getRoleMemberCount(ORACLE_ROLE) < MAX_ORACLE_SIGNATURES, "Too many oracles");
@@ -647,7 +684,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @notice Remove authorized oracle
      * @param _oracle Oracle address to remove
      */
-    function removeOracle(address _oracle) external onlyRole(BRIDGE_ADMIN_ROLE) {
+    function removeOracle(address _oracle) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(authorizedOracles[_oracle], "Oracle not authorized");
         require(getRoleMemberCount(ORACLE_ROLE) > MIN_ORACLE_SIGNATURES, "Cannot remove oracle - minimum required");
         
@@ -659,7 +697,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @notice Add supported chain
      * @param _chainId Chain ID to add
      */
-    function addSupportedChain(uint256 _chainId) external onlyRole(BRIDGE_ADMIN_ROLE) {
+    function addSupportedChain(uint256 _chainId) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_chainId > 0, "Invalid chain ID");
         require(!supportedChains[_chainId], "Chain already supported");
         
@@ -670,10 +709,64 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @notice Remove supported chain
      * @param _chainId Chain ID to remove
      */
-    function removeSupportedChain(uint256 _chainId) external onlyRole(BRIDGE_ADMIN_ROLE) {
+    function removeSupportedChain(uint256 _chainId) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(supportedChains[_chainId], "Chain not supported");
         
         supportedChains[_chainId] = false;
+    }
+
+    /**
+     * @notice Approve target contract for cross-chain operations
+     * @param _target Target contract address
+     */
+    function approveTarget(address _target) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
+        require(_target != address(0), "Invalid target address");
+        require(!approvedTargets[_target], "Target already approved");
+        
+        approvedTargets[_target] = true;
+        
+        emit TargetApproved(_target, msg.sender);
+    }
+
+    /**
+     * @notice Remove target contract approval
+     * @param _target Target contract address
+     */
+    function removeTargetApproval(address _target) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
+        require(approvedTargets[_target], "Target not approved");
+        
+        approvedTargets[_target] = false;
+        
+        emit TargetRemoved(_target, msg.sender);
+    }
+
+    /**
+     * @notice Whitelist function selector for cross-chain operations
+     * @param _selector Function selector to whitelist
+     */
+    function whitelistFunctionSelector(bytes4 _selector) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
+        require(!functionWhitelist[_selector], "Selector already whitelisted");
+        
+        functionWhitelist[_selector] = true;
+        
+        emit FunctionWhitelisted(_selector, msg.sender);
+    }
+
+    /**
+     * @notice Remove function selector from whitelist
+     * @param _selector Function selector to remove
+     */
+    function removeFunctionSelectorFromWhitelist(bytes4 _selector) external onlyRole(BRIDGE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
+        require(functionWhitelist[_selector], "Selector not whitelisted");
+        
+        functionWhitelist[_selector] = false;
+        
+        emit FunctionRemovedFromWhitelist(_selector, msg.sender);
     }
 
     /**
@@ -681,7 +774,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @param _operationId Operation identifier
      * @return operation Complete operation details
      */
-    function getOperation(bytes32 _operationId) external view returns (CrossChainOperation memory operation) {
+    function getOperation(bytes32 _operationId) external view returns (CrossChainOperation memory operation)  {
+        // TODO: Add nonReentrant modifier
         return operations[_operationId];
     }
 
@@ -690,7 +784,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @param _operationId Operation identifier
      * @return count Number of valid signatures
      */
-    function getOperationSignatureCount(bytes32 _operationId) external view returns (uint256 count) {
+    function getOperationSignatureCount(bytes32 _operationId) external view returns (uint256 count)  {
+        // TODO: Add nonReentrant modifier
         address[] memory oracles = _getAuthorizedOracles();
         for (uint256 i = 0; i < oracles.length; i++) {
             if (oracleSignatures[_operationId][oracles[i]].isValid) {
@@ -705,7 +800,8 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
      * @param _operationId Operation identifier
      * @return expired True if operation has expired
      */
-    function isOperationExpired(bytes32 _operationId) external view returns (bool expired) {
+    function isOperationExpired(bytes32 _operationId) external view returns (bool expired)  {
+        // TODO: Add nonReentrant modifier
         CrossChainOperation memory operation = operations[_operationId];
         return block.timestamp > operation.deadline;
     }
@@ -737,14 +833,14 @@ contract EnhancedCrossChainBridge is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @notice Pause bridge operations
      */
-    function pause() external onlyRole(EMERGENCY_ROLE) {
+    function pause() external onlyRole(EMERGENCY_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @notice Unpause bridge operations
      */
-    function unpause() external onlyRole(BRIDGE_ADMIN_ROLE) {
+    function unpause() external onlyRole(BRIDGE_ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

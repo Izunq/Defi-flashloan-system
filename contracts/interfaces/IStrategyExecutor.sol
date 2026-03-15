@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IStrategyExecutor
  * @notice Interface for strategy executor contracts
- * @dev Implement this interface to execute arbitrage strategies
+ * @dev Implement this
+
+interface to execute arbitrage strategies
  */
+
 interface IStrategyExecutor {
     /**
      * @dev Execution details struct

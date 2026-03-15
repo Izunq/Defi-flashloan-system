@@ -4,7 +4,7 @@
     "passed_tests": 46,
     "failed_tests": 6,
     "success_rate": 88.46153846153845,
-    "total_execution_time": 4.344486474990845,
+    "total_execution_time": 4.375015497207642,
     "total_gas_usage": 14253525
   },
   "categories": {
@@ -73,27 +73,27 @@
     {
       "name": "Loop Protection: Insufficient Gas",
       "error": "Expected False, got True",
-      "execution_time": 2.1457672119140625e-06
+      "execution_time": 2.6226043701171875e-06
     },
     {
       "name": "Retry Mechanism: Retry on Transient Failure",
-      "error": "Attempts mismatch: expected 2, got 1",
-      "execution_time": 4.5299530029296875e-06
+      "error": "Success mismatch: expected True, got False; Attempts mismatch: expected 2, got 4",
+      "execution_time": 1.5497207641601562e-05
     },
     {
       "name": "External Call: Successful External Call",
       "error": "Optimization expectations not met",
-      "execution_time": 4.00543212890625e-05
+      "execution_time": 3.0517578125e-05
     },
     {
       "name": "External Call: High-Failure Rate Call",
       "error": "Optimization expectations not met",
-      "execution_time": 3.266334533691406e-05
+      "execution_time": 1.049041748046875e-05
     },
     {
       "name": "Rate Limiting: Rate Limit Exceeded",
       "error": "Expected False, got True",
-      "execution_time": 6.198883056640625e-06
+      "execution_time": 6.4373016357421875e-06
     },
     {
       "name": "Gas Estimation: Batch Operation Estimation",
@@ -102,7 +102,7 @@
     }
   ],
   "performance": {
-    "avg_execution_time": 0.08354781682674702,
+    "avg_execution_time": 0.08413491340783927,
     "avg_gas_usage": 1781690.625
   },
   "recommendations": [

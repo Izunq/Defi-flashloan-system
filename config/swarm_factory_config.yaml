@@ -1,0 +1,55 @@
+# Swarm Agent Factory Configuration
+# =================================
+
+# Redis connection for inter-agent communication
+redis_url: "redis://localhost:6379/0"
+
+# Web3 provider for blockchain interaction
+web3_provider: "http://localhost:8545"
+
+# Available resources for micro-bots
+resources:
+  cpu_cores: 8
+  memory_mb: 16384
+  network_bandwidth_mbps: 1000
+
+# Scaling parameters
+scaling_parameters:
+  min_performance_threshold: 0.5  # Minimum profit in USD to consider a bot successful
+  scale_up_factor: 2.0            # Multiply count by this factor when scaling up
+  scale_down_factor: 0.5          # Multiply count by this factor when scaling down
+  evaluation_interval_seconds: 300 # How often to evaluate performance
+
+# Directory containing micro-bot templates
+templates_dir: "templates/micro_bots"
+
+# Maximum number of worker threads
+max_worker_threads: 50
+
+# Maximum number of bots per type
+max_bots_per_type: 1000
+
+# Total maximum number of bots
+total_max_bots: 5000
+
+# Halal compliance mode
+halal_mode: false
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/swarm/swarm_factory.log"
+  max_size_mb: 10
+  backup_count: 5
+
+# Performance metrics
+metrics:
+  enabled: true
+  collection_interval_seconds: 60
+  retention_days: 7
+
+# Security settings
+security:
+  input_validation: true
+  transaction_signing: "secure"
+  max_gas_price_gwei: 100

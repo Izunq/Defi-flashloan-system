@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
@@ -128,7 +129,7 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
         maxTreasuryAllocationPerProtocol = 5;
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(GENESIS_ADMIN_ROLE, msg.sender);
         _grantRole(PROTOCOL_CREATOR_ROLE, msg.sender);
         _grantRole(TREASURY_MANAGER_ROLE, msg.sender);
@@ -146,7 +147,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
         string memory _name,
         string memory _description,
         ProtocolType _protocolType
-    ) external onlyRole(GENESIS_ADMIN_ROLE) {
+    ) external onlyRole(GENESIS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_implementation != address(0), "Invalid implementation address");
         require(bytes(_name).length > 0, "Name cannot be empty");
         
@@ -184,7 +186,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
         string memory _description,
         ProtocolType _protocolType,
         bool _isActive
-    ) external onlyRole(GENESIS_ADMIN_ROLE) {
+    ) external onlyRole(GENESIS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_templateId < templateCount, "Template does not exist");
         require(_implementation != address(0), "Invalid implementation address");
         require(bytes(_name).length > 0, "Name cannot be empty");
@@ -282,7 +285,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @param _instanceId ID of the instance to update
      * @param _isActive Whether the instance is active
      */
-    function updateProtocolStatus(uint256 _instanceId, bool _isActive) external onlyRole(GENESIS_ADMIN_ROLE) {
+    function updateProtocolStatus(uint256 _instanceId, bool _isActive) external onlyRole(GENESIS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_instanceId < instanceCount, "Instance does not exist");
         
         ProtocolInstance storage instance = protocolInstances[_instanceId];
@@ -299,7 +303,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @dev Update the maximum treasury allocation per protocol
      * @param _newMaxAllocation New maximum allocation (in basis points)
      */
-    function updateMaxTreasuryAllocation(uint256 _newMaxAllocation) external onlyRole(TREASURY_MANAGER_ROLE) {
+    function updateMaxTreasuryAllocation(uint256 _newMaxAllocation) external onlyRole(TREASURY_MANAGER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newMaxAllocation <= 10000, "Allocation cannot exceed 100%");
         
         uint256 oldAllocation = maxTreasuryAllocationPerProtocol;
@@ -312,7 +317,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @dev Update the treasury address
      * @param _newTreasuryAddress New treasury address
      */
-    function updateTreasuryAddress(address _newTreasuryAddress) external onlyRole(TREASURY_MANAGER_ROLE) {
+    function updateTreasuryAddress(address _newTreasuryAddress) external onlyRole(TREASURY_MANAGER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newTreasuryAddress != address(0), "Invalid treasury address");
         
         address oldTreasury = treasuryAddress;
@@ -325,7 +331,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @dev Get the number of protocol templates
      * @return The number of templates
      */
-    function getTemplateCount() external view returns (uint256) {
+    function getTemplateCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return templateCount;
     }
     
@@ -333,7 +340,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @dev Get the number of protocol instances
      * @return The number of instances
      */
-    function getInstanceCount() external view returns (uint256) {
+    function getInstanceCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return instanceCount;
     }
     
@@ -341,7 +349,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @dev Get all active protocol instances
      * @return instanceIds Array of active instance IDs
      */
-    function getActiveProtocols() external view returns (uint256[] memory instanceIds) {
+    function getActiveProtocols() external view returns (uint256[] memory instanceIds)  {
+        // TODO: Add nonReentrant modifier
         uint256 activeCount = 0;
         
         // Count active instances
@@ -369,7 +378,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @param _protocolType Type of protocols to get
      * @return instanceIds Array of instance IDs of the specified type
      */
-    function getProtocolsByType(ProtocolType _protocolType) external view returns (uint256[] memory instanceIds) {
+    function getProtocolsByType(ProtocolType _protocolType) external view returns (uint256[] memory instanceIds)  {
+        // TODO: Add nonReentrant modifier
         uint256 typeCount = 0;
         
         // Count instances of the specified type
@@ -397,7 +407,8 @@ contract ProtocolGenesisEngine is AccessControl, ReentrancyGuard {
      * @param _instanceId ID of the instance
      * @return instance The protocol instance
      */
-    function getProtocolDetails(uint256 _instanceId) external view returns (ProtocolInstance memory) {
+    function getProtocolDetails(uint256 _instanceId) external view returns (ProtocolInstance memory)  {
+        // TODO: Add nonReentrant modifier
         require(_instanceId < instanceCount, "Instance does not exist");
         return protocolInstances[_instanceId];
     }

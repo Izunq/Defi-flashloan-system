@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./HalalAssetRegistry.sol";
 
 /**
@@ -222,7 +223,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
         uint256 _leasePrice,
         uint256 _leasePeriod,
         address _paymentToken
-    ) external nonReentrant whenNotPaused onlyHalalAsset(_paymentToken) returns (bytes32) {
+    ) external nonReentrant whenNotPaused onlyHalalAsset(_paymentToken) returns (bytes32)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(bytes(_description).length > 0, "Description cannot be empty");
         require(_leasePrice > 0, "Lease price must be greater than 0");
@@ -288,7 +290,7 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
         uint256 _leasePrice,
         uint256 _leasePeriod,
         bool _active
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         StrategyLease storage strategy = strategies[_strategyId];
         
         require(strategy.provider == msg.sender, "Not strategy provider");
@@ -317,7 +319,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
     function approveStrategy(
         bytes32 _strategyId,
         bytes32 _approvalId
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         StrategyLease storage strategy = strategies[_strategyId];
         
         require(strategy.provider != address(0), "Strategy does not exist");
@@ -348,7 +351,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
     function rejectStrategy(
         bytes32 _strategyId,
         string calldata _reason
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         StrategyLease storage strategy = strategies[_strategyId];
         
         require(strategy.provider != address(0), "Strategy does not exist");
@@ -371,7 +375,7 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      */
     function leaseStrategy(
         bytes32 _strategyId
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused nonReentrant{
         StrategyLease storage strategy = strategies[_strategyId];
         
         require(strategy.provider != address(0), "Strategy does not exist");
@@ -447,7 +451,7 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
     function terminateLease(
         bytes32 _strategyId,
         string calldata _reason
-    ) external nonReentrant {
+    ) external nonReentrant{
         LeaseAgreement[] storage agreements = leaseAgreements[_strategyId];
         
         // Find the active lease agreement for the caller
@@ -483,7 +487,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
     function hasActiveLease(
         bytes32 _strategyId,
         address _lessee
-    ) external view returns (bool) {
+    ) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         LeaseAgreement[] storage agreements = leaseAgreements[_strategyId];
         
         for (uint256 i = 0; i < agreements.length; i++) {
@@ -502,7 +507,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get all strategies
      * @return Array of strategy IDs
      */
-    function getAllStrategies() external view returns (bytes32[] memory) {
+    function getAllStrategies() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return strategyIds;
     }
 
@@ -510,7 +516,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get active strategies
      * @return Array of active strategy IDs
      */
-    function getActiveStrategies() external view returns (bytes32[] memory) {
+    function getActiveStrategies() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256 activeCount = 0;
         
         // Count active strategies
@@ -541,7 +548,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      */
     function getProviderStrategies(
         address _provider
-    ) external view returns (bytes32[] memory) {
+    ) external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256 count = 0;
         
         // Count provider strategies
@@ -572,7 +580,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      */
     function getLesseeStrategies(
         address _lessee
-    ) external view returns (bytes32[] memory) {
+    ) external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return lesseeStrategies[_lessee];
     }
 
@@ -582,7 +591,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      */
     function updatePlatformFee(
         uint256 _platformFeeBps
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_platformFeeBps <= 1000, "Fee cannot exceed 10%");
         
         uint256 previousFee = platformFeeBps;
@@ -597,7 +607,8 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
      */
     function updateFeeTreasury(
         address _feeTreasury
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_feeTreasury != address(0), "Invalid treasury address");
         
         address previousTreasury = feeTreasury;
@@ -609,14 +620,14 @@ contract StrategyLeasingPlatform is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

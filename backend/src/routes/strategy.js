@@ -61,21 +61,21 @@ router.get('/:id/history', async (req, res) => {
           success: true,
           profit: '12.45',
           gasUsed: '250000',
-          transactionHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+          transactionHash: '0x1234567890abcdef1234567890abcdef90abcdef1234567890abcdef'
         },
         {
           timestamp: new Date(Date.now() - 7200000),
           success: true,
           profit: '8.32',
           gasUsed: '230000',
-          transactionHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
+          transactionHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef34567890'
         },
         {
           timestamp: new Date(Date.now() - 10800000),
           success: false,
           profit: '0',
           gasUsed: '150000',
-          transactionHash: '0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456'
+          transactionHash: '0xdef1234567890abcdef1234567890abcdef1234567890abcdef123456ef1234'
         }
       ]
     });

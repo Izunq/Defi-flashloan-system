@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -200,7 +201,7 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         algorithmicCentralBank = AlgorithmicCentralBank(_algorithmicCentralBank);
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(HUMAN_COUNCIL_ROLE, msg.sender);
         _grantRole(ETHICS_COMMITTEE_ROLE, msg.sender);
         _grantRole(TECHNICAL_COMMITTEE_ROLE, msg.sender);
@@ -294,7 +295,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         string memory _title,
         string memory _description,
         bytes memory _data
-    ) external returns (uint256 proposalId) {
+    ) external returns (uint256 proposalId)  {
+        // TODO: Add nonReentrant modifier
         require(
             hasRole(HUMAN_COUNCIL_ROLE, msg.sender) || hasRole(AI_EXECUTIVE_ROLE, msg.sender),
             "Only Human Council or AI Executive can create proposals"
@@ -332,7 +334,7 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
      * @param _proposalId ID of the proposal
      * @param _support Whether to support the proposal
      */
-    function castVote(uint256 _proposalId, bool _support) external nonReentrant {
+    function castVote(uint256 _proposalId, bool _support) external nonReentrant{
         require(hasRole(HUMAN_COUNCIL_ROLE, msg.sender), "Only Human Council members can vote");
         require(_proposalId < proposalCount, "Proposal does not exist");
         
@@ -371,7 +373,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         uint256 _proposalId,
         bool _approval,
         uint256 _confidence
-    ) external onlyRole(AI_EXECUTIVE_ROLE) {
+    ) external onlyRole(AI_EXECUTIVE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_proposalId < proposalCount, "Proposal does not exist");
         require(_confidence <= 100, "Confidence must be between 0 and 100");
         
@@ -396,7 +399,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
     function recordEthicsDecision(
         uint256 _proposalId,
         bool _approval
-    ) external onlyRole(ETHICS_COMMITTEE_ROLE) {
+    ) external onlyRole(ETHICS_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_proposalId < proposalCount, "Proposal does not exist");
         
         Proposal storage proposal = proposals[_proposalId];
@@ -419,7 +423,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
     function recordTechnicalDecision(
         uint256 _proposalId,
         bool _approval
-    ) external onlyRole(TECHNICAL_COMMITTEE_ROLE) {
+    ) external onlyRole(TECHNICAL_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_proposalId < proposalCount, "Proposal does not exist");
         
         Proposal storage proposal = proposals[_proposalId];
@@ -503,7 +508,7 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
      * @dev Execute an approved proposal
      * @param _proposalId ID of the proposal
      */
-    function executeProposal(uint256 _proposalId) external nonReentrant {
+    function executeProposal(uint256 _proposalId) external nonReentrant{
         require(_proposalId < proposalCount, "Proposal does not exist");
         
         Proposal storage proposal = proposals[_proposalId];
@@ -627,7 +632,7 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         ) = abi.decode(proposal.data, (address, uint256, string));
         
         // Transfer tokens from treasury
-        try governanceToken.transfer(recipient, amount) {
+        try /* SECURITY NOTE: Consider using call instead of transfer */ governanceToken.transfer(recipient, amount) {
             return true;
         } catch {
             return false;
@@ -643,11 +648,11 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         // Decode proposal data
         (
             address targetContract,
-            bytes memory callData
-        ) = abi.decode(proposal.data, (address, bytes));
+            bytes memory callData        ) = abi.decode(proposal.data, (address, bytes));
         
         // Execute the emergency action
         (bool success, ) = targetContract.call(callData);
+        require(success, "External call failed");
         return success;
     }
     
@@ -732,7 +737,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         uint256 _averageGasPrice,
         uint256 _treasuryBalance,
         uint256 _governanceParticipation
-    ) external onlyRole(AI_EXECUTIVE_ROLE) {
+    ) external onlyRole(AI_EXECUTIVE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         systemMetrics.totalValueLocked = _totalValueLocked;
         systemMetrics.dailyActiveUsers = _dailyActiveUsers;
         systemMetrics.protocolCount = _protocolCount;
@@ -765,7 +771,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         bool _isUpdate,
         uint256 _principleId,
         bool _isActive
-    ) external returns (uint256) {
+    ) external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         bytes memory data = abi.encode(_name, _description, _isUpdate, _principleId, _isActive);
         
         return createProposal(
@@ -793,7 +800,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         bytes32 _worldModelSimulationHash,
         bytes32 _ethicalFrameworkHash,
         string memory _metadataURI
-    ) external returns (uint256) {
+    ) external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         bytes memory data = abi.encode(
             _targetContract,
             _newImplementation,
@@ -821,7 +829,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         address _recipient,
         uint256 _amount,
         string memory _reason
-    ) external returns (uint256) {
+    ) external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         bytes memory data = abi.encode(_recipient, _amount, _reason);
         
         return createProposal(
@@ -847,7 +856,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         string memory _description,
         uint256 _treasuryAllocationPercentage,
         bytes memory _initData
-    ) external returns (uint256) {
+    ) external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         bytes memory data = abi.encode(
             _templateId,
             _name,
@@ -877,7 +887,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
         uint256 _newExecutionDelay,
         uint256 _newQuorumPercentage,
         uint256 _newAIConfidenceThreshold
-    ) external returns (uint256) {
+    ) external returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         bytes memory data = abi.encode(
             _newVotingPeriod,
             _newExecutionDelay,
@@ -950,7 +961,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
      * @dev Get all ethical principles
      * @return Array of ethical principles
      */
-    function getAllEthicalPrinciples() external view returns (EthicalPrinciple[] memory) {
+    function getAllEthicalPrinciples() external view returns (EthicalPrinciple[] memory)  {
+        // TODO: Add nonReentrant modifier
         EthicalPrinciple[] memory result = new EthicalPrinciple[](principleCount);
         
         for (uint256 i = 0; i < principleCount; i++) {
@@ -964,7 +976,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
      * @dev Get active ethical principles
      * @return Array of active ethical principles
      */
-    function getActiveEthicalPrinciples() external view returns (EthicalPrinciple[] memory) {
+    function getActiveEthicalPrinciples() external view returns (EthicalPrinciple[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256 activeCount = 0;
         
         // Count active principles
@@ -995,7 +1008,8 @@ contract HumanAISymbiote is AccessControl, ReentrancyGuard {
      * @return hasVoted Whether the voter has voted
      * @return support Whether the voter supported the proposal
      */
-    function getVoterStatus(uint256 _proposalId, address _voter) external view returns (bool hasVoted, bool support) {
+    function getVoterStatus(uint256 _proposalId, address _voter) external view returns (bool hasVoted, bool support)  {
+        // TODO: Add nonReentrant modifier
         require(_proposalId < proposalCount, "Proposal does not exist");
         
         Proposal storage proposal = proposals[_proposalId];

@@ -1,0 +1,29 @@
+{
+  "dilithium_security_level": 3,
+  "sphincs_security_level": 192,
+  "qkd_simulation_mode": true,
+  "encryption_algorithm": "AES256-GCM-SIV",
+  "gnupg_home": null,
+  "key_storage_path": "quantum_keys",
+  "auto_rotate_keys": true,
+  "key_rotation_interval_days": 30,
+  "enabled_features": {
+    "dilithium_signatures": true,
+    "sphincs_signatures": true,
+    "quantum_key_distribution": true,
+    "quantum_resistant_encryption": true,
+    "gnupg_quantum_extensions": true
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/quantum_security.log",
+    "max_size_mb": 10,
+    "backup_count": 5
+  },
+  "security_policies": {
+    "minimum_key_size_bits": 256,
+    "require_dual_signatures": false,
+    "audit_logging": true,
+    "key_backup_locations": 3
+  }
+}

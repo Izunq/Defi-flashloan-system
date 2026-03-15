@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./SecureMultiOracle.sol";
 
@@ -180,7 +181,7 @@ contract AdvancedOracleSecurityValidator is AccessControl, ReentrancyGuard, Paus
         
         primaryOracle = SecureMultiOracle(_primaryOracle);
         
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), _admin);
         _grantRole(VALIDATOR_ADMIN_ROLE, _admin);
         _grantRole(SECURITY_ANALYST_ROLE, _admin);
         _grantRole(EMERGENCY_RESPONSE_ROLE, _admin);
@@ -201,7 +202,8 @@ contract AdvancedOracleSecurityValidator is AccessControl, ReentrancyGuard, Paus
         bytes32 assetId,
         uint256 price,
         uint256 volume
-    ) external nonReentrant whenNotPaused returns (ValidationResult memory result) {
+    ) external nonReentrant whenNotPaused returns (ValidationResult memory result)  {
+        // TODO: Add nonReentrant modifier
         require(price > 0, "Invalid price");
         
         // Check emergency mode
@@ -862,7 +864,8 @@ contract AdvancedOracleSecurityValidator is AccessControl, ReentrancyGuard, Paus
         return assetStatistics[assetId];
     }
     
-    function getThreatScore(bytes32 assetId) external view returns (uint256) {
+    function getThreatScore(bytes32 assetId) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return threatScores[assetId];
     }
     
@@ -895,7 +898,8 @@ contract AdvancedOracleSecurityValidator is AccessControl, ReentrancyGuard, Paus
         return recentThreats;
     }
     
-    function isEmergencyMode(bytes32 assetId) external view returns (bool) {
+    function isEmergencyMode(bytes32 assetId) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return emergencyMode[assetId];
     }
 }

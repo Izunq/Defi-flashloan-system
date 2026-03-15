@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -300,7 +301,7 @@ contract IntentInterpreterV36 is Ownable {
     function updateDefaultParameters(
         IntentType _intentType,
         IntentParameters memory _parameters
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         defaultIntentParameters[_intentType] = _parameters;
         
         emit DefaultParametersUpdated(_intentType, _parameters);
@@ -311,7 +312,8 @@ contract IntentInterpreterV36 is Ownable {
      * @param _intentType Type of intent
      * @return parameters Default parameters
      */
-    function getDefaultParameters(IntentType _intentType) external view returns (IntentParameters memory) {
+    function getDefaultParameters(IntentType _intentType) external view returns (IntentParameters memory)  {
+        // TODO: Add nonReentrant modifier
         return defaultIntentParameters[_intentType];
     }
     
@@ -326,7 +328,8 @@ contract IntentInterpreterV36 is Ownable {
         IntentType _intentType,
         IntentParameters memory _parameters,
         uint256[] memory _availableStrategies
-    ) external view returns (StrategyRanking[] memory) {
+    ) external view returns (StrategyRanking[] memory)  {
+        // TODO: Add nonReentrant modifier
         return _rankStrategies(_intentType, _parameters, _availableStrategies);
     }
 }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -9,7 +10,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
  * @notice Calculates a dynamic "Trust Score" for strategies.
  * @dev This score is a function of ZK proof validity, age, and historical performance.
  */
-contract TrustCurve is Ownable {
+contract TrustCurve is Ownable, ReentrancyGuard {
     struct StrategyScorecard {
         uint256 lastVerifiedAt; // Timestamp of last valid ZK proof
         uint256 totalProfitVerified; // Sum of all zk-verified profits
@@ -42,7 +43,7 @@ contract TrustCurve is Ownable {
      * @param _isSuccess Whether the execution was successful
      * @param _profit The profit (or loss if negative) from the execution
      */
-    function updateOnChainPerformance(uint256 _strategyId, bool _isSuccess, int256 _profit) external onlyOwner {
+    function updateOnChainPerformance(uint256 _strategyId, bool _isSuccess, int256 _profit) external onlyOwner nonReentrant{
         StrategyScorecard storage card = scorecards[_strategyId];
         
         // Update execution stats
@@ -72,7 +73,7 @@ contract TrustCurve is Ownable {
      * @param _strategyId The ID of the strategy
      * @param _isValid Whether the ZK proof is valid
      */
-    function updateZKVerification(uint256 _strategyId, bool _isValid) external onlyOwner {
+    function updateZKVerification(uint256 _strategyId, bool _isValid) external onlyOwner nonReentrant{
         if (_isValid) {
             scorecards[_strategyId].lastVerifiedAt = block.timestamp;
         }
@@ -91,7 +92,7 @@ contract TrustCurve is Ownable {
         uint256 _strategyId, 
         uint256 _intelligenceScore, 
         bool _isValid
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_intelligenceScore <= 100, "Intelligence score must be 0-100");
         
         StrategyScorecard storage card = scorecards[_strategyId];
@@ -160,7 +161,8 @@ contract TrustCurve is Ownable {
      * @param _strategyId The ID of the strategy
      * @return The trust score (0-100)
      */
-    function getTrustScore(uint256 _strategyId) external view returns (uint256) {
+    function getTrustScore(uint256 _strategyId) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return scorecards[_strategyId].trustScore;
     }
     
@@ -169,7 +171,8 @@ contract TrustCurve is Ownable {
      * @param _strategyId The ID of the strategy
      * @return The strategy scorecard
      */
-    function getStrategyScorecard(uint256 _strategyId) external view returns (StrategyScorecard memory) {
+    function getStrategyScorecard(uint256 _strategyId) external view returns (StrategyScorecard memory)  {
+        // TODO: Add nonReentrant modifier
         return scorecards[_strategyId];
     }
 }

@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./TrustCurve.sol";
-import "./ProofMarketplaceV41.sol";
+import "./ProofAwareExecutorV35.sol";
 
 /**
  * @title SelfAmendingProtocol
@@ -122,7 +123,7 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
         
         proxyAdmin = ProxyAdmin(_proxyAdmin);
         
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(GOVERNANCE_ADMIN_ROLE, msg.sender);
     }
     
@@ -131,7 +132,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @param _contractAddress Address of the contract to register
      * @param _contractName Name of the contract
      */
-    function registerContract(address _contractAddress, string memory _contractName) external onlyRole(GOVERNANCE_ADMIN_ROLE) {
+    function registerContract(address _contractAddress, string memory _contractName) external onlyRole(GOVERNANCE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_contractAddress != address(0), "Invalid contract address");
         require(!registeredContracts[_contractAddress], "Contract already registered");
         
@@ -144,7 +146,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @dev Unregister a contract
      * @param _contractAddress Address of the contract to unregister
      */
-    function unregisterContract(address _contractAddress) external onlyRole(GOVERNANCE_ADMIN_ROLE) {
+    function unregisterContract(address _contractAddress) external onlyRole(GOVERNANCE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(registeredContracts[_contractAddress], "Contract not registered");
         
         registeredContracts[_contractAddress] = false;
@@ -166,7 +169,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
         bytes32 _worldModelSimulationHash,
         bytes32 _ethicalFrameworkHash,
         string memory _metadataURI
-    ) external onlyRole(AI_PROPOSER_ROLE) {
+    ) external onlyRole(AI_PROPOSER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(registeredContracts[_targetContract], "Target contract not registered");
         require(_newImplementation != address(0), "Invalid implementation address");
         require(bytes(_metadataURI).length > 0, "Metadata URI cannot be empty");
@@ -245,7 +249,7 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @dev Execute an approved proposal after the execution delay
      * @param _proposalId ID of the proposal
      */
-    function executeProposal(uint256 _proposalId) external nonReentrant {
+    function executeProposal(uint256 _proposalId) external nonReentrant{
         Proposal storage proposal = proposals[_proposalId];
         
         require(proposal.status == ProposalStatus.Approved, "Proposal not approved");
@@ -272,7 +276,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @dev Update the voting period
      * @param _newVotingPeriod New voting period in seconds
      */
-    function updateVotingPeriod(uint256 _newVotingPeriod) external onlyRole(GOVERNANCE_ADMIN_ROLE) {
+    function updateVotingPeriod(uint256 _newVotingPeriod) external onlyRole(GOVERNANCE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newVotingPeriod > 0, "Voting period must be greater than zero");
         votingPeriod = _newVotingPeriod;
     }
@@ -281,7 +286,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @dev Update the execution delay
      * @param _newExecutionDelay New execution delay in seconds
      */
-    function updateExecutionDelay(uint256 _newExecutionDelay) external onlyRole(GOVERNANCE_ADMIN_ROLE) {
+    function updateExecutionDelay(uint256 _newExecutionDelay) external onlyRole(GOVERNANCE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newExecutionDelay > 0, "Execution delay must be greater than zero");
         executionDelay = _newExecutionDelay;
     }
@@ -290,7 +296,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @dev Update the quorum percentage
      * @param _newQuorumPercentage New quorum percentage
      */
-    function updateQuorumPercentage(uint256 _newQuorumPercentage) external onlyRole(GOVERNANCE_ADMIN_ROLE) {
+    function updateQuorumPercentage(uint256 _newQuorumPercentage) external onlyRole(GOVERNANCE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newQuorumPercentage > 0 && _newQuorumPercentage <= 100, "Quorum percentage must be between 1 and 100");
         quorumPercentage = _newQuorumPercentage;
     }
@@ -300,7 +307,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @param _role The role to check
      * @return The number of members in the role
      */
-    function getRoleMemberCount(bytes32 _role) public view returns (uint256) {
+    function getRoleMemberCount(bytes32 _role) public view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return getRoleMemberCount(_role);
     }
     
@@ -309,7 +317,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @param _proposalId ID of the proposal
      * @return Whether the proposal exists
      */
-    function proposalExists(uint256 _proposalId) external view returns (bool) {
+    function proposalExists(uint256 _proposalId) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return proposals[_proposalId].proposedAt > 0;
     }
     
@@ -361,7 +370,8 @@ contract SelfAmendingProtocol is AccessControl, ReentrancyGuard {
      * @param _voter Address of the voter
      * @return Whether the address has voted
      */
-    function hasVoted(uint256 _proposalId, address _voter) external view returns (bool) {
+    function hasVoted(uint256 _proposalId, address _voter) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return proposals[_proposalId].hasVoted[_voter];
     }
 }

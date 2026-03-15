@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title EmergencyInputValidator
@@ -327,7 +329,7 @@ contract EmergencySecurityModifiers {
  * @title EmergencyArbitrageSecurityPatch
  * @dev Emergency security patch for arbitrage contracts
  */
-contract EmergencyArbitrageSecurityPatch is EmergencySecurityModifiers {
+contract EmergencyArbitrageSecurityPatch is EmergencySecurityModifiers, ReentrancyGuard {
     
     // Emergency pause mechanism
     bool public emergencyPaused = false;
@@ -350,7 +352,7 @@ contract EmergencyArbitrageSecurityPatch is EmergencySecurityModifiers {
     /**
      * @dev Emergency pause function
      */
-    function emergencyPause() external onlyEmergencyAdmin {
+    function emergencyPause() external onlyEmergencyAdmin nonReentrant{
         emergencyPaused = true;
         emit EmergencyValidationApplied("pause", msg.sender);
     }
@@ -358,7 +360,7 @@ contract EmergencyArbitrageSecurityPatch is EmergencySecurityModifiers {
     /**
      * @dev Emergency unpause function
      */
-    function emergencyUnpause() external onlyEmergencyAdmin {
+    function emergencyUnpause() external onlyEmergencyAdmin nonReentrant{
         emergencyPaused = false;
         emit EmergencyValidationApplied("unpause", msg.sender);
     }

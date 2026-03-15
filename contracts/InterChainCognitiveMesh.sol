@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
@@ -52,8 +53,7 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         OperationStatus status;
         uint256 createdAt;
         uint256 executedAt;
-        bytes result;
-    }
+        bytes result;    }
 
     // Global state entry
     struct GlobalStateEntry {
@@ -138,7 +138,7 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      * @dev Constructor
      */
     constructor() {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(MESH_ADMIN_ROLE, msg.sender);
         
         // Register the current chain
@@ -165,7 +165,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         address _meshEndpoint,
         uint256 _blockConfirmations,
         uint256 _gasPrice
-    ) external onlyRole(MESH_ADMIN_ROLE) {
+    ) external onlyRole(MESH_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _registerChain(_chainId, _name, _meshEndpoint, _blockConfirmations, _gasPrice);
     }
     
@@ -211,7 +212,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         bool _isActive,
         uint256 _blockConfirmations,
         uint256 _gasPrice
-    ) external onlyRole(MESH_ADMIN_ROLE) {
+    ) external onlyRole(MESH_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(chains[_chainId].chainId != 0, "Chain not registered");
         require(_meshEndpoint != address(0), "Invalid mesh endpoint");
         
@@ -236,7 +238,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         bytes memory _payload,
         uint256 _gasLimit,
         uint256 _deadline
-    ) external payable nonReentrant returns (bytes32 operationId) {
+    ) external payable nonReentrant returns (bytes32 operationId)  {
+        // TODO: Add nonReentrant modifier
         require(chains[_targetChainId].chainId != 0, "Target chain not registered");
         require(chains[_targetChainId].isActive, "Target chain not active");
         require(_deadline > block.timestamp, "Deadline must be in the future");
@@ -356,7 +359,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         bytes32 _key,
         bytes memory _value,
         bytes memory _signature
-    ) external onlyRole(BRIDGE_OPERATOR_ROLE) {
+    ) external onlyRole(BRIDGE_OPERATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         // Verify the signature
         bytes32 messageHash = keccak256(abi.encodePacked(
             _key,
@@ -420,7 +424,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      * @dev Get all global state keys
      * @return Array of state keys
      */
-    function getAllStateKeys() external view returns (bytes32[] memory) {
+    function getAllStateKeys() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return stateKeys;
     }
     
@@ -428,7 +433,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      * @dev Get all registered chain IDs
      * @return Array of chain IDs
      */
-    function getAllChainIds() external view returns (uint256[] memory) {
+    function getAllChainIds() external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return chainIds;
     }
     
@@ -436,7 +442,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      * @dev Get all pending operations
      * @return Array of pending operation IDs
      */
-    function getPendingOperations() external view returns (bytes32[] memory) {
+    function getPendingOperations() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return pendingOperations;
     }
     
@@ -458,7 +465,7 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
     /**
      * @dev Clean up expired operations
      * @param _maxOperations Maximum number of operations to clean up
-     */    function cleanupExpiredOperations(uint256 _maxOperations) external {
+     */    function cleanupExpiredOperations(uint256 _maxOperations) external nonReentrant{
         require(_maxOperations <= MAX_OPERATIONS_PER_CLEANUP, "Exceeds maximum operations per cleanup");
         
         uint256 count = 0;
@@ -501,7 +508,8 @@ contract InterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         uint256 _operationTimeout,
         uint256 _maxGasPrice,
         uint256 _minConfirmations
-    ) external onlyRole(MESH_ADMIN_ROLE) {
+    ) external onlyRole(MESH_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         if (_operationTimeout != operationTimeout) {
             uint256 oldTimeout = operationTimeout;
             operationTimeout = _operationTimeout;

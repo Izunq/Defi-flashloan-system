@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ComprehensiveInputValidator
@@ -538,7 +540,8 @@ library ComprehensiveInputValidator {
      */    function validateAddressBatch(
         address[] calldata addresses,
         uint256 validationMode
-    ) external pure returns (bool[] memory results) {
+    ) external pure returns (bool[] memory results)  {
+        // TODO: Add nonReentrant modifier
         results = new bool[](addresses.length);
         
         for (uint256 i = 0; i < addresses.length; i++) {
@@ -568,7 +571,8 @@ library ComprehensiveInputValidator {
     /**
      * @dev External wrapper for address validation (for try/catch)
      */
-    function validateAddressExternal(address addr, uint256 validationMode) external pure returns (bool) {
+    function validateAddressExternal(address addr, uint256 validationMode) external pure returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return validateAddress(addr, validationMode);
     }
     

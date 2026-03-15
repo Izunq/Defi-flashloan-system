@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./SecureMultiOracle.sol";
 import "./PreCognitiveOracle.sol";
@@ -177,7 +178,7 @@ contract OracleSecurityWrapper is AccessControl, ReentrancyGuard, Pausable {
         predictiveOracle = PreCognitiveOracle(_predictiveOracle);
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), _admin);
         _grantRole(ORACLE_ADMIN_ROLE, _admin);
         _grantRole(SECURITY_MANAGER_ROLE, _admin);
         _grantRole(EMERGENCY_ROLE, _admin);
@@ -610,8 +611,7 @@ contract OracleSecurityWrapper is AccessControl, ReentrancyGuard, Pausable {
      * @notice Check predictive warnings from the PreCognitiveOracle
      */
     function _checkPredictiveWarnings(bytes32 assetId) internal {
-        // This would integrate with the PreCognitiveOracle to get manipulation predictions
-        // Implementation depends on the specific predictive oracle interface
+        // This would integrate with the PreCognitiveOracle to get manipulation predictions        // Implementation depends on the specific predictive oracle
         
         // Example: Check if there's a high probability of manipulation in the next hour
         // bytes32 eventId = keccak256(abi.encodePacked("price_manipulation", assetId));

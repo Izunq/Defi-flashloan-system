@@ -1,0 +1,503 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Primary Database
+  postgres-primary:
+    image: postgres:15
+    container_name: postgres-primary
+    environment:
+      POSTGRES_USER: ${DB_PRIMARY_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PRIMARY_PASSWORD:-postgres}
+      POSTGRES_DB: flashloan_primary
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./init/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # PostgreSQL Replica 1
+  postgres-replica1:
+    image: postgres:15
+    container_name: postgres-replica1
+    environment:
+      POSTGRES_USER: ${DB_PRIMARY_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PRIMARY_PASSWORD:-postgres}
+      POSTGRES_DB: flashloan_primary
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PRIMARY_HOST: postgres-primary
+      PRIMARY_PORT: 5432
+      REPLICA_MODE: 'hot_standby'
+    volumes:
+      - postgres-replica1-data:/var/lib/postgresql/data
+      - ./init/postgres-replica:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    depends_on:
+      - postgres-primary
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # PostgreSQL Replica 2
+  postgres-replica2:
+    image: postgres:15
+    container_name: postgres-replica2
+    environment:
+      POSTGRES_USER: ${DB_PRIMARY_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PRIMARY_PASSWORD:-postgres}
+      POSTGRES_DB: flashloan_primary
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PRIMARY_HOST: postgres-primary
+      PRIMARY_PORT: 5432
+      REPLICA_MODE: 'hot_standby'
+    volumes:
+      - postgres-replica2-data:/var/lib/postgresql/data
+      - ./init/postgres-replica:/docker-entrypoint-initdb.d
+    ports:
+      - "5434:5432"
+    depends_on:
+      - postgres-primary
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # ClickHouse Server
+  clickhouse-server:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./init/clickhouse:/docker-entrypoint-initdb.d
+      - ./config/clickhouse/config.xml:/etc/clickhouse-server/config.xml
+      - ./config/clickhouse/users.xml:/etc/clickhouse-server/users.xml
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+      - "9009:9009"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  # Redis Cluster - Node 1
+  redis-1:
+    image: redis:7-alpine
+    container_name: redis-1
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-1-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Redis Cluster - Node 2
+  redis-2:
+    image: redis:7-alpine
+    container_name: redis-2
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-2-data:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Redis Cluster - Node 3
+  redis-3:
+    image: redis:7-alpine
+    container_name: redis-3
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-3-data:/data
+    ports:
+      - "6381:6379"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Redis Cluster Setup
+  redis-cluster-setup:
+    image: redis:7-alpine
+    container_name: redis-cluster-setup
+    command: >
+      sh -c "sleep 10 && redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 --cluster-replicas 0 --cluster-yes"
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+    networks:
+      - flashloan-network
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      - zookeeper
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # Airflow
+  airflow:
+    image: apache/airflow:2.6.1
+    container_name: airflow
+    command: webserver
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_PRIMARY_USER:-postgres}:${DB_PRIMARY_PASSWORD:-postgres}@postgres-primary:5432/airflow
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./airflow.cfg:/opt/airflow/airflow.cfg
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-primary
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: prometheus
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:9.5.2
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=flashloan-logging
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:1.45
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  # Node Exporter
+  node-exporter:
+    image: prom/node-exporter:v1.5.0
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # PostgreSQL Exporter
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.12.0
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_PRIMARY_USER:-postgres}:${DB_PRIMARY_PASSWORD:-postgres}@postgres-primary:5432/flashloan_primary?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres-primary
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Redis Exporter
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.45.0
+    container_name: redis-exporter
+    environment:
+      REDIS_ADDR: redis-1:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis-1
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # ClickHouse Exporter
+  clickhouse-exporter:
+    image: f1yegor/clickhouse-exporter:latest
+    container_name: clickhouse-exporter
+    environment:
+      CLICKHOUSE_URL: http://clickhouse-server:8123
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+    ports:
+      - "9363:9363"
+    depends_on:
+      - clickhouse-server
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Arbitrage Engine
+  arbitrage-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.arbitrage
+    container_name: arbitrage-engine
+    volumes:
+      - ./arbitrage_models:/app/arbitrage_models
+      - ./config:/app/config
+    environment:
+      - DB_CONFIG_PATH=/app/config/database_config.yaml
+      - MONITORING_CONFIG_PATH=/app/config/monitoring_config.yaml
+      - PROMETHEUS_URL=http://prometheus:9090
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - GRAFANA_URL=http://grafana:3000
+      - MATLAB_PATH=/app/arbitrage_models
+    depends_on:
+      - postgres-primary
+      - clickhouse-server
+      - redis-1
+      - kafka
+      - prometheus
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  # Arbitrage Exporter
+  arbitrage-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.exporter
+    container_name: arbitrage-exporter
+    ports:
+      - "9090:9090"
+    environment:
+      - DB_CONFIG_PATH=/app/config/database_config.yaml
+    depends_on:
+      - postgres-primary
+      - clickhouse-server
+      - redis-1
+    networks:
+      - flashloan-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  flashloan-network:
+    driver: bridge
+
+volumes:
+  postgres-primary-data:
+  postgres-replica1-data:
+  postgres-replica2-data:
+  clickhouse-data:
+  redis-1-data:
+  redis-2-data:
+  redis-3-data:
+  prometheus-data:
+  grafana-data:
+  elasticsearch-data:

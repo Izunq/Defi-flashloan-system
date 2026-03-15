@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IStrategyLeasingPlatform
  * @notice Interface for the Strategy Leasing Platform
  * @dev Shariah-compliant platform for leasing trading strategies based on Ijara principles
  */
+
 interface IStrategyLeasingPlatform {
     /**
      * @dev Register a new strategy for leasing

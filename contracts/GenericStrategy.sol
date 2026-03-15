@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./interfaces/IAavePool.sol";
 import "./interfaces/IFlashLoanSimpleReceiver.sol";
@@ -22,7 +23,7 @@ interface IArbitrageExecutorV33 {
  * @notice Enhanced base strategy for arbitrage execution
  * @dev Includes improved security features and access controls
  */
-contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStrategy, IStrategyExecutor, ReentrancyGuard, Pausable {
+contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStrategy, IStrategyExecutor, ReentrancyGuard, Pausable, Ownable {
     using SafeERC20 for IERC20;
     using Math for uint256;
 
@@ -31,7 +32,9 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
 
-    // Core contracts
+        bytes32 public constant STRATEGY_EXECUTOR_ROLE = keccak256("STRATEGY_EXECUTOR_ROLE");
+
+// Core contracts
     address public immutable EXECUTOR;
     address public immutable AAVE_POOL;
     address public immutable WETH;
@@ -128,13 +131,12 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
      * @param _aavePool Address of the Aave lending pool
      * @param _weth Address of WETH
      * @param _admin Address of the admin
-     */
-    constructor(
+     */    constructor(
         address _executor, 
         address _aavePool, 
         address _weth,
         address _admin
-    ) {
+    ) Ownable(_admin) {
         require(_executor != address(0), "Strategy: Zero executor address");
         require(_aavePool != address(0), "Strategy: Zero pool address");
         require(_weth != address(0), "Strategy: Zero WETH address");
@@ -143,12 +145,11 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         EXECUTOR = _executor;
         AAVE_POOL = _aavePool;
         WETH = _weth;
-        
-        // Setup roles
-        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-        _setupRole(OPERATOR_ROLE, _admin);
-        _setupRole(EMERGENCY_ROLE, _admin);
-        _setupRole(EXECUTOR_ROLE, _executor);
+          // Setup roles
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(OPERATOR_ROLE, _admin);
+        _grantRole(EMERGENCY_ROLE, _admin);
+        _grantRole(EXECUTOR_ROLE, _executor);
         
         emit StrategyInitialized(_executor, _admin);
     }
@@ -165,7 +166,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         address _tokenB,
         uint256 _minProfit,
         address _executor
-    ) external override {
+    ) external override onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(!initialized, "Strategy: Already initialized");
         require(_executor == EXECUTOR, "Strategy: Invalid executor");
         require(_tokenA != address(0) && _tokenB != address(0), "Strategy: Zero token address");
@@ -191,7 +193,7 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         address _tokenB, 
         uint256 _minProfit,
         uint256 _maxSlippageBps
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) onlyInitialized whenNotPaused {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) onlyInitialized whenNotPaused  nonReentrant{
         require(_tokenA != address(0) && _tokenB != address(0), "Strategy: Zero token address");
         require(_minProfit > 0, "Strategy: Invalid min profit");
         require(_maxSlippageBps <= 1000, "Strategy: Slippage too high"); // Max 10%
@@ -290,54 +292,46 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         
         // Check circuit breakers
         require(_checkCircuitBreakers(currentPrice), "Strategy: Circuit breaker triggered");
-        
-        // Use the lower of the two slippage values
+          // Use the lower of the two slippage values
         uint256 effectiveMaxSlippage = maxSlippage < maxSlippageBps ? maxSlippage : maxSlippageBps;
         
-        try {
-            // Perform arbitrage logic
-            uint256 profit = _performArbitrage(asset, amount, tokenA, tokenB, effectiveMaxSlippage, arbitrageData);
-            
-            // Validate profit meets minimum threshold
-            require(profit >= minProfit, "Strategy: Insufficient profit");
-            
-            // Calculate total repayment amount
-            uint256 totalRepayment = amount + premium;
-            
-            // Ensure we have enough to repay the loan
-            uint256 balance = IERC20(asset).balanceOf(address(this));
-            require(balance >= totalRepayment, "Strategy: Insufficient balance for repayment");
-            
-            // Transfer repayment amount back to executor
-            IERC20(asset).safeTransfer(msg.sender, totalRepayment);
-            
-            // Send remaining profit to executor
-            uint256 remainingProfit = balance - totalRepayment;
-            if (remainingProfit > 0) {
-                IERC20(asset).safeTransfer(msg.sender, remainingProfit);
-            }
-            
-            // Calculate gas used
-            uint256 gasUsed = gasStart - gasleft();
-            require(gasUsed <= maxGasUsage, "Strategy: Gas usage too high");
-            
-            // Update state
-            lastCaller = tx.origin;
-            lastProfit = profit;
-            lastExecutionTimestamp = block.timestamp;
-            totalExecutions++;
-            successfulExecutions++;
-            totalProfit += profit;
-            consecutiveFailures = 0; // Reset consecutive failures
-            
-            emit ArbitrageExecuted(tx.origin, profit, block.timestamp, gasUsed);
-            
-            return true;
-        } catch {
-            // Update failure count
-            consecutiveFailures++;
-            
-            // Revert to ensure flash loan is not completed
+        // Perform arbitrage logic
+        uint256 profit = _performArbitrage(asset, amount, tokenA, tokenB, effectiveMaxSlippage, arbitrageData);
+        
+        // Validate profit meets minimum threshold
+        require(profit >= minProfit, "Strategy: Insufficient profit");
+        
+        // Calculate total repayment amount
+        uint256 totalRepayment = amount + premium;
+        
+        // Ensure we have enough to repay the loan
+        uint256 balance = IERC20(asset).balanceOf(address(this));
+        require(balance >= totalRepayment, "Strategy: Insufficient balance for repayment");
+        
+        // Transfer repayment amount back to executor
+        IERC20(asset).safeTransfer(msg.sender, totalRepayment);
+          // Send remaining profit to executor
+        uint256 remainingProfit = balance - totalRepayment;
+        if (remainingProfit > 0) {
+            IERC20(asset).safeTransfer(msg.sender, remainingProfit);
+        }
+        
+        // Calculate gas used
+        uint256 gasUsed = gasStart - gasleft();
+        require(gasUsed <= maxGasUsage, "Strategy: Gas usage too high");
+        
+        // Update state
+        lastCaller = msg.sender /* SECURITY FIX: Changed from tx.origin to prevent phishing attacks */;
+        lastProfit = profit;
+        lastExecutionTimestamp = block.timestamp;
+        totalExecutions++;
+        successfulExecutions++;
+        totalProfit += profit;
+        consecutiveFailures = 0; // Reset consecutive failures
+        
+        emit ArbitrageExecuted(msg.sender /* SECURITY FIX: Changed from tx.origin to prevent phishing attacks */, profit, block.timestamp, gasUsed);
+        
+        return true;
             revert("Strategy: Execution failed");
         }
     }
@@ -357,7 +351,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         uint256 premium,
         address initiator,
         bytes calldata params
-    ) external override onlyInitialized nonReentrant whenNotPaused returns (bool) {
+    ) external override onlyInitialized nonReentrant whenNotPaused returns (bool)  {
+        // TODO: Add nonReentrant modifier
         require(msg.sender == AAVE_POOL, "Strategy: Not Aave pool");
         require(initiator == EXECUTOR, "Strategy: Invalid initiator");
         
@@ -370,13 +365,11 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         
         // Check circuit breakers
         require(_checkCircuitBreakers(currentPrice), "Strategy: Circuit breaker triggered");
+          // Use the lower of the two slippage values
+        uint256 effectiveMaxSlippage = _maxSlippage < maxSlippageBps ? _maxSlippage : maxSlippageBps;
         
-        try {
-            // Use the lower of the two slippage values
-            uint256 effectiveMaxSlippage = _maxSlippage < maxSlippageBps ? _maxSlippage : maxSlippageBps;
-            
-            // Perform arbitrage logic
-            uint256 profit = _performArbitrage(asset, amount, _tokenA, _tokenB, effectiveMaxSlippage, arbitrageData);
+        // Perform arbitrage logic
+        uint256 profit = _performArbitrage(asset, amount, _tokenA, _tokenB, effectiveMaxSlippage, arbitrageData);
             
             // Validate profit meets minimum threshold
             require(profit >= _minProfit, "Strategy: Insufficient profit");
@@ -388,45 +381,37 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
             uint256 balance = IERC20(asset).balanceOf(address(this));
             require(balance >= totalRepayment, "Strategy: Insufficient balance for repayment");
             
-            // Approve the lending pool to pull the repayment amount
-            IERC20(asset).safeApprove(AAVE_POOL, totalRepayment);
-            
-            // Send profit to executor
-            uint256 remainingProfit = balance - totalRepayment;
-            if (remainingProfit > 0) {
-                IERC20(asset).safeApprove(EXECUTOR, remainingProfit);
-                IArbitrageExecutorV33(EXECUTOR).depositProfit(asset, remainingProfit);
-            }
-            
-            // Calculate gas used
-            uint256 gasUsed = gasStart - gasleft();
-            require(gasUsed <= maxGasUsage, "Strategy: Gas usage too high");
-            
-            // Update state
-            lastCaller = tx.origin;
-            lastProfit = profit;
-            lastExecutionTimestamp = block.timestamp;
-            totalExecutions++;
-            successfulExecutions++;
-            totalProfit += profit;
-            consecutiveFailures = 0; // Reset consecutive failures
-            
-            emit ArbitrageExecuted(tx.origin, profit, block.timestamp, gasUsed);
-            
-            return true;
-        } catch {
-            // Update failure count
-            consecutiveFailures++;
-            
-            // Revert to ensure flash loan is not completed
-            revert("Strategy: Execution failed");
+            // Approve the lending pool to pull the repayment amount        IERC20(asset).safeApprove(AAVE_POOL, totalRepayment);
+        
+        // Send profit to executor
+        uint256 remainingProfit = balance - totalRepayment;
+        if (remainingProfit > 0) {
+            IERC20(asset).safeApprove(EXECUTOR, remainingProfit);
+            IArbitrageExecutorV33(EXECUTOR).depositProfit(asset, remainingProfit);
         }
+        
+        // Calculate gas used
+        uint256 gasUsed = gasStart - gasleft();
+        require(gasUsed <= maxGasUsage, "Strategy: Gas usage too high");
+        
+        // Update state
+        lastCaller = msg.sender /* SECURITY FIX: Changed from tx.origin to prevent phishing attacks */;
+        lastProfit = profit;
+        lastExecutionTimestamp = block.timestamp;
+        totalExecutions++;
+        successfulExecutions++;
+        totalProfit += profit;
+        consecutiveFailures = 0; // Reset consecutive failures
+          emit ArbitrageExecuted(msg.sender /* SECURITY FIX: Changed from tx.origin to prevent phishing attacks */, profit, block.timestamp, gasUsed);
+        
+        return true;
     }
 
     /**
      * @dev Emergency pause function
      */
-    function emergencyPause() external onlyRole(EMERGENCY_ROLE) {
+    function emergencyPause() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _pause();
         emit EmergencyWithdrawal(address(0), msg.sender, 0); // Special event to indicate emergency pause
     }
@@ -434,7 +419,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
     /**
      * @dev Emergency unpause function
      */
-    function emergencyUnpause() external onlyRole(EMERGENCY_ROLE) {
+    function emergencyUnpause() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _unpause();
     }
     
@@ -443,7 +429,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
      * @param token Token to withdraw
      * @param to Address to send tokens to
      */
-    function emergencyWithdraw(address token, address to) external onlyRole(EMERGENCY_ROLE) {
+    function emergencyWithdraw(address token, address to) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(to != address(0), "Strategy: Zero address");
         
         uint256 balance;
@@ -479,7 +466,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         uint256 _maxLossPercentage,
         uint256 _maxConsecutiveFailures,
         uint256 _maxPriceDeviationBps
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_maxExecutionsPerHour > 0, "Strategy: Invalid hourly limit");
         require(_maxExecutionsPerDay > 0, "Strategy: Invalid daily limit");
         require(_maxLossPercentage <= 1000, "Strategy: Loss percentage too high"); // Max 10%
@@ -536,7 +524,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
         address _token,
         uint256 _amount,
         address _recipient
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_recipient != address(0), "Strategy: Zero recipient address");
         require(_amount > 0, "Strategy: Invalid amount");
         
@@ -620,7 +609,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
      * @dev Cancel a timelock operation
      * @param _operationId The operation ID to cancel
      */
-    function cancelTimelock(bytes32 _operationId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function cancelTimelock(bytes32 _operationId) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(timelockExpirations[_operationId] > 0, "Strategy: Timelock not initiated");
         
         delete timelockExpirations[_operationId];
@@ -631,14 +621,14 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(EMERGENCY_ROLE) {
+    function pause() external onlyRole(EMERGENCY_ROLE) nonReentrant onlyOwner {
         _pause();
     }
     
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant onlyOwner {
         _unpause();
     }
 
@@ -700,8 +690,8 @@ contract GenericStrategy is AccessControl, IFlashLoanSimpleReceiver, IGenericStr
     /**
      * @dev Check if strategy is configured
      * @return True if the strategy is configured
-     */
-    function isConfigured() external view override returns (bool) {
+     */    function isConfigured() external view override returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return initialized && tokenA != address(0) && tokenB != address(0) && minProfit > 0;
     }
 

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title AccessControlSecurityFix
@@ -135,7 +137,7 @@ contract AccessControlSecurityFix is AccessControl, ReentrancyGuard, Pausable {
     constructor(address admin) {
         require(admin != address(0), "Invalid admin address");
         
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), admin);
         _grantRole(EMERGENCY_ROLE, admin);
         _grantRole(SECURITY_MANAGER_ROLE, admin);
         
@@ -266,17 +268,30 @@ contract AccessControlSecurityFix is AccessControl, ReentrancyGuard, Pausable {
     
     /**
      * @dev Check if address has any administrative role
+     */    /**
+     * @dev Check if account has admin role - SECURITY ENHANCED
      */
-    function hasAdminRole(address account) external view returns (bool) {
+    function hasAdminRole(address account) 
+        external 
+        view 
+        onlyRole(SECURITY_MANAGER_ROLE) 
+        returns (bool) 
+    {
         return hasRole(DEFAULT_ADMIN_ROLE, account) || 
                hasRole(EMERGENCY_ROLE, account) || 
                hasRole(SECURITY_MANAGER_ROLE, account);
     }
     
     /**
-     * @dev Get all roles for an account
+     * @dev Get all roles for an account - SECURITY ENHANCED
      */
-    function getAccountRoles(address account) external view returns (bytes32[] memory roles) {
+    function getAccountRoles(address account) 
+        external 
+        view 
+        onlyRole(SECURITY_MANAGER_ROLE) 
+        whenNotPaused 
+        returns (bytes32[] memory roles) 
+    {
         bytes32[] memory allRoles = new bytes32[](8);
         allRoles[0] = DEFAULT_ADMIN_ROLE;
         allRoles[1] = STRATEGY_PROPOSER_ROLE;
@@ -303,24 +318,39 @@ contract AccessControlSecurityFix is AccessControl, ReentrancyGuard, Pausable {
             }
         }
     }
-    
+      // =================
+    // VIEW FUNCTIONS - SECURITY ENHANCED
     // =================
-    // VIEW FUNCTIONS
-    // =================
     
-    function isApprovedProposer(address proposer) external view returns (bool) {
+    function isApprovedProposer(address proposer) 
+        external 
+        view 
+        onlyRole(STRATEGY_EXECUTOR_ROLE) 
+        returns (bool) 
+    {
         return approvedProposers[proposer];
     }
     
-    function getProposerNonce(address proposer) external view returns (uint256) {
+    function getProposerNonce(address proposer) 
+        external 
+        view 
+        onlyRole(SECURITY_MANAGER_ROLE) 
+        returns (uint256) 
+    {
         return proposerNonce[proposer];
     }
     
-    function getLastProposalTime(address proposer) external view returns (uint256) {
+    function getLastProposalTime(address proposer) 
+        external 
+        view 
+        onlyRole(SECURITY_MANAGER_ROLE) 
+        returns (uint256) 
+    {
         return lastProposalTime[proposer];
     }
     
-    function timeUntilNextProposal(address proposer) external view returns (uint256) {
+    function timeUntilNextProposal(address proposer) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         uint256 nextAllowedTime = lastProposalTime[proposer] + proposalCooldownPeriod;
         if (block.timestamp >= nextAllowedTime) {
             return 0;

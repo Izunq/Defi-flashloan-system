@@ -1,0 +1,21 @@
+{
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "db": 0,
+        "decode_responses": true,
+        "health_check_interval": 30,
+        "socket_keepalive": true,
+        "socket_keepalive_options": {},
+        "connection_pool": {
+            "max_connections": 50,
+            "retry_on_timeout": true
+        }
+    },
+    "testing": {
+        "load_test_duration": 300,
+        "concurrent_connections": 100,
+        "operations_per_second": 1000,
+        "test_data_size": 10000
+    }
+}

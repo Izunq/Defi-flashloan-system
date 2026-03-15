@@ -1,0 +1,44 @@
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MATLAB Runtime
+RUN mkdir -p /tmp/mcr-install && \
+    cd /tmp/mcr-install && \
+    curl -L -o mcr-installer.zip "https://ssd.mathworks.com/supportfiles/downloads/R2023a/Release/0/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2023a_glnxa64.zip" && \
+    unzip mcr-installer.zip && \
+    ./install -mode silent -agreeToLicense yes && \
+    cd / && \
+    rm -rf /tmp/mcr-install
+
+# Set MATLAB Runtime environment variables
+ENV LD_LIBRARY_PATH=/usr/local/MATLAB/MATLAB_Runtime/v912/runtime/glnxa64:/usr/local/MATLAB/MATLAB_Runtime/v912/bin/glnxa64:/usr/local/MATLAB/MATLAB_Runtime/v912/sys/os/glnxa64:/usr/local/MATLAB/MATLAB_Runtime/v912/extern/bin/glnxa64
+ENV MATLAB_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/v912
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# Command to run the application
+CMD ["python", "matlab_bridge.py"]

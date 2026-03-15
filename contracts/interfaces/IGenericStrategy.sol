@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /**
  * @title IGenericStrategy
  * @notice Interface for arbitrage strategy contracts
- * @dev All strategy contracts must implement this interface
- */
+ * @dev All strategy contracts must implement this
+
+interface */
+
 interface IGenericStrategy is IERC165 {
     /**
      * @dev Initialize the strategy with configuration data

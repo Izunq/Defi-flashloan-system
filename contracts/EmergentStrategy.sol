@@ -2,7 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
@@ -13,7 +14,7 @@ import "./PreCognitiveOracle.sol";
  * @notice A modular, dynamically assembled strategy contract
  * @dev Part of the V43 Emergent Strategy Synthesis architecture
  */
-contract EmergentStrategy is Ownable, ReentrancyGuard {
+contract EmergentStrategy is Ownable, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
     
     // Strategy metadata
@@ -69,6 +70,9 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
         uint256 timestamp
     );
     
+    // Emergency rescue event
+    event ETHRescued(address indexed recipient, uint256 amount);
+    
     /**
      * @dev Constructor
      * @param _name Name of the strategy
@@ -97,7 +101,7 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
         address _contractAddress,
         string memory _name,
         string memory _componentType
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_contractAddress != address(0), "Invalid component address");
         
         components.push(Component({
@@ -119,7 +123,7 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      * @dev Remove a component from the strategy
      * @param _index Index of the component to remove
      */
-    function removeComponent(uint256 _index) external onlyOwner {
+    function removeComponent(uint256 _index) external onlyOwner nonReentrant{
         require(_index < components.length, "Invalid component index");
         
         Component storage component = components[_index];
@@ -137,7 +141,8 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      * @return success Whether the execution was successful
      * @return profitLoss Profit or loss from the execution
      */
-    function execute() external nonReentrant returns (bool success, int256 profitLoss) {
+    function execute() external nonReentrant returns (bool success, int256 profitLoss)  {
+        // TODO: Add nonReentrant modifier
         require(isActive, "Strategy not active");
         
         // Record initial portfolio value
@@ -147,17 +152,16 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
         bool allSuccess = true;
         for (uint256 i = 0; i < components.length; i++) {
             Component storage component = components[i];
-            
-            if (!component.isActive) {
+              if (!component.isActive) {
                 continue;
             }
             
             // Call the component's execute function
-            (bool callSuccess, bytes memory result) = component.contractAddress.call(
+            (bool success, bytes memory result) = component.contractAddress.call(
                 abi.encodeWithSignature("execute()")
             );
             
-            if (!callSuccess) {
+            if (!success) {
                 allSuccess = false;
             }
         }
@@ -195,7 +199,8 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      * @dev Get the portfolio value
      * @return value Total portfolio value
      */
-    function getPortfolioValue() public view returns (uint256 value) {
+    function getPortfolioValue() public view returns (uint256 value)  {
+        // TODO: Add nonReentrant modifier
         // In a real implementation, this would calculate the value of all assets
         // For this example, we'll just return the ETH balance
         return address(this).balance;
@@ -205,7 +210,7 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      * @dev Set the active state of the strategy
      * @param _isActive Whether the strategy is active
      */
-    function setActive(bool _isActive) external onlyOwner {
+    function setActive(bool _isActive) external onlyOwner nonReentrant{
         isActive = _isActive;
     }
     
@@ -213,7 +218,8 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      * @dev Get the number of components
      * @return count Number of components
      */
-    function getComponentCount() external view returns (uint256 count) {
+    function getComponentCount() external view returns (uint256 count)  {
+        // TODO: Add nonReentrant modifier
         return components.length;
     }
     
@@ -246,18 +252,34 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
      */
     receive() external payable {
         emit FundsReceived(msg.sender, msg.value, block.timestamp);
-    }
-    
-    /**
-     * @dev Rescue ETH from the contract
+    }    /**
+     * @dev Rescue ETH from the contract - SECURITY ENHANCED
      * @param _amount Amount to rescue
      * @param _recipient Recipient address
      */
-    function rescueETH(uint256 _amount, address payable _recipient) external onlyOwner {
+    function rescueETH(uint256 _amount, address payable _recipient) 
+        external 
+        onlyOwner 
+        nonReentrant 
+        whenNotPaused 
+    {
         require(_recipient != address(0), "Invalid recipient address");
+        require(_amount > 0, "Amount must be positive");
         require(_amount <= address(this).balance, "Insufficient balance");
+        require(_recipient != address(this), "Cannot send to self");
+        require(_amount <= 10 ether, "Amount exceeds emergency limit");
         
-        (bool success, ) = _recipient.call{value: _amount}("");
+        // Additional security checks
+        require(gasleft() > 50000, "Insufficient gas for safe transfer");
+        
+        // Effects first (emit event before external call)
+        emit ETHRescued(_recipient, _amount);
+        
+        // Secure external call with proper validation and error handling
+        (bool success, ) = _recipient.call{
+            value: _amount,
+            gas: 30000  // Limit gas to prevent reentrancy
+        }("");
         require(success, "ETH transfer failed");
     }
     
@@ -271,7 +293,7 @@ contract EmergentStrategy is Ownable, ReentrancyGuard {
         address _tokenAddress,
         uint256 _amount,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_tokenAddress != address(0), "Invalid token address");
         require(_recipient != address(0), "Invalid recipient address");
         
@@ -319,7 +341,8 @@ contract EmergentStrategyFactory is Ownable {
         string memory _description,
         address _creator,
         bytes32 _salt
-    ) external returns (uint256 strategyId, address strategyAddress) {
+    ) external returns (uint256 strategyId, address strategyAddress)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(_creator != address(0), "Invalid creator address");
         
@@ -355,7 +378,8 @@ contract EmergentStrategyFactory is Ownable {
      * @param _strategyId ID of the strategy
      * @return Strategy address
      */
-    function getStrategyAddress(uint256 _strategyId) external view returns (address) {
+    function getStrategyAddress(uint256 _strategyId) external view returns (address)  {
+        // TODO: Add nonReentrant modifier
         return strategies[_strategyId];
     }
     
@@ -372,7 +396,8 @@ contract EmergentStrategyFactory is Ownable {
         string memory _description,
         address _creator,
         bytes32 _salt
-    ) external view returns (address) {
+    ) external view returns (address)  {
+        // TODO: Add nonReentrant modifier
         bytes memory bytecode = abi.encodePacked(
             type(EmergentStrategy).creationCode,
             abi.encode(_name, _description, _creator)
@@ -419,12 +444,11 @@ abstract contract StrategyComponent {
         require(msg.sender == strategy, "Caller is not the strategy");
         _;
     }
-    
-    /**
+      /**
      * @dev Execute the component
      * @return success Whether the execution was successful
      */
-    function execute() external virtual onlyStrategy returns (bool success);
+    function execute() external virtual returns (bool success);
 }
 
 /**
@@ -432,7 +456,7 @@ abstract contract StrategyComponent {
  * @notice Component for swapping assets
  * @dev Part of the V43 Emergent Strategy Synthesis architecture
  */
-contract SwapComponent is StrategyComponent {
+contract SwapComponent is StrategyComponent, ReentrancyGuard {
     using SafeERC20 for IERC20;
     
     address public immutable tokenIn;
@@ -472,7 +496,8 @@ contract SwapComponent is StrategyComponent {
      * @dev Execute the swap
      * @return success Whether the execution was successful
      */
-    function execute() external override onlyStrategy returns (bool success) {
+    function execute() external override onlyStrategy returns (bool success)  {
+        // TODO: Add nonReentrant modifier
         // Get balance of tokenIn
         uint256 balance = IERC20(tokenIn).balanceOf(strategy);
         
@@ -494,15 +519,14 @@ contract SwapComponent is StrategyComponent {
         // Call swap function on DEX
         // In a real implementation, this would call the specific DEX's swap function
         // For this example, we'll just simulate a successful swap
-        
-        return true;
+          return true;
     }
     
     /**
      * @dev Update amount percentage
      * @param _amountPercentage New percentage
      */
-    function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy {
+    function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy nonReentrant {
         require(_amountPercentage <= 10000, "Percentage cannot exceed 10000 (100%)");
         amountPercentage = _amountPercentage;
     }
@@ -513,7 +537,7 @@ contract SwapComponent is StrategyComponent {
  * @notice Component for interacting with lending protocols
  * @dev Part of the V43 Emergent Strategy Synthesis architecture
  */
-contract LendingComponent is StrategyComponent {
+contract LendingComponent is StrategyComponent, ReentrancyGuard {
     using SafeERC20 for IERC20;
     
     enum ActionType { Deposit, Withdraw, Borrow, Repay }
@@ -554,7 +578,8 @@ contract LendingComponent is StrategyComponent {
      * @dev Execute the lending action
      * @return success Whether the execution was successful
      */
-    function execute() external override onlyStrategy returns (bool success) {
+    function execute() external override onlyStrategy returns (bool success)  {
+        // TODO: Add nonReentrant modifier
         // Get relevant balance
         uint256 balance;
         
@@ -606,7 +631,7 @@ contract LendingComponent is StrategyComponent {
      * @dev Update amount percentage
      * @param _amountPercentage New percentage
      */
-    function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy {
+    function updateAmountPercentage(uint256 _amountPercentage) external onlyStrategy nonReentrant{
         require(_amountPercentage <= 10000, "Percentage cannot exceed 10000 (100%)");
         amountPercentage = _amountPercentage;
     }
@@ -615,7 +640,7 @@ contract LendingComponent is StrategyComponent {
      * @dev Update action type
      * @param _actionType New action type
      */
-    function updateActionType(ActionType _actionType) external onlyStrategy {
+    function updateActionType(ActionType _actionType) external onlyStrategy nonReentrant{
         actionType = _actionType;
     }
 }
@@ -625,7 +650,7 @@ contract LendingComponent is StrategyComponent {
  * @notice Component for interacting with the Pre-Cognitive Oracle
  * @dev Part of the V43 Emergent Strategy Synthesis architecture
  */
-contract OracleComponent is StrategyComponent {
+contract OracleComponent is StrategyComponent, ReentrancyGuard {
     PreCognitiveOracle public immutable oracle;
     bytes32 public eventTypeId;
     bytes32 public horizonId;
@@ -664,7 +689,8 @@ contract OracleComponent is StrategyComponent {
      * @dev Execute the oracle check
      * @return success Whether the execution was successful
      */
-    function execute() external override onlyStrategy returns (bool success) {
+    function execute() external override onlyStrategy returns (bool success)  {
+        // TODO: Add nonReentrant modifier
         // Get latest probability from oracle
         (
             bytes32 probabilityId,
@@ -693,7 +719,7 @@ contract OracleComponent is StrategyComponent {
     function updateThresholds(
         uint256 _probabilityThreshold,
         uint256 _confidenceThreshold
-    ) external onlyStrategy {
+    ) external onlyStrategy nonReentrant{
         probabilityThreshold = _probabilityThreshold;
         confidenceThreshold = _confidenceThreshold;
     }
@@ -706,7 +732,7 @@ contract OracleComponent is StrategyComponent {
     function updateEventType(
         bytes32 _eventTypeId,
         bytes32 _horizonId
-    ) external onlyStrategy {
+    ) external onlyStrategy nonReentrant{
         eventTypeId = _eventTypeId;
         horizonId = _horizonId;
     }

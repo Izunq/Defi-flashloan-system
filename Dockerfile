@@ -1,52 +1,24 @@
-# Dockerfile for Arbitrage Agent
-FROM python:3.10-slim
+# Frontend build stage
+FROM node:18-alpine AS frontend-builder
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    software-properties-common \
-    git \
-    nodejs \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install snarkjs globally
-RUN npm install -g snarkjs
-
-# Create a non-root user and group
-RUN groupadd -r appuser && useradd -r -g appuser -m -d /home/appuser appuser
-
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+COPY package*.json ./
+RUN npm install
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application
 COPY . .
 
-# Create a directory for persistent data with proper permissions
-RUN mkdir -p /data/agent_state && \
-    chown -R appuser:appuser /data/agent_state && \
-    chown -R appuser:appuser /app
+RUN npm run build
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV CONFIG_FILE=/app/config_ultimate.yaml
-ENV AGENT_STATE_DIR=/data/agent_state
+# Frontend serve stage
+FROM node:18-alpine AS frontend
 
-# Expose port for potential API or dashboard
-EXPOSE 8501
+WORKDIR /app
 
-# Drop privileges to non-root user
-USER appuser
+RUN npm install -g serve
 
-# Set the entrypoint
-ENTRYPOINT ["python", "python_agent_v34_ultimate.py"]
+COPY --from=frontend-builder /app/dist ./dist
 
-# Default command (can be overridden)
-CMD ["--config", "/app/config_ultimate.yaml"]
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]

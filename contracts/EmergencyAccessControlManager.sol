@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * @title EmergencyAccessControlManager
@@ -51,14 +52,15 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     event RoleAssignmentLogged(bytes32 indexed role, address indexed account, address indexed assignedBy, bool revoked);
     
     constructor(address _admin) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), _admin);
         _grantRole(EMERGENCY_ROLE, _admin);
     }
     
     /**
      * @dev Activate global emergency mode
      */
-    function activateEmergencyMode(string calldata reason) external onlyRole(EMERGENCY_ROLE) {
+    function activateEmergencyMode(string calldata reason) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         globalEmergencyMode = true;
         emergencyModeActivationTime = block.timestamp;
         _pause();
@@ -68,7 +70,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     /**
      * @dev Deactivate global emergency mode
      */
-    function deactivateEmergencyMode() external onlyRole(EMERGENCY_ROLE) {
+    function deactivateEmergencyMode() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         globalEmergencyMode = false;
         _unpause();
         emit EmergencyModeDeactivated(msg.sender);
@@ -80,7 +83,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     function batchSetProposerApproval(
         address[] calldata proposers, 
         bool[] calldata approvals
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(proposers.length == approvals.length, "Array length mismatch");
         
         for (uint256 i = 0; i < proposers.length; i++) {
@@ -93,7 +97,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     /**
      * @dev Grant role and log assignment
      */
-    function grantRoleWithLogging(bytes32 role, address account) external onlyRole(getRoleAdmin(role)) {
+    function grantRoleWithLogging(bytes32 role, address account) external onlyRole(getRoleAdmin(role))  {
+        // TODO: Add nonReentrant modifier
         _grantRole(role, account);
         _logRoleAssignment(role, account, false);
     }
@@ -101,7 +106,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     /**
      * @dev Revoke role and log revocation
      */
-    function revokeRoleWithLogging(bytes32 role, address account) external onlyRole(getRoleAdmin(role)) {
+    function revokeRoleWithLogging(bytes32 role, address account) external onlyRole(getRoleAdmin(role))  {
+        // TODO: Add nonReentrant modifier
         _revokeRole(role, account);
         _logRoleAssignment(role, account, true);
     }
@@ -109,7 +115,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     /**
      * @dev Emergency revoke all roles from an account
      */
-    function emergencyRevokeAllRoles(address account) external onlyRole(EMERGENCY_ROLE) {
+    function emergencyRevokeAllRoles(address account) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         bytes32[] memory roles = _getAllRoles();
         
         for (uint256 i = 0; i < roles.length; i++) {
@@ -123,14 +130,16 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
     /**
      * @dev Check if an address is an approved proposer
      */
-    function isApprovedProposer(address proposer) external view returns (bool) {
+    function isApprovedProposer(address proposer) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         return approvedProposers[proposer];
     }
     
     /**
      * @dev Get role assignment history for an account
      */
-    function getRoleHistory(address account) external view returns (uint256[] memory) {
+    function getRoleHistory(address account) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return accountRoleHistory[account];
     }
     
@@ -179,7 +188,8 @@ contract EmergencyAccessControlManager is AccessControl, ReentrancyGuard, Pausab
         address oracle,
         address securityManager,
         address riskManager
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _grantRole(STRATEGY_PROPOSER_ROLE, strategist);
         _grantRole(STRATEGY_EXECUTOR_ROLE, executor);
         _grantRole(ORACLE_ROLE, oracle);

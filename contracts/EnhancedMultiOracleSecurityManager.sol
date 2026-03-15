@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
@@ -221,7 +222,7 @@ contract EnhancedMultiOracleSecurityManager is AccessControl, ReentrancyGuard, P
     error CircuitBreakerActive(bytes32 assetId);
     error EmergencyModeActive();
     error ManipulationSuspected(bytes32 assetId, uint256 confidence);
-    error OracleQuarantined(address oracle);
+    error OracleInQuarantine(address oracle);
     
     // =================
     // MODIFIERS
@@ -230,7 +231,7 @@ contract EnhancedMultiOracleSecurityManager is AccessControl, ReentrancyGuard, P
     modifier onlyActiveOracle() {
         OracleSource memory oracle = oracles[msg.sender];
         if (!oracle.isActive) revert OracleNotRegistered(msg.sender);
-        if (oracle.isQuarantined) revert OracleQuarantined(msg.sender);
+        if (oracle.isQuarantined) revert OracleInQuarantine(msg.sender);
         _;
     }
     
@@ -252,7 +253,7 @@ contract EnhancedMultiOracleSecurityManager is AccessControl, ReentrancyGuard, P
     // =================
     
     constructor(address admin) {
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), admin);
         _grantRole(ORACLE_ADMIN_ROLE, admin);
         _grantRole(SECURITY_MANAGER_ROLE, admin);
         _grantRole(EMERGENCY_RESPONSE_ROLE, admin);
@@ -274,7 +275,8 @@ contract EnhancedMultiOracleSecurityManager is AccessControl, ReentrancyGuard, P
         OracleSourceType sourceType,
         string calldata sourceGroup,
         uint256 weight
-    ) external onlyRole(ORACLE_ADMIN_ROLE) {
+    ) external onlyRole(ORACLE_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         if (oracles[oracleAddress].isActive) revert OracleAlreadyRegistered(oracleAddress);
         require(oracleAddress != address(0), "Invalid oracle address");
         require(weight > 0 && weight <= 10000, "Invalid weight");
@@ -964,14 +966,16 @@ contract EnhancedMultiOracleSecurityManager is AccessControl, ReentrancyGuard, P
     /**
      * @notice Emergency pause function
      */
-    function emergencyPause() external onlyRole(EMERGENCY_RESPONSE_ROLE) {
+    function emergencyPause() external onlyRole(EMERGENCY_RESPONSE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _pause();
     }
     
     /**
      * @notice Emergency unpause function
      */
-    function emergencyUnpause() external onlyRole(EMERGENCY_RESPONSE_ROLE) {
+    function emergencyUnpause() external onlyRole(EMERGENCY_RESPONSE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _unpause();
     }
 }

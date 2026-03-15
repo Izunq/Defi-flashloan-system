@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-06-20T01:13:06.979439",
+  "total_records": 1000,
+  "profit_metrics": {
+    "total_return": 1022.7227603567429,
+    "mean_return": 1.022722760356743,
+    "std_return": 0.6986277850181098,
+    "win_rate": 1.0,
+    "sharpe_ratio": 1.4639022127215167,
+    "max_profit": 4.05885411619854,
+    "max_loss": 0.0006955389756017876,
+    "total_trades": 1000,
+    "winning_trades": 1000,
+    "losing_trades": 0
+  },
+  "risk_metrics": {
+    "var_95": 0.11503852782578085,
+    "var_99": 0.032680295715030054,
+    "max_drawdown": 0.0,
+    "volatility": 0.6986277850181098
+  },
+  "performance_ratios": {
+    "profit_factor": Infinity,
+    "average_win": 1.022722760356743,
+    "average_loss": 0,
+    "win_loss_ratio": 0
+  },
+  "spread_analysis": {
+    "mean_spread": 0.0020265705809055607,
+    "std_spread": 0.0009624436290775325,
+    "min_spread": 0.0001,
+    "max_spread": 0.005852731490654722,
+    "percentile_95": 0.0036769725284151464,
+    "coefficient_variation": 0.47491246450812996
+  },
+  "gas_analysis": {
+    "mean_gas": 0.010477294102130809,
+    "median_gas": 0.010020816148164169,
+    "gas_volatility": 0.0031210184776766076,
+    "high_gas_threshold": 0.0144879987367715,
+    "gas_efficiency_corr": -0.9885626108507709
+  },
+  "market_analysis": {
+    "mean_volatility": 0.020159718673937347,
+    "low_vol_profit": 1.0561444871617902,
+    "high_vol_profit": 1.0701077461107782,
+    "volatility_profit_corr": -0.0031907390682093194,
+    "best_regime": "high_volatility"
+  },
+  "timing_analysis": {
+    "best_hour": 2,
+    "worst_hour": 9,
+    "best_hour_profit": 1.2122754074348399,
+    "worst_hour_profit": 0.8910855946708766,
+    "hourly_range": 0.3211898127639633
+  },
+  "opportunity_analysis": {
+    "mean_score": 0.4857189711634396,
+    "excellent_opportunities": 100,
+    "poor_opportunities": 100,
+    "score_volatility": 0.09537334022059424
+  }
+}

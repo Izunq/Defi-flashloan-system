@@ -1,0 +1,50 @@
+{
+  "matlab_path": null,
+  "model_path": "ai_market_making/models/market_maker_model.mat",
+  "market_data_path": "ai_market_making/data/market_data.csv",
+  "initial_capital": 1000000,
+  "max_position": 1000,
+  "risk_tolerance": 0.5,
+  "update_frequency_seconds": 1,
+  "trading_pairs": ["BTC/USD", "ETH/USD", "SOL/USD", "AVAX/USD", "DOT/USD"],
+  "spread_factor": 0.001,
+  "use_reinforcement_learning": true,
+  "simulation_mode": true,
+  "position_rebalance_threshold": 800,
+  "stop_loss_percentage": 0.025,
+  "take_profit_percentage": 0.03,
+  "market_impact_factor": 0.05,
+  "neural_network": {
+    "type": "LSTM",
+    "input_features": 100,
+    "lstm_units": 50,
+    "dense_units": 25,
+    "output_units": 2,
+    "learning_rate": 0.001,
+    "batch_size": 32,
+    "validation_split": 0.2
+  },
+  "reinforcement_learning": {
+    "type": "DQN",
+    "state_size": 100,
+    "action_size": 2,
+    "learning_rate": 0.001,
+    "discount_factor": 0.99,
+    "exploration_rate": 0.1,
+    "memory_size": 10000,
+    "target_update_frequency": 1000
+  },
+  "risk_management": {
+    "max_drawdown_percentage": 5,
+    "max_daily_loss_percentage": 2,
+    "position_concentration_limit": 30,
+    "correlation_threshold": 0.7,
+    "volatility_scaling": true
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/ai_market_maker.log",
+    "max_size_mb": 10,
+    "backup_count": 5
+  }
+}

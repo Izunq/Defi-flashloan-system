@@ -1,0 +1,192 @@
+{
+  "summary": {
+    "total_tests": 30,
+    "passed_tests": 30,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "duration_seconds": 0.9630074501037598,
+    "timestamp": 1750353820.923392
+  },
+  "detailed_results": [
+    {
+      "test": "ZKVerifier: Normal batch size",
+      "passed": true,
+      "details": "Batch size 25 accepted",
+      "timestamp": 1750353819.9595096
+    },
+    {
+      "test": "ZKVerifier: Maximum batch size",
+      "passed": true,
+      "details": "Batch size 50 accepted",
+      "timestamp": 1750353819.9598348
+    },
+    {
+      "test": "ZKVerifier: Oversized batch rejection",
+      "passed": true,
+      "details": "Batch size 51 correctly rejected",
+      "timestamp": 1750353819.9600098
+    },
+    {
+      "test": "Oracle: Normal batch size",
+      "passed": true,
+      "details": "Batch size 50 - Expected: True, Got: True",
+      "timestamp": 1750353820.0628994
+    },
+    {
+      "test": "Oracle: Maximum batch size",
+      "passed": true,
+      "details": "Batch size 100 - Expected: True, Got: True",
+      "timestamp": 1750353820.0631113
+    },
+    {
+      "test": "Oracle: Oversized batch",
+      "passed": true,
+      "details": "Batch size 101 - Expected: False, Got: False",
+      "timestamp": 1750353820.0632787
+    },
+    {
+      "test": "Mesh: Normal cleanup size",
+      "passed": true,
+      "details": "Cleanup size 25 - Expected: True, Got: True",
+      "timestamp": 1750353820.1730738
+    },
+    {
+      "test": "Mesh: Maximum cleanup size",
+      "passed": true,
+      "details": "Cleanup size 50 - Expected: True, Got: True",
+      "timestamp": 1750353820.1732821
+    },
+    {
+      "test": "Mesh: Oversized cleanup",
+      "passed": true,
+      "details": "Cleanup size 51 - Expected: False, Got: False",
+      "timestamp": 1750353820.1734447
+    },
+    {
+      "test": "AIStrategy: Normal token array",
+      "passed": true,
+      "details": "Array size 25 - Expected: True, Got: True",
+      "timestamp": 1750353820.2829337
+    },
+    {
+      "test": "AIStrategy: Maximum token array",
+      "passed": true,
+      "details": "Array size 50 - Expected: True, Got: True",
+      "timestamp": 1750353820.2832086
+    },
+    {
+      "test": "AIStrategy: Oversized token array",
+      "passed": true,
+      "details": "Array size 51 - Expected: False, Got: False",
+      "timestamp": 1750353820.2834563
+    },
+    {
+      "test": "InputValidator: Normal pattern search",
+      "passed": true,
+      "details": "Search size 500 - Expected: True, Got: True",
+      "timestamp": 1750353820.3928974
+    },
+    {
+      "test": "InputValidator: Maximum pattern search",
+      "passed": true,
+      "details": "Search size 1000 - Expected: True, Got: True",
+      "timestamp": 1750353820.3930676
+    },
+    {
+      "test": "InputValidator: Oversized pattern search",
+      "passed": true,
+      "details": "Search size 1001 - Expected: False, Got: False",
+      "timestamp": 1750353820.3932486
+    },
+    {
+      "test": "Gas Monitor: Normal gas usage",
+      "passed": true,
+      "details": "Gas used: 1000000, Limit: 2000000",
+      "timestamp": 1750353820.4946926
+    },
+    {
+      "test": "Gas Monitor: High gas usage",
+      "passed": true,
+      "details": "Gas used: 4500000, Limit: 5000000",
+      "timestamp": 1750353820.4948866
+    },
+    {
+      "test": "Gas Monitor: Excessive gas usage",
+      "passed": true,
+      "details": "Gas used: 6000000, Limit: 5000000",
+      "timestamp": 1750353820.4950807
+    },
+    {
+      "test": "Circuit Breaker: 1 failures",
+      "passed": true,
+      "details": "Failures: 1, Threshold: 3",
+      "timestamp": 1750353820.603847
+    },
+    {
+      "test": "Circuit Breaker: 2 failures",
+      "passed": true,
+      "details": "Failures: 2, Threshold: 3",
+      "timestamp": 1750353820.604043
+    },
+    {
+      "test": "Circuit Breaker: 3 failures",
+      "passed": true,
+      "details": "Failures: 3, Threshold: 3",
+      "timestamp": 1750353820.6042345
+    },
+    {
+      "test": "Circuit Breaker: 5 failures",
+      "passed": true,
+      "details": "Failures: 5, Threshold: 3",
+      "timestamp": 1750353820.6043863
+    },
+    {
+      "test": "Rate Limit: 5 operations",
+      "passed": true,
+      "details": "Operations: 5, Limit: 10",
+      "timestamp": 1750353820.7110794
+    },
+    {
+      "test": "Rate Limit: 10 operations",
+      "passed": true,
+      "details": "Operations: 10, Limit: 10",
+      "timestamp": 1750353820.7112827
+    },
+    {
+      "test": "Rate Limit: 11 operations",
+      "passed": true,
+      "details": "Operations: 11, Limit: 10",
+      "timestamp": 1750353820.7115233
+    },
+    {
+      "test": "Rate Limit: 15 operations",
+      "passed": true,
+      "details": "Operations: 15, Limit: 10",
+      "timestamp": 1750353820.7117083
+    },
+    {
+      "test": "Edge Case: Zero batch size",
+      "passed": true,
+      "details": "Value: 0",
+      "timestamp": 1750353820.821066
+    },
+    {
+      "test": "Edge Case: Negative array size",
+      "passed": true,
+      "details": "Value: -1",
+      "timestamp": 1750353820.8213167
+    },
+    {
+      "test": "Edge Case: Maximum uint256",
+      "passed": true,
+      "details": "Value: 115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "timestamp": 1750353820.8215094
+    },
+    {
+      "test": "Edge Case: Empty array",
+      "passed": true,
+      "details": "Value: 0",
+      "timestamp": 1750353820.8216727
+    }
+  ]
+}

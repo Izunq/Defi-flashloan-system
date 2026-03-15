@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./HalalAssetRegistry.sol";
 
 /**
@@ -186,7 +187,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Start a new Zakat period
      */
-    function startZakatPeriod() external onlyRole(ADMIN_ROLE) {
+    function startZakatPeriod() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         // Check if there's an active period
         if (zakatPeriods.length > 0) {
             ZakatPeriod storage lastPeriod = zakatPeriods[zakatPeriods.length - 1];
@@ -216,7 +218,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      * @dev Calculate Zakat for the current period
      * @return totalZakatUSD The total Zakat calculated in USD
      */
-    function calculateZakat() external onlyRole(ADMIN_ROLE) returns (uint256) {
+    function calculateZakat() external onlyRole(ADMIN_ROLE) returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(zakatPeriods.length > 0, "No active Zakat period");
         
         ZakatPeriod storage currentPeriod = zakatPeriods[zakatPeriods.length - 1];
@@ -286,7 +289,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
         address _recipient,
         address _asset,
         uint256 _amount
-    ) external nonReentrant onlyRole(ZAKAT_DISTRIBUTOR_ROLE) onlyHalalAsset(_asset) {
+    ) external nonReentrant onlyRole(ZAKAT_DISTRIBUTOR_ROLE) onlyHalalAsset(_asset)  {
+        // TODO: Add nonReentrant modifier
         require(_periodId < zakatPeriods.length, "Invalid period ID");
         require(zakatRecipients[_recipient].approved, "Recipient not approved");
         require(treasuryAssets[_asset], "Asset not in treasury");
@@ -336,7 +340,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
         address _recipient,
         string calldata _name,
         string calldata _category
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_recipient != address(0), "Invalid recipient address");
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(bytes(_category).length > 0, "Category cannot be empty");
@@ -370,7 +375,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
     function setRecipientApproval(
         address _recipient,
         bool _approved
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(zakatRecipients[_recipient].paymentAddress != address(0), "Recipient does not exist");
         
         zakatRecipients[_recipient].approved = _approved;
@@ -388,7 +394,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      */
     function addTreasuryAsset(
         address _asset
-    ) external onlyRole(TREASURY_ROLE) onlyHalalAsset(_asset) {
+    ) external onlyRole(TREASURY_ROLE) onlyHalalAsset(_asset)  {
+        // TODO: Add nonReentrant modifier
         require(!treasuryAssets[_asset], "Asset already in treasury");
         
         treasuryAssets[_asset] = true;
@@ -403,7 +410,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      */
     function removeTreasuryAsset(
         address _asset
-    ) external onlyRole(TREASURY_ROLE) {
+    ) external onlyRole(TREASURY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(treasuryAssets[_asset], "Asset not in treasury");
         
         treasuryAssets[_asset] = false;
@@ -428,7 +436,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
     function setAssetPriceOracle(
         address _asset,
         address _oracle
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_asset != address(0), "Invalid asset address");
         require(_oracle != address(0), "Invalid oracle address");
         
@@ -445,7 +454,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
     function updateNisab(
         uint256 _goldNisabUSD,
         uint256 _silverNisabUSD
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_goldNisabUSD > 0, "Invalid gold Nisab");
         require(_silverNisabUSD > 0, "Invalid silver Nisab");
         
@@ -474,7 +484,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get all Zakat recipients
      * @return Array of recipient addresses
      */
-    function getAllRecipients() external view returns (address[] memory) {
+    function getAllRecipients() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         return recipientList;
     }
 
@@ -482,7 +493,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get all treasury assets
      * @return Array of asset addresses
      */
-    function getAllTreasuryAssets() external view returns (address[] memory) {
+    function getAllTreasuryAssets() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         return treasuryAssetList;
     }
 
@@ -490,7 +502,8 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get distribution count
      * @return Number of distributions
      */
-    function getDistributionCount() external view returns (uint256) {
+    function getDistributionCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return distributions.length;
     }
 
@@ -498,21 +511,22 @@ contract ZakatManager is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get period count
      * @return Number of Zakat periods
      */
-    function getPeriodCount() external view returns (uint256) {
+    function getPeriodCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return zakatPeriods.length;
     }
 
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

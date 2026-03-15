@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -123,7 +123,8 @@ contract AIStrategyV34 is Ownable, ReentrancyGuard {
     function makePrediction(
         address token,
         MarketFeatures calldata features
-    ) external returns (PredictionOutput memory prediction) {
+    ) external returns (PredictionOutput memory prediction)  {
+        // TODO: Add nonReentrant modifier
         require(features.timestamp > 0, "Invalid timestamp");
         
         // Store historical data
@@ -160,7 +161,8 @@ contract AIStrategyV34 is Ownable, ReentrancyGuard {
         address token,
         uint256 amount,
         bytes calldata executionData
-    ) external onlyOwner nonReentrant returns (bool success, uint256 profit) {
+    ) external onlyOwner nonReentrant returns (bool success, uint256 profit)  {
+        // TODO: Add nonReentrant modifier
         PredictionOutput memory prediction = latestPredictions[token];
         
         require(prediction.timestamp > 0, "No prediction available");
@@ -256,14 +258,13 @@ contract AIStrategyV34 is Ownable, ReentrancyGuard {
         // For demonstration, we'll simulate execution
         
         uint256 initialBalance = IERC20(token).balanceOf(address(this));
-        
-        // Decode execution data and perform arbitrage
+          // Decode execution data and perform arbitrage
         // This would integrate with DEX routers, flash loans, etc.
         (address target, bytes memory callData) = abi.decode(executionData, (address, bytes));
         
-        (bool callSuccess, ) = target.call(callData);
-        
-        if (callSuccess) {
+        (bool success, ) = target.call(callData);
+        require(success, "External call failed");        
+        if (success) {
             uint256 finalBalance = IERC20(token).balanceOf(address(this));
             if (finalBalance > initialBalance) {
                 profit = finalBalance - initialBalance;
@@ -552,36 +553,41 @@ contract AIStrategyV34 is Ownable, ReentrancyGuard {
         uint256 _maxPositionSize,
         uint256 _riskTolerance,
         uint256 _minConfidence
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         maxPositionSize = _maxPositionSize;
         riskTolerance = _riskTolerance;
         minConfidence = _minConfidence;
     }
 
-    function updateAdaptationRate(uint256 _adaptationRate) external onlyOwner {
+    function updateAdaptationRate(uint256 _adaptationRate) external onlyOwner nonReentrant{
         adaptationRate = _adaptationRate;
     }
 
     // View Functions
 
-    function getLatestPrediction(address token) external view returns (PredictionOutput memory) {
+    function getLatestPrediction(address token) external view returns (PredictionOutput memory)  {
+        // TODO: Add nonReentrant modifier
         return latestPredictions[token];
     }
 
-    function getPerformanceMetrics() external view returns (PerformanceMetrics memory) {
+    function getPerformanceMetrics() external view returns (PerformanceMetrics memory)  {
+        // TODO: Add nonReentrant modifier
         return performance;
     }
 
-    function getSuccessRate() external view returns (uint256) {
+    function getSuccessRate() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         if (performance.totalTrades == 0) return 0;
         return (performance.successfulTrades * 100) / performance.totalTrades;
     }
 
-    function getNeuralNetworkVersion() external view returns (uint256) {
+    function getNeuralNetworkVersion() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return neuralNetwork.version;
     }
 
-    function getQValue(bytes32 state) external view returns (int256) {
+    function getQValue(bytes32 state) external view returns (int256)  {
+        // TODO: Add nonReentrant modifier
         return rlAgent.qTable[state];
     }
 }

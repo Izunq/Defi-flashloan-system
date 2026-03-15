@@ -35,7 +35,7 @@ export interface SentinelAlertsData {
 }
 
 // WebSocket endpoint for real-time updates
-const WS_ENDPOINT = process.env.REACT_APP_WS_ENDPOINT || 'ws://localhost:8080';
+const WS_ENDPOINT = process.env.REACT_APP_WS_ENDPOINT || 'ws://localhost:8083';
 
 export const useSentinelAlerts = (): SentinelAlertsData => {
   const [alerts, setAlerts] = useState<SentinelAlert[]>([]);
@@ -181,8 +181,8 @@ export const useSentinelAlerts = (): SentinelAlertsData => {
           attack_type: "SANDWICH_ATTACK",
           profit: 0.35,
           gas_used: 250000,
-          attacker: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b",
-          victim: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+          attacker: "${CONTRACT_ADDRESS}",
+          victim: "${CONTRACT_ADDRESS}",
           confidence: 0.95
         },
         recommended_actions: [

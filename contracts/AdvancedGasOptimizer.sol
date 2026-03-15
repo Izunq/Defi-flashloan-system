@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./interfaces/IGasOptimizer.sol";
 
 /**
@@ -11,7 +12,7 @@ import "./interfaces/IGasOptimizer.sol";
  * @notice Advanced gas optimization and DoS protection system
  * @dev Provides comprehensive gas optimization, circuit breakers, and retry mechanisms
  */
-contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
+contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable, Ownable {
     
     bytes32 public constant GAS_ADMIN_ROLE = keccak256("GAS_ADMIN_ROLE");
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
@@ -114,10 +115,9 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     event NetworkCongestionUpdated(uint256 congestionLevel);
     event GasOptimizationPerformed(bytes4 indexed selector, uint256 gasSaved);
     
-    constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(GAS_ADMIN_ROLE, msg.sender);
-        _setupRole(EMERGENCY_ROLE, msg.sender);
+    constructor() Ownable(msg.sender) {        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(GAS_ADMIN_ROLE, msg.sender);
+        _grantRole(EMERGENCY_ROLE, msg.sender);
         
         // Initialize default configurations
         _initializeDefaults();
@@ -311,7 +311,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     function setGasLimits(
         bytes4 selector,
         GasLimits calldata limits
-    ) external onlyRole(GAS_ADMIN_ROLE) {
+    ) external onlyRole(GAS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(limits.maxGasPerOperation > 0, "Invalid max gas per operation");
         require(limits.maxGasPerBatch >= limits.maxGasPerOperation, "Invalid batch limit");
         require(limits.maxLoopIterations > 0, "Invalid max iterations");
@@ -330,7 +331,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
         address contract_,
         bytes4 selector,
         EnhancedCircuitBreaker calldata config
-    ) external onlyRole(GAS_ADMIN_ROLE) {
+    ) external onlyRole(GAS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(contract_ != address(0), "Invalid contract address");
         require(config.gasThreshold > 0, "Invalid gas threshold");
         require(config.maxFailuresInWindow > 0, "Invalid max failures");
@@ -345,7 +347,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     function setRetryConfig(
         bytes4 selector,
         RetryConfig calldata config
-    ) external onlyRole(GAS_ADMIN_ROLE) {
+    ) external onlyRole(GAS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(config.maxRetries > 0 && config.maxRetries <= 10, "Invalid max retries");
         require(config.baseDelaySeconds > 0, "Invalid base delay");
         require(config.maxDelaySeconds >= config.baseDelaySeconds, "Invalid max delay");
@@ -360,7 +363,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     function configureExternalCall(
         address target,
         ExternalCallConfig calldata config
-    ) external onlyRole(GAS_ADMIN_ROLE) {
+    ) external onlyRole(GAS_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(target != address(0), "Invalid target address");
         require(config.maxRetries > 0, "Invalid max retries");
         require(config.timeoutSeconds > 0, "Invalid timeout");
@@ -394,7 +398,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     function resetCircuitBreaker(
         address contract_,
         bytes4 selector
-    ) external onlyRole(EMERGENCY_ROLE) {
+    ) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         EnhancedCircuitBreaker storage cb = circuitBreakers[contract_][selector];
         cb.isTripped = false;
         cb.currentFailures = 0;
@@ -443,7 +448,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     function calculateRetryDelay(
         bytes4 selector,
         uint256 attemptNumber
-    ) external view returns (uint256) {
+    ) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         RetryConfig memory config = this.getRetryConfig(selector);
         
         uint256 delay = config.baseDelaySeconds;
@@ -475,7 +481,8 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
         bytes4 selector,
         uint256 attemptNumber,
         string calldata errorReason
-    ) external view returns (bool) {
+    ) external view returns (bool)  {
+        // TODO: Add nonReentrant modifier
         RetryConfig memory config = this.getRetryConfig(selector);
         
         if (attemptNumber >= config.maxRetries) {
@@ -496,14 +503,15 @@ contract AdvancedGasOptimizer is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Emergency pause functionality
      */
-    function emergencyPause() external onlyRole(EMERGENCY_ROLE) {
+    function emergencyPause() external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _pause();
     }
     
     /**
      * @dev Unpause functionality
      */
-    function unpause() external onlyRole(EMERGENCY_ROLE) {
+    function unpause() external onlyRole(EMERGENCY_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
     

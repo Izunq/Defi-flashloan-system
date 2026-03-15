@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -195,7 +196,7 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         treasuryAddress = _treasuryAddress;
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(BANK_ADMIN_ROLE, msg.sender);
         _grantRole(POLICY_COMMITTEE_ROLE, msg.sender);
         _grantRole(EMERGENCY_RESPONSE_ROLE, msg.sender);
@@ -237,7 +238,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         bool _isEmergencyAsset,
         uint256 _reserveRatio,
         uint256 _maxLiquidity
-    ) external onlyRole(BANK_ADMIN_ROLE) {
+    ) external onlyRole(BANK_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_tokenAddress != address(0), "Invalid token address");
         require(assets[_tokenAddress].tokenAddress == address(0), "Asset already registered");
         require(_targetPrice > 0, "Target price must be greater than zero");
@@ -290,7 +292,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         bool _isEmergencyAsset,
         uint256 _reserveRatio,
         uint256 _maxLiquidity
-    ) external onlyRole(BANK_ADMIN_ROLE) {
+    ) external onlyRole(BANK_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(assets[_tokenAddress].tokenAddress != address(0), "Asset not registered");
         require(_targetPrice > 0, "Target price must be greater than zero");
         require(_minPrice < _targetPrice && _maxPrice > _targetPrice, "Invalid price bounds");
@@ -329,7 +332,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         bool _isMonitored,
         bool _isProtected,
         uint256 _stabilizationFactor
-    ) external onlyRole(BANK_ADMIN_ROLE) {
+    ) external onlyRole(BANK_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_marketAddress != address(0), "Invalid market address");
         require(markets[_marketAddress].marketAddress == address(0), "Market already registered");
         
@@ -371,7 +375,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         uint256 _volatility,
         uint256 _liquidity,
         uint256 _volume24h
-    ) external onlyRole(ORACLE_ROLE) {
+    ) external onlyRole(ORACLE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(markets[_marketAddress].marketAddress != address(0), "Market not registered");
         
         MarketInfo storage market = markets[_marketAddress];
@@ -486,7 +491,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
     function activateEmergencyMode(
         address _marketAddress,
         string memory _reason
-    ) external onlyRole(EMERGENCY_RESPONSE_ROLE) {
+    ) external onlyRole(EMERGENCY_RESPONSE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(markets[_marketAddress].marketAddress != address(0), "Market not registered");
         
         MarketInfo storage market = markets[_marketAddress];
@@ -521,7 +527,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
     function deactivateEmergencyMode(
         address _marketAddress,
         MarketState _newState
-    ) external onlyRole(EMERGENCY_RESPONSE_ROLE) {
+    ) external onlyRole(EMERGENCY_RESPONSE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(markets[_marketAddress].marketAddress != address(0), "Market not registered");
         require(_newState != MarketState.Crisis, "Cannot set to Crisis state");
         
@@ -566,7 +573,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
         uint256 _interventionCooldown,
         uint256 _emergencyThreshold,
         uint256 _stabilizationFee
-    ) external onlyRole(POLICY_COMMITTEE_ROLE) {
+    ) external onlyRole(POLICY_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_baseReserveRatio <= 10000, "Reserve ratio cannot exceed 100%");
         require(_maxInterventionSize <= 5000, "Intervention size cannot exceed 50%");
         require(_emergencyThreshold <= 5000, "Emergency threshold cannot exceed 50%");
@@ -594,7 +602,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @dev Update treasury address
      * @param _newTreasuryAddress New treasury address
      */
-    function updateTreasuryAddress(address _newTreasuryAddress) external onlyRole(BANK_ADMIN_ROLE) {
+    function updateTreasuryAddress(address _newTreasuryAddress) external onlyRole(BANK_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_newTreasuryAddress != address(0), "Invalid treasury address");
         treasuryAddress = _newTreasuryAddress;
     }
@@ -665,7 +674,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @dev Get all registered assets
      * @return List of asset addresses
      */
-    function getAllAssets() external view returns (address[] memory) {
+    function getAllAssets() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         return assetList;
     }
     
@@ -673,7 +683,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @dev Get all registered markets
      * @return List of market addresses
      */
-    function getAllMarkets() external view returns (address[] memory) {
+    function getAllMarkets() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         return marketList;
     }
     
@@ -682,7 +693,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @param _interventionId Intervention ID
      * @return Intervention details
      */
-    function getIntervention(uint256 _interventionId) external view returns (Intervention memory) {
+    function getIntervention(uint256 _interventionId) external view returns (Intervention memory)  {
+        // TODO: Add nonReentrant modifier
         require(_interventionId < interventionCount, "Invalid intervention ID");
         return interventions[_interventionId];
     }
@@ -692,7 +704,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @param _count Number of interventions to get
      * @return List of recent interventions
      */
-    function getRecentInterventions(uint256 _count) external view returns (Intervention[] memory) {
+    function getRecentInterventions(uint256 _count) external view returns (Intervention[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256 count = Math.min(_count, interventionCount);
         Intervention[] memory result = new Intervention[](count);
         
@@ -709,7 +722,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @param _marketAddress Address of the market
      * @return Market state
      */
-    function getMarketState(address _marketAddress) external view returns (MarketInfo memory) {
+    function getMarketState(address _marketAddress) external view returns (MarketInfo memory)  {
+        // TODO: Add nonReentrant modifier
         require(markets[_marketAddress].marketAddress != address(0), "Market not registered");
         return markets[_marketAddress];
     }
@@ -719,7 +733,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @param _tokenAddress Address of the token
      * @return Asset info
      */
-    function getAssetInfo(address _tokenAddress) external view returns (AssetInfo memory) {
+    function getAssetInfo(address _tokenAddress) external view returns (AssetInfo memory)  {
+        // TODO: Add nonReentrant modifier
         require(assets[_tokenAddress].tokenAddress != address(0), "Asset not registered");
         return assets[_tokenAddress];
     }
@@ -728,7 +743,8 @@ contract AlgorithmicCentralBank is AccessControl, ReentrancyGuard {
      * @dev Get markets in crisis
      * @return List of markets in crisis
      */
-    function getMarketsInCrisis() external view returns (address[] memory) {
+    function getMarketsInCrisis() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         uint256 count = 0;
         
         // Count markets in crisis

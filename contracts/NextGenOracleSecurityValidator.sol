@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title NextGenOracleSecurityValidator
@@ -164,7 +165,7 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         address _mlOperator,
         address _quantumOperator
     ) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), _admin);
         _grantRole(SECURITY_MANAGER_ROLE, _securityManager);
         _grantRole(ML_OPERATOR_ROLE, _mlOperator);
         _grantRole(QUANTUM_OPERATOR_ROLE, _quantumOperator);
@@ -270,7 +271,8 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         uint256 neuralNetScore,
         uint256 confidence,
         string[] memory featureImportance
-    ) external onlyRole(ML_OPERATOR_ROLE) {
+    ) external onlyRole(ML_OPERATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         
         // Calculate ensemble score (weighted average)
         uint256 ensembleScore = (
@@ -307,7 +309,8 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         bytes32 dataCommitment,
         bytes32[] memory oracleCommitments,
         uint256 quantumResistanceLevel
-    ) external onlyRole(QUANTUM_OPERATOR_ROLE) {
+    ) external onlyRole(QUANTUM_OPERATOR_ROLE)  {
+        // TODO: Add nonReentrant modifier
         
         QuantumConsensus memory consensus = QuantumConsensus({
             dataCommitment: dataCommitment,
@@ -333,7 +336,8 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
     /**
      * @dev Economic circuit breaker with dynamic thresholds
      */
-    function checkEconomicCircuitBreaker(string memory asset) external onlyRole(SECURITY_MANAGER_ROLE) {
+    function checkEconomicCircuitBreaker(string memory asset) external onlyRole(SECURITY_MANAGER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         EconomicSecurityModel storage model = economicModels[asset];
         
         // Calculate current value at risk
@@ -402,7 +406,8 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         address oracle,
         string memory asset,
         uint256 economicDamage
-    ) external onlyRole(SECURITY_MANAGER_ROLE) {
+    ) external onlyRole(SECURITY_MANAGER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         
         require(oracleStakes[oracle] > 0, "No stake to slash");
         
@@ -589,21 +594,18 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         if (historyLength < 30) return 0;
         
         // Get recent price returns
-        uint256[] memory returns = new uint256[](30);
+        uint256[] memory results = new uint256[](30);
         for (uint256 i = historyLength - 30; i < historyLength - 1; i++) {
             uint256 currentPrice = priceHistory[asset][i + 1].price;
             uint256 previousPrice = priceHistory[asset][i].price;
-            
-            if (previousPrice > 0) {
-                returns[i - (historyLength - 30)] = currentPrice > previousPrice ?
+              if (previousPrice > 0) {
+                results[i - (historyLength - 30)] = currentPrice > previousPrice ?
                     (currentPrice - previousPrice) * BASIS_POINTS / previousPrice :
                     (previousPrice - currentPrice) * BASIS_POINTS / previousPrice;
             }
-        }
-        
-        // Sort returns and get 5th percentile (95% VaR)
-        _quickSort(returns, 0, int256(29));
-        return returns[1]; // Approximately 5th percentile
+        }        // Sort returns and get 5th percentile (95% VaR)
+        _quickSort(results, 0, int256(29));
+        return results[1]; // Approximately 5th percentile
     }
     
     function _calculateDynamicThreshold(string memory asset) internal view returns (uint256) {
@@ -1011,19 +1013,23 @@ contract NextGenOracleSecurityValidator is AccessControl, Pausable, ReentrancyGu
         return (0, 0, 0, quantumReadinessLevel, true);
     }
     
-    function getEconomicModel(string memory asset) external view returns (EconomicSecurityModel memory) {
+    function getEconomicModel(string memory asset) external view returns (EconomicSecurityModel memory)  {
+        // TODO: Add nonReentrant modifier
         return economicModels[asset];
     }
     
-    function getMLEnsembleResult(string memory asset) external view returns (MLEnsembleResult memory) {
+    function getMLEnsembleResult(string memory asset) external view returns (MLEnsembleResult memory)  {
+        // TODO: Add nonReentrant modifier
         return mlEnsembleResults[asset];
     }
     
-    function getQuantumConsensus(string memory asset) external view returns (QuantumConsensus memory) {
+    function getQuantumConsensus(string memory asset) external view returns (QuantumConsensus memory)  {
+        // TODO: Add nonReentrant modifier
         return quantumConsensus[asset];
     }
     
-    function getRealTimeThreatScore(string memory asset) external view returns (uint256) {
+    function getRealTimeThreatScore(string memory asset) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return realTimeThreatScores[asset];
     }
 }

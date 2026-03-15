@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IMudarabahFlashSwap
  * @notice Interface for the Mudarabah Flash Swap receiver
  * @dev Shariah-compliant alternative to flash loans
  */
+
 interface IMudarabahFlashSwap {
     /**
      * @dev Execute Mudarabah operation

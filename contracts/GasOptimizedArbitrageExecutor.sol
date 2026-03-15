@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./GasGriefingProtection.sol";
 import "./AdvancedGasOptimizer.sol";
@@ -368,7 +370,7 @@ contract GasOptimizedArbitrageExecutor is GasGriefingProtection {
     /**
      * @dev Execute single operation (placeholder)
      */
-    function _executeOperation(bytes calldata operation) external {
+    function _executeOperation(bytes calldata operation) external nonReentrant{
         // Implementation would depend on operation type
         require(msg.sender == address(this), "Internal call only");
         // Actual operation execution logic here
@@ -377,7 +379,7 @@ contract GasOptimizedArbitrageExecutor is GasGriefingProtection {
     /**
      * @dev Execute loop iteration (placeholder)
      */
-    function _executeLoopIteration(bytes calldata data, uint256 iteration) external {
+    function _executeLoopIteration(bytes calldata data, uint256 iteration) external nonReentrant{
         require(msg.sender == address(this), "Internal call only");
         // Actual iteration logic here
     }
@@ -537,7 +539,7 @@ contract GasOptimizedArbitrageExecutor is GasGriefingProtection {
     function configureBatchSettings(
         bytes4 selector,
         BatchConfig calldata config
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(config.maxBatchSize > 0, "Invalid batch size");
         require(config.maxGasPerBatch > 0, "Invalid gas limit");
         
@@ -550,7 +552,7 @@ contract GasOptimizedArbitrageExecutor is GasGriefingProtection {
     function configureLoopOptimization(
         bytes4 selector,
         LoopOptimization calldata config
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(config.maxIterations > 0, "Invalid max iterations");
         require(config.gasPerIteration > 0, "Invalid gas per iteration");
         

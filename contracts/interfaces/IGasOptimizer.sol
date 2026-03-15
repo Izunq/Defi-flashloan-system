@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title IGasOptimizer
  * @notice Interface for gas optimization and DoS protection
  */
+
 interface IGasOptimizer {
     
     struct GasLimits {

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./PreCognitiveOracle.sol";
@@ -109,7 +109,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
         uint256 _triggerProbability,
         uint256 _triggerConfidence,
         bool _isActive
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_triggerProbability <= 10000, "Probability cannot exceed 10000 basis points");
         require(_triggerConfidence <= 10000, "Confidence cannot exceed 10000 basis points");
         
@@ -142,7 +142,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
         address _tokenAddress,
         uint256 _allocation,
         bool _isActive
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_tokenAddress != address(0), "Invalid token address");
         require(_allocation <= 10000, "Allocation cannot exceed 10000 basis points");
         
@@ -209,7 +209,8 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
      * @return success Whether the execution was successful
      * @return profitLoss Profit or loss from the execution
      */
-    function execute() external nonReentrant returns (bool success, int256 profitLoss) {
+    function execute() external nonReentrant returns (bool success, int256 profitLoss)  {
+        // TODO: Add nonReentrant modifier
         require(config.isActive, "Strategy not active");
         require(!state.isExecuting, "Already executing");
         
@@ -284,7 +285,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
      * @param _tokenAddress Address of the token to deposit
      * @param _amount Amount to deposit
      */
-    function deposit(address _tokenAddress, uint256 _amount) external onlyOwner {
+    function deposit(address _tokenAddress, uint256 _amount) external onlyOwner nonReentrant{
         require(_tokenAddress != address(0), "Invalid token address");
         require(_amount > 0, "Amount must be greater than zero");
         
@@ -302,7 +303,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
         address _tokenAddress,
         uint256 _amount,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_tokenAddress != address(0), "Invalid token address");
         require(_amount > 0, "Amount must be greater than zero");
         require(_recipient != address(0), "Invalid recipient address");
@@ -345,7 +346,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
      * @param _amount Amount to rescue
      * @param _recipient Recipient address
      */
-    function rescueETH(uint256 _amount, address payable _recipient) external onlyOwner {
+    function rescueETH(uint256 _amount, address payable _recipient) external onlyOwner nonReentrant{
         require(_recipient != address(0), "Invalid recipient address");
         require(_amount <= address(this).balance, "Insufficient balance");
         
@@ -363,7 +364,7 @@ contract EventDrivenStrategy is Ownable, ReentrancyGuard {
         address _tokenAddress,
         uint256 _amount,
         address _recipient
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant{
         require(_tokenAddress != address(0), "Invalid token address");
         require(_recipient != address(0), "Invalid recipient address");
         

@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -189,7 +189,7 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      */
     constructor() Ownable(msg.sender) {
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(ORACLE_PROVIDER_ROLE, msg.sender);
         _grantRole(EVENT_VERIFIER_ROLE, msg.sender);
         
@@ -209,7 +209,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
     function registerOracleProvider(
         address _provider,
         string memory _name
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         _registerOracleProvider(_provider, _name);
     }
     
@@ -255,7 +256,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         string memory _name,
         bool _isActive,
         uint256 _reputationScore
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_provider != address(0), "Provider address cannot be zero");
         require(bytes(_name).length > 0, "Provider name cannot be empty");
         require(oracleProviders[_provider].lastUpdateTime > 0, "Provider not registered");
@@ -282,7 +284,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      */
     function removeOracleProvider(
         address _provider
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(oracleProviders[_provider].lastUpdateTime > 0, "Provider not registered");
         
         // Deactivate the provider
@@ -301,7 +304,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      */
     function setMinOracleConsensus(
         uint256 _minConsensus
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_minConsensus > 0, "Minimum consensus must be greater than zero");
         require(_minConsensus <= oracleProviderAddresses.length, "Minimum consensus cannot exceed number of providers");
         
@@ -312,7 +316,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      * @dev Get the number of active oracle providers
      * @return count Number of active providers
      */
-    function getActiveOracleProvidersCount() external view returns (uint256 count) {
+    function getActiveOracleProvidersCount() external view returns (uint256 count)  {
+        // TODO: Add nonReentrant modifier
         for (uint256 i = 0; i < oracleProviderAddresses.length; i++) {
             if (oracleProviders[oracleProviderAddresses[i]].isActive) {
                 count++;
@@ -330,7 +335,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
     function registerEventType(
         string memory _name,
         string memory _description
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) returns (bytes32 eventTypeId) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE) returns (bytes32 eventTypeId)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         
         // Generate event type ID
@@ -372,7 +378,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         string memory _name,
         string memory _description,
         bool _isActive
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(eventTypes[_eventTypeId].name).length > 0, "Event type does not exist");
         require(bytes(_name).length > 0, "Name cannot be empty");
         
@@ -400,7 +407,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
     function registerTimeHorizon(
         string memory _name,
         uint256 _durationSeconds
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) returns (bytes32 horizonId) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE) returns (bytes32 horizonId)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(_durationSeconds > 0, "Duration must be greater than zero");
         
@@ -442,7 +450,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         string memory _name,
         uint256 _durationSeconds,
         bool _isActive
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(timeHorizons[_horizonId].durationSeconds > 0, "Time horizon does not exist");
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(_durationSeconds > 0, "Duration must be greater than zero");
@@ -477,7 +486,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         uint256 _probability,
         uint256 _confidence,
         bytes32 _dataHash
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (bytes32 probabilityId) {
+    ) public onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (bytes32 probabilityId)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(eventTypes[_eventTypeId].name).length > 0, "Event type does not exist");
         require(timeHorizons[_horizonId].durationSeconds > 0, "Time horizon does not exist");
         require(eventTypes[_eventTypeId].isActive, "Event type is not active");
@@ -593,7 +603,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      */
     function confirmProbability(
         bytes32 _probabilityId
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (uint256) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(oracleProviders[msg.sender].isActive, "Oracle provider is not active");
         
         EventProbability storage probability = eventProbabilities[_probabilityId];
@@ -646,7 +657,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         uint256[] memory _probabilities,
         uint256[] memory _confidences,
         bytes32[] memory _dataHashes
-    ) external onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (bytes32[] memory) {
+    ) external onlyRole(ORACLE_PROVIDER_ROLE) whenNotPaused returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         require(
             _eventTypeIds.length == _horizonIds.length &&
             _eventTypeIds.length == _probabilities.length &&
@@ -680,7 +692,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
     function verifyEvent(
         bytes32 _probabilityId,
         bool _eventOccurred
-    ) external onlyRole(EVENT_VERIFIER_ROLE) {
+    ) external onlyRole(EVENT_VERIFIER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         EventProbability storage probability = eventProbabilities[_probabilityId];
         
         require(probability.timestamp > 0, "Probability does not exist");
@@ -710,7 +723,7 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
         bytes32 _probabilityId,
         bool _eventOccurred,
         bytes memory _signature
-    ) external {
+    ) external nonReentrant{
         EventProbability storage probability = eventProbabilities[_probabilityId];
         
         require(probability.timestamp > 0, "Probability does not exist");
@@ -746,7 +759,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      * @dev Add a trusted signer
      * @param _signer Address of the signer
      */
-    function addTrustedSigner(address _signer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addTrustedSigner(address _signer) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_signer != address(0), "Invalid signer address");
         require(!trustedSigners[_signer], "Signer already trusted");
         
@@ -759,7 +773,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      * @dev Remove a trusted signer
      * @param _signer Address of the signer
      */
-    function removeTrustedSigner(address _signer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function removeTrustedSigner(address _signer) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(trustedSigners[_signer], "Signer not trusted");
         
         trustedSigners[_signer] = false;
@@ -813,7 +828,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
     function getHistoricalProbabilities(
         bytes32 _eventTypeId,
         bytes32 _horizonId
-    ) external view returns (bytes32[] memory) {
+    ) external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return historicalProbabilities[_eventTypeId][_horizonId];
     }
     
@@ -862,7 +878,8 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      * @dev Get all event types
      * @return Array of event type IDs
      */
-    function getAllEventTypes() external view returns (bytes32[] memory) {
+    function getAllEventTypes() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return eventTypeIds;
     }
     
@@ -870,21 +887,22 @@ contract PreCognitiveOracle is Ownable, AccessControl, ReentrancyGuard, Pausable
      * @dev Get all time horizons
      * @return Array of time horizon IDs
      */
-    function getAllTimeHorizons() external view returns (bytes32[] memory) {
+    function getAllTimeHorizons() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return timeHorizonIds;
     }
     
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
     
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

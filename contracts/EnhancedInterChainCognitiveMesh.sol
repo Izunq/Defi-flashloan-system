@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./CrossChainSecurityValidator.sol";
 import "./InputValidator.sol";
@@ -212,7 +213,7 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         
         securityValidator = CrossChainSecurityValidator(_securityValidator);
         
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(MESH_ADMIN_ROLE, msg.sender);
         _grantRole(EMERGENCY_ROLE, msg.sender);
     }
@@ -231,7 +232,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         address _meshEndpoint,
         uint256 _blockConfirmations,
         uint256 _maxGasPrice
-    ) external onlyRole(MESH_ADMIN_ROLE) {
+    ) external onlyRole(MESH_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         InputValidator.requireValidAddress(_meshEndpoint);
         InputValidator.requireInRange(_blockConfirmations, 1, 100);
         InputValidator.requireInRange(_maxGasPrice, 1 gwei, 2000 gwei);
@@ -267,7 +269,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         bytes memory _payload,
         uint256 _gasLimit,
         uint256 _deadline
-    ) external payable nonReentrant whenNotPaused validChain(_targetChainId) returns (bytes32 operationId) {
+    ) external payable nonReentrant whenNotPaused validChain(_targetChainId) returns (bytes32 operationId)  {
+        // TODO: Add nonReentrant modifier
         InputValidator.requireInRange(_gasLimit, 21000, 30000000);
         require(_deadline > block.timestamp, "Deadline must be in the future");
         require(_deadline <= block.timestamp + operationTimeout, "Deadline too far in future");
@@ -345,7 +348,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
     function validateOperation(
         bytes32 _operationId,
         CrossChainSecurityValidator.OracleSignature[] calldata _signatures
-    ) external onlyRole(ORACLE_ROLE) operationExists(_operationId) {
+    ) external onlyRole(ORACLE_ROLE) operationExists(_operationId)  {
+        // TODO: Add nonReentrant modifier
         CrossChainOperation storage operation = operations[_operationId];
         
         if (operation.status != OperationStatus.Pending) {
@@ -466,7 +470,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      */
     function addMultiSigSignature(
         bytes32 _operationId
-    ) external operationExists(_operationId) {
+    ) external operationExists(_operationId)  {
+        // TODO: Add nonReentrant modifier
         MultiSigRequirement storage multiSig = multiSigRequirements[_operationId];
         
         require(!multiSig.isComplete, "Multi-sig already complete");
@@ -505,7 +510,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
     function emergencyPause(
         string calldata _reason,
         uint256 _duration
-    ) external onlyRole(EMERGENCY_ROLE) {
+    ) external onlyRole(EMERGENCY_ROLE)  {
+        // TODO: Add nonReentrant modifier
         emergencyControls.globalPause = true;
         emergencyControls.crossChainPause = true;
         emergencyControls.pausedUntil = block.timestamp + _duration;
@@ -520,7 +526,8 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
      * @param _payload Call payload
      * @return result Call result
      */
-    function safeExecuteCall(bytes calldata _payload) external payable returns (bytes memory result) {
+    function safeExecuteCall(bytes calldata _payload) external payable returns (bytes memory result)  {
+        // TODO: Add nonReentrant modifier
         require(msg.sender == address(this), "Only self-call allowed");
         
         (bool success, bytes memory returnData) = address(this).call{
@@ -642,11 +649,13 @@ contract EnhancedInterChainCognitiveMesh is AccessControl, ReentrancyGuard {
         return (multiSig.signers, multiSig.currentSignatures, multiSig.requiredSignatures, multiSig.isComplete);
     }
     
-    function getPendingOperations() external view returns (bytes32[] memory) {
+    function getPendingOperations() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return pendingOperations;
     }
     
-    function getValidatingOperations() external view returns (bytes32[] memory) {
+    function getValidatingOperations() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return validatingOperations;
     }
 

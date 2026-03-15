@@ -1,0 +1,76 @@
+# Prometheus Configuration for Arbitrage System
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Artemis AI Core
+  - job_name: 'artemis-ai-core'
+    static_configs:
+      - targets: ['localhost:8082']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Backend Services
+  - job_name: 'data-ingestion'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/metrics'
+
+  # Node Exporter (system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # Frontend (if metrics enabled)
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['localhost:3000']
+    metrics_path: '/api/metrics'
+
+  # Database metrics
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['localhost:9187']
+
+  # Redis metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['localhost:9121']
+
+  # Exchange API monitors
+  - job_name: 'exchange-monitors'
+    static_configs:
+      - targets: ['localhost:8090']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Blockchain node monitors
+  - job_name: 'blockchain-monitors'
+    static_configs:
+      - targets: ['localhost:8091']
+    metrics_path: '/metrics'
+
+  # Custom arbitrage metrics
+  - job_name: 'arbitrage-engine'
+    static_configs:
+      - targets: ['localhost:8092']
+    metrics_path: '/metrics'
+    scrape_interval: 1s  # High frequency for trading metrics

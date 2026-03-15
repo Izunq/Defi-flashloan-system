@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./SecurityEnhancedExecutor.sol";
 import "./SecureMultiOracle.sol";
-import "./ArbitrageExecutorV33.sol";
+import "./GasOptimizedArbitrageExecutor.sol";
 
 /**
  * @title SecurityUpgradeDeployer
@@ -52,7 +54,7 @@ contract SecurityUpgradeDeployer {
         uint256 _timelockDelay,
         uint256 _maxGasPrice,
         address[] calldata _oracles
-    ) external onlyDeployer notDeployed {
+    ) external onlyDeployer notDeployed nonReentrant{
         require(_timelockDelay >= 1 hours, "Timelock too short");
         require(_maxGasPrice > 0, "Invalid gas price");
         require(_oracles.length >= 3, "Need at least 3 oracles");
@@ -83,7 +85,7 @@ contract SecurityUpgradeDeployer {
     function configureSecurity(
         address _multisigWallet,
         address _emergencyAdmin
-    ) external onlyDeployer {
+    ) external onlyDeployer nonReentrant{
         require(deployed, "Not deployed yet");
         require(_multisigWallet != address(0), "Invalid multisig");
         require(_emergencyAdmin != address(0), "Invalid emergency admin");

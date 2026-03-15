@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -282,7 +283,7 @@ contract ProductionOracleSecurityValidator is AccessControl, ReentrancyGuard, Pa
         require(securityManager != address(0), "Invalid security manager");
         require(emergencyResponder != address(0), "Invalid emergency responder");
         
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), admin);
         _grantRole(SECURITY_MANAGER_ROLE, securityManager);
         _grantRole(EMERGENCY_RESPONDER_ROLE, emergencyResponder);
         
@@ -1320,7 +1321,7 @@ contract ProductionOracleSecurityValidator is AccessControl, ReentrancyGuard, Pa
     /**
      * @notice Deactivate global emergency protocol
      */
-    function deactivateGlobalEmergencyProtocol() external onlyEmergencyResponder {
+    function deactivateGlobalEmergencyProtocol() external onlyEmergencyResponder nonReentrant{
         require(globalEmergencyProtocol.active, "Emergency protocol not active");
         require(
             block.timestamp >= globalEmergencyProtocol.activatedAt + 1 hours,

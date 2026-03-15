@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./InputValidator.sol";
 
@@ -129,12 +130,12 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
     error FunctionNotAllowed(bytes4 selector);
     error InsufficientConfirmations(uint256 received, uint256 required);
     error ChainUnhealthy(uint256 chainId);
-    error TransferLimitExceeded(uint256 amount, uint256 limit);
+    error TransferAmountExceeded(uint256 amount, uint256 limit);
     error InvalidSignatureAge(uint256 age, uint256 maxAge);
     error ReplayAttackDetected(address operator, uint256 nonce);
 
     constructor() {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(VALIDATOR_ADMIN_ROLE, msg.sender);
         
         // Initialize default function rules
@@ -160,7 +161,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
         bytes calldata payload,
         uint256 value,
         OracleSignature[] calldata signatures
-    ) external returns (bool isValid) {
+    ) external returns (bool isValid)  {
+        // TODO: Add nonReentrant modifier
         // Basic payload validation
         _validatePayload(payload, value);
         
@@ -216,7 +218,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
         uint256 blockHeight,
         uint256 avgBlockTime,
         bool isHealthy
-    ) external onlyRole(ORACLE_ROLE) {
+    ) external onlyRole(ORACLE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         ChainHealth storage health = chainHealth[chainId];
         
         health.lastBlockHeight = blockHeight;
@@ -248,7 +251,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
         bool requiresMultiSig,
         uint256 dailyLimit,
         uint256 hourlyLimit
-    ) external onlyRole(VALIDATOR_ADMIN_ROLE) {
+    ) external onlyRole(VALIDATOR_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         InputValidator.requireInRange(minConfirmations, 1, 10);
         InputValidator.requireInRange(maxValue, 0, type(uint128).max);
         
@@ -269,7 +273,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
      * @notice Emergency pause chain operations
      * @param chainId Chain ID to pause
      */
-    function emergencyPauseChain(uint256 chainId) external onlyRole(VALIDATOR_ADMIN_ROLE) {
+    function emergencyPauseChain(uint256 chainId) external onlyRole(VALIDATOR_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         chainHealth[chainId].isPaused = true;
         chainHealth[chainId].isHealthy = false;
         
@@ -281,7 +286,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
      * @param messageHash Message hash
      * @return info Message information
      */
-    function getMessageInfo(bytes32 messageHash) external view returns (MessageInfo memory info) {
+    function getMessageInfo(bytes32 messageHash) external view returns (MessageInfo memory info)  {
+        // TODO: Add nonReentrant modifier
         return messages[messageHash];
     }
 
@@ -290,7 +296,8 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
      * @param chainId Chain ID
      * @return isHealthy Whether chain is healthy
      */
-    function isChainHealthy(uint256 chainId) external view returns (bool isHealthy) {
+    function isChainHealthy(uint256 chainId) external view returns (bool isHealthy)  {
+        // TODO: Add nonReentrant modifier
         ChainHealth memory health = chainHealth[chainId];
         
         return health.isHealthy && 
@@ -327,7 +334,7 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
         }
         
         if (value > rule.maxValue) {
-            revert TransferLimitExceeded(value, rule.maxValue);
+            revert TransferAmountExceeded(value, rule.maxValue);
         }
     }
 
@@ -409,17 +416,17 @@ contract CrossChainSecurityValidator is AccessControl, ReentrancyGuard {
         
         // Check per-operation limit
         if (amount > limits.maxPerOperation) {
-            revert TransferLimitExceeded(amount, limits.maxPerOperation);
+            revert TransferAmountExceeded(amount, limits.maxPerOperation);
         }
         
         // Check hourly limit
         if (limits.hourlyUsed + amount > limits.maxPerHour) {
-            revert TransferLimitExceeded(limits.hourlyUsed + amount, limits.maxPerHour);
+            revert TransferAmountExceeded(limits.hourlyUsed + amount, limits.maxPerHour);
         }
         
         // Check daily limit
         if (limits.dailyUsed + amount > limits.maxDaily) {
-            revert TransferLimitExceeded(limits.dailyUsed + amount, limits.maxDaily);
+            revert TransferAmountExceeded(limits.dailyUsed + amount, limits.maxDaily);
         }
     }
 

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./HalalAssetRegistry.sol";
 
 /**
@@ -219,7 +220,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      */
     function joinPool(
         uint256 _contribution
-    ) external nonReentrant whenNotPaused onlyHalalAsset(poolInfo.contributionToken) {
+    ) external nonReentrant whenNotPaused onlyHalalAsset(poolInfo.contributionToken)  {
+        // TODO: Add nonReentrant modifier
         require(poolInfo.active, "Pool is not active");
         require(_contribution >= poolInfo.minContribution, "Contribution too low");
         require(!participants[msg.sender].active, "Already a participant");
@@ -258,7 +260,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      */
     function addContribution(
         uint256 _contribution
-    ) external nonReentrant whenNotPaused onlyRole(PARTICIPANT_ROLE) {
+    ) external nonReentrant whenNotPaused onlyRole(PARTICIPANT_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(poolInfo.active, "Pool is not active");
         require(_contribution > 0, "Contribution must be > 0");
         require(participants[msg.sender].active, "Not an active participant");
@@ -293,7 +296,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
         string calldata _reason,
         string calldata _evidence,
         bytes32 _eventId
-    ) external nonReentrant whenNotPaused onlyRole(PARTICIPANT_ROLE) returns (uint256) {
+    ) external nonReentrant whenNotPaused onlyRole(PARTICIPANT_ROLE) returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         require(poolInfo.active, "Pool is not active");
         require(_amount > 0, "Claim amount must be > 0");
         require(bytes(_reason).length > 0, "Reason cannot be empty");
@@ -335,7 +339,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
         uint256 _claimId,
         bool _approved,
         string calldata _rejectionReason
-    ) external nonReentrant onlyRole(CLAIM_MANAGER_ROLE) {
+    ) external nonReentrant onlyRole(CLAIM_MANAGER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_claimId < claims.length, "Invalid claim ID");
         
         Claim storage claim = claims[_claimId];
@@ -405,7 +410,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
         string calldata _name,
         string calldata _description,
         uint256 _maxCoverageAmount
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) returns (bytes32) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) returns (bytes32)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(bytes(_description).length > 0, "Description cannot be empty");
         require(_maxCoverageAmount > 0, "Max coverage must be > 0");
@@ -442,7 +448,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
         bytes32 _eventId,
         uint256 _maxCoverageAmount,
         bool _covered
-    ) external onlyRole(SHARIAH_COMMITTEE_ROLE) {
+    ) external onlyRole(SHARIAH_COMMITTEE_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(insurableEvents[_eventId].maxCoverageAmount > 0, "Event does not exist");
         require(_maxCoverageAmount > 0, "Max coverage must be > 0");
         
@@ -462,7 +469,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Distribute surplus to participants
      */
-    function distributeSurplus() external nonReentrant onlyRole(ADMIN_ROLE) {
+    function distributeSurplus() external nonReentrant onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(poolInfo.active, "Pool is not active");
         require(
             block.timestamp >= lastSurplusDistribution + surplusDistributionPeriod,
@@ -510,7 +518,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Activate the pool
      */
-    function activatePool() external onlyRole(ADMIN_ROLE) {
+    function activatePool() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(!poolInfo.active, "Pool already active");
         
         poolInfo.active = true;
@@ -521,7 +530,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
     /**
      * @dev Deactivate the pool
      */
-    function deactivatePool() external onlyRole(ADMIN_ROLE) {
+    function deactivatePool() external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(poolInfo.active, "Pool already inactive");
         
         poolInfo.active = false;
@@ -535,7 +545,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      */
     function updateMinContribution(
         uint256 _minContribution
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_minContribution > 0, "Min contribution must be > 0");
         
         poolInfo.minContribution = _minContribution;
@@ -547,7 +558,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      */
     function updateSurplusDistributionPeriod(
         uint256 _period
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(_period >= 30 days, "Period too short");
         
         surplusDistributionPeriod = _period;
@@ -557,7 +569,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get all insurable events
      * @return Array of event IDs
      */
-    function getAllInsurableEvents() external view returns (bytes32[] memory) {
+    function getAllInsurableEvents() external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return insurableEventIds;
     }
 
@@ -568,7 +581,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      */
     function getParticipantClaims(
         address _participant
-    ) external view returns (uint256[] memory) {
+    ) external view returns (uint256[] memory)  {
+        // TODO: Add nonReentrant modifier
         return participantClaims[_participant];
     }
 
@@ -576,7 +590,8 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get pool balance
      * @return Current balance of the pool
      */
-    function getPoolBalance() external view returns (uint256) {
+    function getPoolBalance() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return IERC20(poolInfo.contributionToken).balanceOf(address(this));
     }
 
@@ -584,21 +599,22 @@ contract TakafulPool is AccessControl, ReentrancyGuard, Pausable {
      * @dev Get claim count
      * @return Number of claims
      */
-    function getClaimCount() external view returns (uint256) {
+    function getClaimCount() external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return claims.length;
     }
 
     /**
      * @dev Pause the contract
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _pause();
     }
 
     /**
      * @dev Unpause the contract
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(ADMIN_ROLE)  nonReentrant onlyOwner{
         _unpause();
     }
 }

@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./TrustCurve.sol";
@@ -173,7 +173,7 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         STRATEGY_INCUBATOR = StrategyIncubatorV33(_incubatorAddress);
         
         // Setup roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(keccak256("DEFAULT_ADMIN_ROLE"), msg.sender);
         _grantRole(AGENT_ROLE, msg.sender);
         _grantRole(COMPOSER_ROLE, msg.sender);
         _grantRole(VERIFIER_ROLE, msg.sender);
@@ -190,7 +190,7 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
     function registerAgent(
         string memory _name,
         string memory _metadata
-    ) external {
+    ) external nonReentrant{
         require(agents[msg.sender].agentAddress == address(0), "Agent already registered");
         require(bytes(_name).length > 0, "Name cannot be empty");
         
@@ -221,7 +221,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         string memory _name,
         string memory _metadata,
         bool _isActive
-    ) external onlyRole(AGENT_ROLE) {
+    ) external onlyRole(AGENT_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(agents[msg.sender].agentAddress != address(0), "Agent not registered");
         require(bytes(_name).length > 0, "Name cannot be empty");
         
@@ -246,7 +247,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         address _recipient,
         bytes32 _messageType,
         bytes memory _data
-    ) external onlyRole(AGENT_ROLE) returns (bytes32 messageId) {
+    ) external onlyRole(AGENT_ROLE) returns (bytes32 messageId)  {
+        // TODO: Add nonReentrant modifier
         require(_recipient != address(0), "Invalid recipient");
         require(agents[_recipient].agentAddress != address(0), "Recipient not registered");
         require(agents[_recipient].isActive, "Recipient not active");
@@ -285,7 +287,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
      * @dev Process a message
      * @param _messageId ID of the message to process
      */
-    function processMessage(bytes32 _messageId) external onlyRole(AGENT_ROLE) {
+    function processMessage(bytes32 _messageId) external onlyRole(AGENT_ROLE)  {
+        // TODO: Add nonReentrant modifier
         Message storage message = messages[_messageId];
         
         require(message.recipient == msg.sender, "Not the recipient");
@@ -305,7 +308,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
      * @param _agent Agent address
      * @return messageIds Array of message IDs
      */
-    function getAgentInbox(address _agent) external view returns (bytes32[] memory) {
+    function getAgentInbox(address _agent) external view returns (bytes32[] memory)  {
+        // TODO: Add nonReentrant modifier
         return agentInbox[_agent];
     }
     
@@ -350,7 +354,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         string memory _name,
         string memory _description,
         uint256[] memory _componentStrategyIds
-    ) external onlyRole(COMPOSER_ROLE) returns (uint256 compositeId) {
+    ) external onlyRole(COMPOSER_ROLE) returns (uint256 compositeId)  {
+        // TODO: Add nonReentrant modifier
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(_componentStrategyIds.length > 0, "No component strategies");
         require(_componentStrategyIds.length <= 5, "Too many component strategies");
@@ -475,7 +480,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         uint256 _strategyId,
         bytes32 _proofHash,
         bool _isValid
-    ) external onlyRole(VERIFIER_ROLE) {
+    ) external onlyRole(VERIFIER_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(
             STRATEGY_INCUBATOR.getStrategy(_strategyId).strategyAddress != address(0),
             "Strategy does not exist"
@@ -511,7 +517,7 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
         uint256 _strategyId,
         uint256 _price,
         uint256 _duration
-    ) external {
+    ) external nonReentrant{
         require(
             STRATEGY_INCUBATOR.getStrategy(_strategyId).strategyAddress != address(0),
             "Strategy does not exist"
@@ -558,7 +564,7 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
      */
     function purchaseExecutionRights(
         uint256 _strategyId
-    ) external payable nonReentrant {
+    ) external payable nonReentrant{
         ExecutionRights storage rights = executionRights[_strategyId];
         
         require(rights.owner != address(0), "Execution rights not available");
@@ -603,7 +609,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
     function updateAgentReputation(
         address _agent,
         int256 _reputationDelta
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        // TODO: Add nonReentrant modifier
         require(agents[_agent].agentAddress != address(0), "Agent not registered");
         
         Agent storage agent = agents[_agent];
@@ -622,7 +629,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
      * @dev Get all registered agents
      * @return agentAddresses Array of agent addresses
      */
-    function getAllAgents() external view returns (address[] memory) {
+    function getAllAgents() external view returns (address[] memory)  {
+        // TODO: Add nonReentrant modifier
         return agentList;
     }
     
@@ -697,7 +705,8 @@ contract SwarmIntelligenceV38 is Ownable, AccessControl, ReentrancyGuard {
      * @param _strategyId ID of the strategy
      * @return proofCount Number of proofs
      */
-    function getZKProofCount(uint256 _strategyId) external view returns (uint256) {
+    function getZKProofCount(uint256 _strategyId) external view returns (uint256)  {
+        // TODO: Add nonReentrant modifier
         return strategyProofs[_strategyId].length;
     }
     

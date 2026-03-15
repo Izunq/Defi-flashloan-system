@@ -1,22 +1,6 @@
-# Build stage
-FROM node:18-alpine AS builder
-
+FROM python:3.11-slim
 WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production || npm install --only=production
-
-# Runtime stage
-FROM node:18-alpine
-
-WORKDIR /app
-
-RUN apk add --no-cache dumb-init
-
-COPY --from=builder /app/node_modules ./node_modules
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-
-EXPOSE 8080
-
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["npm", "start"]
+CMD ["python", "-m", "src.main"]

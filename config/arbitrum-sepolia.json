@@ -1,0 +1,14 @@
+{
+  "chain_id": 421614,
+  "chain_name": "Arbitrum Sepolia",
+  "rpc_env_var": "ALCHEMY_ARBITRUM_SEPOLIA_URL",
+  "explorer": "https://sepolia.arbiscan.io",
+  "contracts": {
+    "aave_v3_pool": "0xBfC91D59fdAA134A4ED45f7B584cAf96D7024b32",
+    "uniswap_v3_router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+    "uniswap_v3_quoter": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+    "sushiswap_router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+  },
+  "tokens": {},
+  "deployed_contracts": {}
+}

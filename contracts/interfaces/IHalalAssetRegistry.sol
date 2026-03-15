@@ -1,33 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-/**
- * @title IHalalAssetRegistry
- * @notice Interface for the Halal Asset Registry
- * @dev Used to verify if assets are Shariah-compliant */
-
+/// @title IHalalAssetRegistry - Interface for the halal asset compliance registry
+/// @notice Maintains a registry of tokens that have been reviewed and approved
+///         as Sharia-compliant, along with blacklisted tokens that must be avoided.
 interface IHalalAssetRegistry {
-    /**
-     * @dev Check if an asset is Shariah-compliant
-     * @param asset The address of the asset to check
-     * @return isCompliant Whether the asset is Shariah-compliant
-     */
-    function isHalalCompliant(address asset) external view returns (bool);
-    
-    /**
-     * @dev Get information about a Halal asset
-     * @param asset The address of the asset
-     * @return name The name of the asset
-     * @return approvalReason The reason for approval
-     * @return approvalTimestamp When the asset was approved
-     * @return approvedBy Who approved the asset
-     */
-    function getHalalAssetInfo(address asset) external view returns (
-        string memory name,
-        string memory approvalReason,
-        uint256 approvalTimestamp,
-        address approvedBy
-    );
+    /// @notice Check whether a token is approved as halal-compliant
+    /// @param token The address of the token to check
+    /// @return True if the token is approved as halal-compliant
+    function isHalalCompliant(address token) external view returns (bool);
+
+    /// @notice Check whether a token is blacklisted (non-compliant)
+    /// @param token The address of the token to check
+    /// @return True if the token is blacklisted
+    function isBlacklisted(address token) external view returns (bool);
+
+    /// @notice Get full asset information for a given token
+    /// @param token The address of the token to query
+    /// @return name The name or label assigned to the asset in the registry
+    /// @return approvalReason The reason or basis for the compliance decision
+    /// @return reviewTimestamp The timestamp of the last compliance review
+    /// @return approved Whether the asset is currently approved as halal
+    /// @return blacklisted Whether the asset is currently blacklisted
+    function getAssetInfo(
+        address token
+    )
+        external
+        view
+        returns (
+            string memory name,
+            string memory approvalReason,
+            uint256 reviewTimestamp,
+            bool approved,
+            bool blacklisted
+        );
 }

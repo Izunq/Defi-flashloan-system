@@ -1,9 +1,0 @@
-Method,Name,Error,Occurrences
-REDIS_PUBLISH,market_update,Exception('Publish failed'),108
-TRADE_EXECUTION,arbitrage_trade,Exception('price_moved'),3
-TRADE_EXECUTION,arbitrage_trade,Exception('slippage_too_high'),4
-REDIS_PUBLISH,market_opportunity,Exception('Failed to publish to Redis'),561
-TRADE_EXECUTION,arbitrage_trade,Exception('gas_limit_exceeded'),3
-REDIS_PUBLISH,high_value_opportunity,Exception('Publish failed'),154
-TRADE_EXECUTION,arbitrage_trade,Exception('insufficient_liquidity'),2
-REDIS_PUBLISH,system_status,Exception('Publish failed'),54

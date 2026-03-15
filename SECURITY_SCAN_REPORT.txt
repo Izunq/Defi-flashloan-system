@@ -1,1 +1,0 @@
-*** CRITICAL SECURITY AUDIT REPORT ***\n==================================================\nScan completed at: C:\Users\mahia\New_Flashloan\nTotal files with violations: 0\n\nSUCCESS: NO PRIVATE KEY VIOLATIONS FOUND!\nThe codebase appears to be secure from direct private key exposure.
